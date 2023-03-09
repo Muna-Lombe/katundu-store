@@ -1,0 +1,9 @@
+[
+    {"id": 1,"name": "Package","type": 0},
+    {"id": 2,"name": "Width, cm","type": 1},
+    {"id": 3,"name": "Length, cm","type": 1},
+    {"id": 4,"name": "Height, cm","type": 1},
+    {"id": 5,"name": "Weight, kg","type": 2},
+    {"id": 6,"name": "Size","type": 3},
+    {"id": 7,"name": "Color","type": 3}
+]

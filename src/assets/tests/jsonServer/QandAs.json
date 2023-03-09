@@ -1,0 +1,40 @@
+{
+  "questions": [
+    {
+      "poster": {
+        "name": "Jerry Adams",
+        "avtr_url":null
+      },
+      "productName": "Super product #1 Very Cheap Great Quality",
+      "productImgUrl": null,
+      "text": "Some question about a product?",
+      "rating": {
+        "upvotes": 10
+      },
+      "datePosted": "1 January 2001",
+      "responseCount": 5,
+      "responses": [
+        {
+          "poster": {
+            "name": "Davies Store",
+            "avtr_url": null,
+            "verified": true
+          },
+          "text": "Some answer text Some answer text Some answer text Some answer text Some answer text Some answer text Some answer text Some answer text Some answer text Some answer text Some answer text Some answer text",
+          "rating": {
+            "upvotes": 10,
+            "downvotes": 10
+          },
+          "datePosted": "1 January 2001",
+          "ranking": "🎗️ Best Answer"
+        }
+      ]
+    }
+  ],
+  "answersList": [
+    "Number of comments",
+    "Ranking",
+    "Date posted",
+    "Relevance"
+  ]
+}
