@@ -1,9 +1,0 @@
-[
-  {"id":1,"product_variation_property_id":6,"title":"big","value":"big"},
-  {"id":2,"product_variation_property_id":6,"title":"medium","value":"medium"},
-  {"id":3,"product_variation_property_id":6,"title":"small","value":"small"},
-  {"id":4,"product_variation_property_id":7,"title":"black","value":"black"},
-  {"id":5,"product_variation_property_id":7,"title":"white","value":"white"},
-  {"id":6,"product_variation_property_id":7,"title":"blue","value":"blue"},
-  {"id":7,"product_variation_property_id":7,"title":"red","value":"red"}
-]
