@@ -51,6 +51,7 @@ name - product
 
 name category_id - id category
 
+
 description
 Product description
 Product images:
