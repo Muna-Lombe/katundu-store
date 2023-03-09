@@ -16,7 +16,7 @@ module.exports = {
     "plugins": ["unused-imports"],
     "rules": {
         "no-unused-vars": [
-            "error", 
+            "off", 
             { 
                 "vars": "all", 
                 "args": "after-used", 
