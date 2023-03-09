@@ -50,6 +50,9 @@
   "devDependencies": {
     "@types/redux-orm": "^0.16.1",
     "autoprefixer": "^10.4.4",
+    "eslint": "^8.35.0",
+    "eslint-plugin-react": "^7.32.2",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "gh-pages": "^3.2.3",
     "postcss": "^8.4.12",
     "postcss-cli": "^9.1.0",

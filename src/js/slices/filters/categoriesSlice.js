@@ -1,4 +1,4 @@
-import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit'
+import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit'
 
 const categoriesAdapter = createEntityAdapter()
 

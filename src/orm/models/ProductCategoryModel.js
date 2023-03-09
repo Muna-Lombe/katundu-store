@@ -1,5 +1,5 @@
-import { attr,fk, many, Model, ORM } from "redux-orm";
-import { CREATE, REMOVE, UPDATE, ADD_TO,REMOVE_FROM, ASSIGN, actions } from "../actions/actionTypes";
+import { attr, Model } from "redux-orm";
+import { actions } from "../actions/actionTypes";
 import customReducer from "./reducer";
 
 

@@ -115,4 +115,4 @@ export default function customReducer({session, model,action }) {
       return session.state
   }
   return session.state;
-};
+}

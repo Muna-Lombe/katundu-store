@@ -5,16 +5,10 @@ import
   ProductCategories,
   SortedProducts,
   ProductsByMaxRange,
-  LazyLoad,
-  OneProduct,
   ProductImages,
-  OneProductImage,
   ProductVariations,
   ProductVariationProperties,
-  OneProductVariation,
-  OneProductVariationProperties,
   ProductVariationPropertyListValues,
-  OneProductVariationPropertyListValues,
   ProductVariationPropertyValues
 }
 

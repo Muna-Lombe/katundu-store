@@ -1,4 +1,4 @@
-import {createSelector, ORM } from "redux-orm";
+import { ORM } from "redux-orm";
 import Order from "../models/OrderModel";
 import Product from "../models/ProductModel";
 import { createReducer } from "redux-orm";

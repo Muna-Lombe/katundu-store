@@ -1,6 +1,5 @@
-import { createAsyncThunk, findNonSerializableValue } from "@reduxjs/toolkit";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 import db from "../../assets/tests/jsonServer/db"
-import { CREATE } from "../actions/actionTypes"
 import { ThunkTypes } from "../actions/thunkTypes";
 import { mapper } from ".";
 // import { Map } from ".";

@@ -1,4 +1,4 @@
-import { attr,fk, many, Model, oneToOne, ORM } from "redux-orm";
+import { attr,fk, Model } from "redux-orm";
 import customReducer from "./reducer";
 import { actions } from "../actions/actionTypes";
 

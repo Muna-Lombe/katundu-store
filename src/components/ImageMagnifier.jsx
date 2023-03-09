@@ -104,7 +104,7 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
         <div 
           // onTouchMove={(e) => magnify("activeImage", 3)} 
           
-        className={"mesh-mask modal absolute hidden peer-focus:flex peer-hover:flex peer-active:flex  w-full h-full bg-black opacity-50"}>
+        className={"mesh-mask modal absolute flex  w-full h-full bg-black opacity-30 border-[1px] rounded-md"}>
             {/* <VerticalLine count={Number.parseInt(((sqrDim / (sqrDim / 10) * 5)).toString())} />
             <HorizontalLine count={Number.parseInt(((sqrDim / (sqrDim / 10) * 5)).toString())} /> */}
 

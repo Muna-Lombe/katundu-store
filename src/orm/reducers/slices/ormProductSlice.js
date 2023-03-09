@@ -1,7 +1,4 @@
-import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit'
-import React from 'react'
-import { useSelector } from 'react-redux'
-import Get from '../../../assets/tests/Get'
+import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit'
 import { session } from '../rootOrmReducer'
 
 const ormProductsAdapter = createEntityAdapter()

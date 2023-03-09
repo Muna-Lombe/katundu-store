@@ -1,6 +1,4 @@
 import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit'
-import React from 'react'
-import Get from '../../../assets/tests/Get'
 
 
 const orderHistoryAdapter = createEntityAdapter()

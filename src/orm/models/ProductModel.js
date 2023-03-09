@@ -1,8 +1,6 @@
-import { attr,fk, many, Model, oneToOne, ORM } from "redux-orm";
-import { PropTypes } from 'react';
+import { attr, many, Model } from "redux-orm";
 // import { getPropTypesMixin } from "redux-orm-proptypes";
-import { CREATE, REMOVE, UPDATE, ADD_TO,REMOVE_FROM, ASSIGN, actions } from "../actions/actionTypes";
-import { createSlice } from "@reduxjs/toolkit";
+import { actions } from "../actions/actionTypes";
 import customReducer from "./reducer";
 // import { session } from "../reducers/rootOrmReducer";
 

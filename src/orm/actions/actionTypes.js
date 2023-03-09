@@ -36,7 +36,7 @@ export function actions(){
     return[i,action]
     // return [i = createAction(`orm/${model}/` + [UPDATE, REMOVE, ADD, CREATE, ADD_TO, REMOVE_FROM, ASSIGN, FULFILLED, SET_LOADING, CLEAR_LOADING][d])]
   }))
-}};
+}}
 export default types;
 // export const [updated, removed, added, created, addedTo, removedFrom, assigned, fulfilled, setLoading, clearedLoading] = actions
 
