@@ -49,9 +49,9 @@ const db = {
       // first check when last request was made
       const timeSinceLast = (new Date()).getTime() - this.lastRequest.getTime();
       this.lastRequest = new Date();
-      if (timeSinceLast < 1000) {
-        this.lastRequest = new Date(this.lastRequest.getTime() + (1000 - timeSinceLast));
-        await new Promise((resolve) => setTimeout(resolve, 1000-timeSinceLast));
+      if (timeSinceLast < 300) {
+        this.lastRequest = new Date(this.lastRequest.getTime() + (300 - timeSinceLast));
+        await new Promise((resolve) => setTimeout(resolve,300-timeSinceLast));
       }
       return getFrom.DB(request,filter);
     },

@@ -9,21 +9,12 @@ import { mapper } from ".";
 export const load = async (model, thunkFulfilled) => {
   if (model) {
     
-    // console.log("path", url, searchParams)
     let data = await db.makeRequest(model.dataName, model.range)
-    // console.log("data", data) 
+ 
     const props = { data, model }
     const action = { ...data }
-    // return props
-    // reduceState({props})
-    // console.log("returned state", newState)
-
     return action
   }
-  // if(thunkFulfilled){
-  //     // session
-  // }
-
 }
 
 

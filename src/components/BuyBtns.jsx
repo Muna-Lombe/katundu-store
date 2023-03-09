@@ -16,7 +16,7 @@ const BuyBtns = ({ id, }) => {
 
   const dispatch = useDispatch()
   const handleRedirect = () =>{
-    goto("/signin",{state:{redirect:location.pathname}})
+    goto("/signin", { state: { ...location}})
   }
   const handleAddToCart = (id) => {
     dispatch(createdCartItem({

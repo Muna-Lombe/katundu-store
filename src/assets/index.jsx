@@ -37,8 +37,8 @@ export const filterData = {
   ]
 }
 export const titleTagTypes={
-  currencyType : "ZMW",
-  location: { city: "Lusaka", state: "Lusaka Province" },
+  currencyType : "zmw",
+  location: { city: "Lusaka", state: " Lusaka Province" },
   buyBtn:{
     mainText :"Add to cart", subText :"Delivery Tomorrow", tooltip :"Item already in cart"
   },
@@ -49,7 +49,7 @@ export const titleTagTypes={
     categoriesText: "Categories", settingsText: "Settings"
   },
   cart:{
-    currencyType : "ZMW", cartTag:"Cart", emptyCartBtnTag:"Empty Cart",
+    currencyType : "zmw", cartTag:"Cart", emptyCartBtnTag:"Empty Cart",
     qtyType: "pcs.", promoCountdown: "to ", priceMinTag: "from", checkoutTag:"Checkout", totalInCartTag:"Cart Total"
   },
   checkout:{

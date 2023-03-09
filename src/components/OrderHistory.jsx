@@ -1,7 +1,7 @@
 import React from 'react'
 
 // assets 
-import { CopyIco, ArrowDown, titleTagTypes as tags} from '../assets'
+import { CopyIco, ArrowDown, titleTagTypes as tags, OpenIco} from '../assets'
 import ContentDetails from './ContentDetails'
 import NameTag from './NameTag'
 import ProductDescriptor from './ProductDescriptor'
@@ -100,8 +100,9 @@ const OrderHistory = ({ itemsOrdered}) => {
             </div>
             
           </div>
-          <div className="show-more w-min relative">
-              <ArrowDown size={18} handleClick={handleRotateIco} />
+          <div onClick={handleRotateIco} className="show-more w-min relative">
+            <OpenIco/>
+              {/* <ArrowDown size={18} handleClick={handleRotateIco} /> */}
           </div>
         </div>
         <div id="item_content" className="flex flex-col justify-center gap-2 font-raleway ">

@@ -33,7 +33,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
   const discountTag = (disc,old_price)=>(
       <>
         <h4 id="old_price" className="text-[#8D8D8E] line-through font-extralight text-sm  greater-than-md:text-[1.0rem] ">
-          {old_price+'₽'}
+          {old_price+' '+tags.currencyType}
         </h4>
       <h4 id="discount" className="text-[#FF2D87] font-semibold text-sm  greater-than-md:text-[1.0rem] ">
           {'-'+disc+'%'}
@@ -52,8 +52,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
   }
 
   const handleRedirect = () => {
-    
-    goto("/signin", { state: { redirect: location.pathname } })
+    goto("/signin", {   state: { ...location } })
   }
   
   const BuyBtn=({})=>(
@@ -126,7 +125,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
       <div id="product_content" className=" relative w-full max-h-[50%] flex flex-wrap  justify-between gap-0 bg-white">
         <div id="name_store_price__wrapper" className=" py-1 w-full  h-max flex flex-col justify-between">
           <div id="name_store__wrapper" className="w-full h-full flex flex-col justify-between gap-1">
-            <h4 id='product_name' className=" h-12 bg-white text-[#2D2D2F] text-sm greater-than-md:text-lg hover:text-blue-400 font-medium">
+            <h4 id='product_name' className=" h-12 bg-white text-[#2D2D2F] text-sm greater-than-md:text-base hover:text-blue-400 font-medium">
               {
                 noPrd
                   ? <div className="no-prd-field w-[70%] h-6 border rounded-md bg-gradient-to-tr from-slate-400 to-slate-500 animate-pulse opacity-30"></div>
@@ -164,8 +163,8 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
                 <span>
 
                   {product.isDiscounted[0] === true
-                    ? 'от ' + calcDisc(product.priceRange.sort((a, b) => a - b)[0], product.isDiscounted[1] ) + ' ₽'
-                    : 'от ' + product.priceRange.sort((a, b) => a -b)[0] + ' ₽'
+                    ? 'from ' + calcDisc(product.priceRange.sort((a, b) => a - b)[0], product.isDiscounted[1] ) + ' '+tags.currencyType
+                    : 'from ' + product.priceRange.sort((a, b) => a - b)[0] + ' ' + tags.currencyType
                   }
                 </span>
                 <span id="discounted_price" className="w-max h-[25px] flex  pr-2 justify-between items-center gap-4  ">
