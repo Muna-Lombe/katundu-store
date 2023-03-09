@@ -97,22 +97,24 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
       </div>
   )
   const CurrentImage = () => (
-      <div className={"mesh-magnifier-container relative  max-w-full aspect-square flex justify-center"}>
+      <div 
+      onPointerEnter={(e) => magnify("activeImage", 3)}
+      onMouseEnter={(e) => magnify("activeImage", 3)} 
+        className={" mesh-magnifier-container relative  max-w-full aspect-square flex justify-center"}>
         <div 
           // onTouchMove={(e) => magnify("activeImage", 3)} 
-          onPointerEnter={(e) => magnify("activeImage", 3)} 
-          onMouseEnter={(e) => magnify("activeImage", 3)} 
-          className={"mesh-mask modal absolute w-full h-full bg-black opacity-50"}>
+          
+        className={"mesh-mask modal absolute hidden peer-focus:flex peer-hover:flex peer-active:flex  w-full h-full bg-black opacity-50"}>
             {/* <VerticalLine count={Number.parseInt(((sqrDim / (sqrDim / 10) * 5)).toString())} />
             <HorizontalLine count={Number.parseInt(((sqrDim / (sqrDim / 10) * 5)).toString())} /> */}
 
         </div>
             {
               // images?.length ?
-              <img id="activeImage" alt="gallery" className={"w-full  aspect-square object-cover object-center block bg-white"} src={imagepath(activeImage?.image_url || images[0]?.image_url) || no_img_path} />
+              <img id="activeImage" alt="gallery" className={"w-full max-w-[400px]  aspect-square object-cover object-center block bg-white border-[1px] rounded-md"} src={imagepath(activeImage?.image_url || images[0]?.image_url) || no_img_path} />
                 // : ""
             }
-        <div className={"img-magnifier-glass absolute bottom-0 right-0 w-1/4 aspect-square hover:bg-white border-[3px] border-slate-600  rounded-md cursor-none"}></div>
+        <div className={"peer img-magnifier-glass absolute bottom-0 right-0 w-1/4 aspect-square hover:bg-white border-[3px] border-slate-600  rounded-md cursor-none"}></div>
       </div>
   )
  

@@ -57,17 +57,19 @@ const Cart = ({ unOrd, ord }) => {
           <div id="product_item__wrapper" className="w-auto sm:w-[95%] md:w-[99%] lg:w-[95%] xl:w-[95%] flex flex-col flex-nowrap xs:flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row  justify-between gap-1 md:gap-2 lg:gap-4 xl:gap-4">  
             <div id="product_details" 
               className=" w-auto  md:max-w-[312px] lg:max-w-[450px] xl:w-full flex flex-wrap xs:flex-wrap sm:flex-nowrap md:flex-nowrap lg:flex-nowrap xl:flex-nowrap  justify-start ">
-              <div id="product_image" 
+                <Link to={"/product/" + orderItem.product.id} id="product_image"
                 className="w-max max-h-[5rem] px-2 flex justify-center items-center">
-                <img 
-                  className=" max-w-[5rem] max-h-[5rem] md:w-full md:h-full lg:w-full lg:h-full xl:w-full xl:h-full object-contain" src={imagepath(orderItem.product.images[0].image_url)} alt="IGM" />
-              </div>
+
+                  <img className=" max-w-[5rem] max-h-[5rem] md:w-full md:h-full lg:w-full lg:h-full xl:w-full xl:h-full object-contain" src={imagepath(orderItem.product.images[0].image_url)} alt="IGM" />
+                </Link>
+              
+              
               <div id="product_description" 
                 className="w-auto max-w-[352px] flex flex-col justify-between"  >
-                <p 
+                <Link to={"/product/" + orderItem.product.id} 
                   className=" h-auto max-h-[5rem] flex-wrap overflow-y-clip">
                   {orderItem.product.name.toString().length > 6 ? orderItem.product.name.slice(0,30) + "..." : orderItem.product.name}
-                </p>
+                </Link>
                 <div id="product_tags" 
                   className="w-max mt-4 flex flex-col lg:flex-row xl:flex-row justify-between gap-2">
                   <div 
