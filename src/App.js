@@ -27,13 +27,13 @@ function App() {
         <Route path="/product/:id" exact element={<ShowProduct />} />
         <Route path="/search" exact element={<Search />} />
         <Route path="/cart" exact element={
-          <PrivateRoute redirect={"/cart"} component={Basket} />
+          <PrivateRoute component={Basket} />
         } />
         <Route path="/checkout" exact element={
-          <PrivateRoute redirect={"/checkout"} component={Checkout} />
+          <PrivateRoute component={Checkout} />
         } />
         <Route path="/history" exact element={
-          <PrivateRoute redirect={"/history"} component={History} />
+          <PrivateRoute component={History} />
         } />
         <Route path="/signin" exact element={<Login /> } /> 
         

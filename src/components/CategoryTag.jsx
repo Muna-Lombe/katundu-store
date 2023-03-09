@@ -22,7 +22,6 @@ const CategoryTag = ({borderId=1,id,text='tag'})=>{
   }
 
   const handleFilter = (catId, action) => {
-    // console.log("filter our",catId)
     switch (action) {
       case "remove":
         // console.log(action)
@@ -46,26 +45,7 @@ const CategoryTag = ({borderId=1,id,text='tag'})=>{
     return(
       <div 
         id={`tag tag-${text}`} 
-        className={`
-          w-max 
-          h-[1.6rem] 
-          whitespace-nowrap 
-          flex 
-          justify-center 
-          items-center 
-          rounded-2xl 
-          py-[0.2rem] 
-          mx-1 
-          px-4 
-          border-2 
-          border-gray-200 
-          text-red-600
-          text-[0.9rem] 
-          font-sans 
-          font-semibold
-          cursor-pointer
-
-        `}
+        className={`w-max h-[1.6rem] whitespace-nowrap flex justify-center items-center rounded-2xl py-[0.2rem] mx-1 px-4 border-2 border-gray-200 text-red-600 text-[0.9rem] font-sans font-semibold cursor-pointer`}
         onMouseDown={(e)=>handleScroll(e)}
         
       >
@@ -79,26 +59,7 @@ const CategoryTag = ({borderId=1,id,text='tag'})=>{
     return(
       <div 
         id={`tag tag-${text}`} 
-        className={`
-          w-max 
-          h-[1.6rem] 
-          whitespace-nowrap 
-          flex 
-          justify-center 
-          items-center 
-          rounded-2xl 
-          py-[0.2rem] 
-          mx-1 
-          px-4 
-          border-2 
-          border-[#FF2D87] 
-          text-black 
-          text-[0.9rem] 
-          font-sans 
-          font-semibold
-          cursor-pointer
-
-        `}
+        className={`  w-max   h-[1.6rem]   whitespace-nowrap   flex   justify-center   items-center   rounded-2xl   py-[0.2rem]   mx-1   px-4   border-2   border-[#FF2D87]   text-black   text-[0.9rem]   font-sans   font-semibold  cursor-pointer`}
         onMouseDown={(e)=>handleScroll(e)}
         
       >
@@ -111,40 +72,23 @@ const CategoryTag = ({borderId=1,id,text='tag'})=>{
   return(
     <div 
       id={`tag tag-${text}`} 
-      className={`
-        mx-1 
-        py-[0.2rem] 
-        px-2 
-        w-max 
-        h-[1.6rem] 
-        flex 
-        justify-center 
-        items-center
-        gap-2
-        
-        whitespace-nowrap 
-        rounded-2xl 
-        text-white 
-        text-[0.9rem] 
-        font-sans 
-        font-semibold 
-        cursor-pointer
-        ${colorTags[borderId]}
-      `}
       onMouseDown={(e)=>handleScroll(e)}
-
+      className={`mx-1 py-[0.2rem] px-4 w-max h-[1.6rem] flex justify-center items-center gap-2whitespace-nowrap rounded-2xl text-white text-[0.9rem] font-sans font-semibold cursor-pointer ${colorTags[borderId]}`}
     >
-      <h2 className="px-1" onClick={()=> handleFilter(id||borderId, "add")}>
+      <h2 className="px-1 h-full flex flex-row whitespace-nowrap flex-nowrap justify-center items-center" onClick={()=> handleFilter(id||borderId, "add")}>
       {text}
       </h2>
+      <span>
       {
         cat.active
-        ?  <samp onClick={() => handleFilter(id||borderId,"remove" )}>
+        ?  <span onClick={() => handleFilter(id||borderId,"remove" )}>
             <CancelIco/>
-          </samp>
+          </span>
          
         : ''
       }
+
+      </span>
     </div>
   )
   }

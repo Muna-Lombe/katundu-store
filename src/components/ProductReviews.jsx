@@ -125,7 +125,7 @@ const ProductReviews=({prs})=>{
                 <p>{"brief description"}</p>
                 {
                   review.quantifiers.map((q, x) =>
-                    <p className="flex flex-col xs:flex-col sm:flex-row lg:flex-col gap-1">
+                    <p key={x} className="flex flex-col xs:flex-col sm:flex-row lg:flex-col gap-1">
                       <span className="quantifier-name text-slate-400 text-base">{q.quantifier}:</span>
                       <span className="quantifier-value text-base">{q.value}</span>
                     </p>

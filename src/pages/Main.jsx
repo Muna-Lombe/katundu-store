@@ -6,11 +6,10 @@ import { titleTagTypes as tags } from '../assets';
 const Main = () => {
     let cats = useSelector(categories)
     let products = useSelector(filteredProductsFromModel([]))
-    const wait=(fn)=>{
-      setTimeout(() => {
-        
-      }, 500);
-      return fn
+    const hScroll=(e)=>{
+      e.preventDefault()
+      // console.log(e)
+      // e.target.offsetParent.classList.toggle("pointer-event-none")
     }
   const bigScreens = "grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-8"
   const smallScreens = "grid-cols-[repeat(auto-fit,minmax(10rem,12rem))] gap-2"
@@ -27,12 +26,12 @@ const Main = () => {
   )
   const ProductContent = ()=>(
     <div id="products_list" className="w-full flex flex-col">
-      <div id="products_list__header" className="m-3 w-auto flex flex-col md:flex-row lg:flex-row xl:flex-row justify-start gap-2  items-baseline ">
+      <div id="products_list__header" className="m-3 w-auto flex  flex-col md:flex-row lg:flex-row xl:flex-row justify-start gap-2  items-baseline ">
         <h3 className=" text-2xl text-black  font-raleway font-[700]">{tags.home.categoriesText}</h3>
       </div>
-      <div id="product_tags" className=" w-auto flex flex-row flex-nowrap overflow-x-hidden" >
+      <div id="product_tags" className=" w-auto  flex flex-row flex-nowrap overflow-x-hidden" >
         <CategoryTag borderId={'type_clear'} text={'clear'} />
-        <div className="scrollable_product_tags mr-2  w-max  flex flex-row overflow-x-scroll tag">
+        <div onMouseEnter={(e) => hScroll(e)} onMouseLeave={(e) => hScroll(e)} className="scrollable_product_tags mr-2  w-max  flex flex-row overflow-x-scroll overflow-y-hidden tag">
           {
 
             cats.map((tag, idx) => {

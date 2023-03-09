@@ -25,7 +25,7 @@ const ContentDetails = ({showLogo, contentType, variations = [{ id: 1, name: "ye
 
         {
           variations?.map((i, x) => (
-            <div id={'var_' + i.id} onClick={(e) => handleActiveToggle(e)} className={"variation-image " + (x === 0 ? " active" : "") + " py-1 px-2 w-max  flex items-baseline border-b-2 border-spacing-2 leading-[8px]  "}>
+            <div id={'var_' + i.id} key={x} onClick={(e) => handleActiveToggle(e)} className={"variation-image " + (x === 0 ? " active" : "") + " py-1 px-2 w-max  flex items-baseline border-b-2 border-spacing-2 leading-[8px]  "}>
               {i.text}
             </div>
           ))

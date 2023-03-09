@@ -6,8 +6,9 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { createdAuth } from "../orm/models/AuthModel";
 import { momentDate, sha256 } from "../orm/utilities";
-import { auths } from "../orm/selectors";
 import types from "../orm/actions/actionTypes";
+import { useEffect } from "react";
+import { authenticatedUsers, isAuthedUser } from "../orm/selectors";
 
 export default function Login({userId}) {
 
@@ -28,9 +29,8 @@ export default function Login({userId}) {
     }
     const h = await Promise.all([sha256(data.password)])
     dispatch(createdAuth({dateCreated:momentDate().shortDate, timeCreated:new Date().toString(),  authStatus:types.AUTH_VALID}))
-    // console.log("loc",location)
     location.state.pathname ||= "/"
-    goto(location.state)
+    goto(location.state,{state:{from: location.pathname}})
   }
   return (
     <>
@@ -48,12 +48,12 @@ export default function Login({userId}) {
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
               Or{' '}
-              <a href="&/" className="font-medium text-indigo-600 hover:text-indigo-500">
+              <a href="&/" className="font-medium text-blue-600 hover:text-blue-500">
                 create a new account for free
               </a>
             </p>
           </div>
-          <form id="Signin-form" name="Signin-form" className="mt-8 space-y-6" action="#" method="POST">
+          <form id="Signin-form" name="Signin-form" className="mt-8 space-y-6" action="#" method="POST" onSubmit={(e) => handleSignin(e)}>
             <input form="Signin-form" type="hidden" name="remember" defaultValue="true" />
             <div className="-space-y-px rounded-md shadow-sm">
               <div className="text">
@@ -67,7 +67,7 @@ export default function Login({userId}) {
                   type="email"
                   autoComplete="email"
                   required
-                  className="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 indent-2 sm:text-sm sm:leading-6"
+                  className="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 indent-2 sm:text-sm sm:leading-6"
                   placeholder="Email address"
                 />
               </div>
@@ -81,7 +81,7 @@ export default function Login({userId}) {
                   type="password"
                   autoComplete="current-password"
                   required
-                  className="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 indent-2 sm:text-sm sm:leading-6"
+                  className="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-blue-600 indent-2 sm:text-sm sm:leading-6"
                   placeholder="Password"
                 />
               </div>
@@ -93,7 +93,7 @@ export default function Login({userId}) {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                   Remember me
@@ -101,7 +101,7 @@ export default function Login({userId}) {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
+                <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
                   Forgot your password?
                 </a>
               </div>
@@ -110,12 +110,12 @@ export default function Login({userId}) {
             <div>
               <button
                 type="submit"
-                onSubmit={(e) => handleSignin(e)}
-                onClick={(e) => handleSignin(e)}
-                className="group relative flex w-full justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                // onSubmit={(e) => handleSignin(e)}
+                // onClick={(e) => handleSignin(e)}
+                className="group relative flex w-full justify-center rounded-md bg-blue-600 py-2 px-3 text-sm font-semibold text-white hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
-                  {/* <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" /> */}
+                  {/* <LockClosedIcon className="h-5 w-5 text-blue-500 group-hover:text-blue-400" aria-hidden="true" /> */}
                   <InfoIco/>
                 </span>
                 Sign in

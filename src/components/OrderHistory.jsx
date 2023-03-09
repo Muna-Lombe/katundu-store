@@ -7,6 +7,8 @@ import NameTag from './NameTag'
 import ProductDescriptor from './ProductDescriptor'
 import ContentDescription from './ContentDescription'
 import Logo from './Logo'
+import NoItems from './NoItems'
+import { Link } from 'react-router-dom'
 
 const OrderHistory = ({ itemsOrdered}) => {
   const handleRotateIco = (e) => {
@@ -140,7 +142,11 @@ const OrderHistory = ({ itemsOrdered}) => {
       </div>
       <div id="order_history__content" className="w-full ">
         <div id="content_wrapper" className="w-full grid  grid-flow-rows grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] gap-6">
-         {itemsOrdered?.map((item,x) => <Item key={x} order={item}/>) } 
+         {
+          itemsOrdered.length
+          ? itemsOrdered?.map((item,x) => <Item key={x} order={item}/>) 
+              : <NoItems subText={"🙅 looks like you have no orders yet 👀"} mainText={<span> {"😃 "} <Link to={"/"} className='text-blue-500 hover:underline'>{"Buy something"} </Link>  {" to start your shopping journey 😃"} </span>} />
+        } 
           
         </div>
       </div>

@@ -22,7 +22,7 @@ const FilterSearchResults = ({ children }) => {
         data[target] = { ...data[target],[newk]:k} 
       });
     }
-    console.log("data",JSON.stringify(data))
+    // console.log("data",JSON.stringify(data))
     const shouldToggle =  window.innerWidth <= 767
     handleToggleFilters(shouldToggle)
   }

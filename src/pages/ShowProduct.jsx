@@ -10,8 +10,9 @@ const ShowProduct = ()=>{
   const  id = useParams().id || 2001
   const productItem = useSelector(filteredProductsFromModel([])).find(i=> i.id.toString() === id.toString())
   // console.log("show", product)
-  const navigate = useLocation()
-  
+  // const navigate = useLocation()
+  const location = useLocation()
+
   const handleClassToggle=(e, setActive)=>{
     e.preventDefault()
     const curElem = e.target;
@@ -63,11 +64,14 @@ const ShowProduct = ()=>{
   const descTag1 = "100% Natural Instant Freeze-Dried Coffee"
   const descTag2 = " Storage conditions, including after opening: store tightly closed in a cool, dry place without foreign odors"
   
-  const BackBtn = () =>(
-    <Link to={-1} className="back-btn">
-      <ArrowLeft size={22}/>
-    </Link>
-  )
+  const BackBtn = () =>{
+    const path = (location.state?.from?.includes("signin") ? "/" : -1)
+    return(
+      <Link to={path} className="back-btn">
+        <ArrowLeft size={22}/>
+      </Link>
+    )
+  }
   
   const ViewImageModal = ({openModal, modalAction}) => {
     
@@ -124,9 +128,9 @@ const ShowProduct = ()=>{
         <Suspense fallback={<NoItems />}>
           <div className="top w-full flex border hide-sidebar gap-2 ">
             <BackBtn/>
-            <p>
+            {/* <p>
               {navigate.pathname}
-            </p>
+            </p> */}
           </div>
             <MiddleSection>
               <ContentViewer>
@@ -138,7 +142,7 @@ const ShowProduct = ()=>{
                                 <ProductDescriptor key={101} id={`${i.id}${x}`} label={"In stock"} values={[i.stock]} />
                               </div>
                               { i.properties.map((k,v)=> 
-                                <div className="w-full less-than-xs:child:max-w-[330px] less-than-xs:child:flex-wrap less-than-xs:child:justify-between">
+                                <div key={v} className="w-full less-than-xs:child:max-w-[330px] less-than-xs:child:flex-wrap less-than-xs:child:justify-between">
                                 <ProductDescriptor key={v} id={`${i.id}${v}`} label={k.name} values={k.values || [`${k.type}`]} />
                               </div>
                               )}
@@ -148,7 +152,7 @@ const ShowProduct = ()=>{
 
                       <ContentSpecification>
                         {
-                          productItem?.unitValues.map((uv,x)=><ProductSpecificationDetail label={uv.label} value={uv.value} />
+                          productItem?.unitValues.map((uv,x)=><ProductSpecificationDetail key={x} label={uv.label} value={uv.value} />
                           )
                         }
                       </ContentSpecification>
