@@ -110,20 +110,20 @@ const Cart = ({ unOrd, ord }) => {
               <div id="product_price" 
                 className="w-max  mx-2">
                 <h2 id="new_price" 
-                  className=" text-[#2967FF] less-than-xs:text-base text-[1.2rem] md:text-[1.3rem] lg:text-[1.3rem] xl:text-[1.3rem] font-semibold">
+                  className=" text-[#2967FF] less-than-xs:text-[18px] text-[1.2rem] md:text-[1.3rem] lg:text-[1.3rem] xl:text-[1.3rem] font-semibold">
                     
                   {
                     
                     orderItem.product.isDiscounted
-                      ? tags.cart.priceMinTag + ( orderItem.product.isDiscounted * orderItem.productCount).toFixed(1) + tags.currencyType
-                      : tags.cart.priceMinTag + (orderItem.product.price * orderItem.productCount).toFixed(1) + tags.currencyType
+                      ? tags.cart.priceMinTag + ' ' + tags.currencyType + ( orderItem.product.isDiscounted * orderItem.productCount).toFixed(1) 
+                      : tags.cart.priceMinTag + tags.currencyType + (orderItem.product.price * orderItem.productCount).toFixed(1) 
                   }
                 </h2>
                 <div id="discounted_price" 
                   className="w- flexauto pr-2 justify-between ">
                   <h4 id="old_price" 
-                    className="text-[#8D8D8E] text-s line-through font-extralight">
-                  {orderItem.product.isDiscounted ? orderItem.product.price +tags.currencyType: ''}
+                    className="text-[#8D8D8E] text-sm line-through font-extralight">
+                    {orderItem.product.isDiscounted ? tags.currencyType + orderItem.product.price : ''}
                   </h4>
                 </div>
               </div>
@@ -157,8 +157,8 @@ const Cart = ({ unOrd, ord }) => {
                 className="flex sm:hidden md:hidden lg:hidden xl:hidden" 
                 >
                   <Link 
-                    to={{pathname: "/checkout"}} 
-                    state={state} 
+                    to={ "/checkout"} 
+                    state={{...state,from:"/cart"}} 
                     
                     className={" less-than-xs:w-[5rem] less-than-xs:h-[1rem] w-[7rem] h-[2.1rem] md:w-[10rem] md:h-[2.5rem] lg:w-[10rem] lg:h-[2.5rem] xl:w-[10rem] xl:h-[2.5rem] px-8 py-5 bg-[#2967FF] border-[1px] border-[#2967FF]  flex justify-center items-center rounded-2xl less-than-xs:text-base text-lg md:text-xl lg:text-xl xl:text-xl text-white font-medium" + (disableItem ? " pointer-events-none cursor-auto": "") }    
                   > 
@@ -174,7 +174,7 @@ const Cart = ({ unOrd, ord }) => {
                 </p>
                 <p 
                   className=" text-black less-than-xs:text-base text-xl font-bold">
-                  {total+tags.currencyType} 
+               {tags.currencyType + total} 
                 </p>
                 <button id="Checkout_btn"
                 onClick={(e)=>handleItemOrdered(e,[storeName, orders])} 
@@ -210,9 +210,9 @@ const Cart = ({ unOrd, ord }) => {
           </h3>
         </div>
         <div id="no_items_banner__footer" 
-          className="text-lg text-black font-raleway font-bold">
+          className="text-lg text-black font-raleway font-bold text-center">
           <h3>
-            😃 Try adding a product first 😃
+            <span> {"😃 "} <Link to={"/"} className='text-blue-500 hover:underline text-center'>{"Buy something"} </Link>  {" to start your shopping journey 😃"} </span>
           </h3>
         </div>
       </div>

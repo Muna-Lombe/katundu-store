@@ -37,7 +37,7 @@ export const filterData = {
   ]
 }
 export const titleTagTypes={
-  currencyType : "zmw",
+  currencyType : "K",
   location: { city: "Lusaka", state: " Lusaka Province" },
   buyBtn:{
     mainText :"Add to cart", subText :"Delivery Tomorrow", tooltip :"Item already in cart"
@@ -61,7 +61,7 @@ export const titleTagTypes={
     mainText : "Go to the description", subText :"Unit value of the product"
   },
   discountInfo:{
-    titleText: "The best price for Ozon", moreText: "Learn About Price Reduction",
+    titleText: "The best price for Katundu", moreText: "Learn About Price Reduction",
   },
   footer:{
     storename: "Katundu", joinus: "Join Us!", appInstall: "Install the app", trademark: "© Katundu", legal:"legal information",

@@ -33,7 +33,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
   const discountTag = (disc,old_price)=>(
       <>
         <h4 id="old_price" className="text-[#8D8D8E] line-through font-extralight text-sm  greater-than-md:text-[1.0rem] ">
-          {old_price+' '+tags.currencyType}
+        {tags.currencyType + old_price}
         </h4>
       <h4 id="discount" className="text-[#FF2D87] font-semibold text-sm  greater-than-md:text-[1.0rem] ">
           {'-'+disc+'%'}
@@ -135,21 +135,6 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
               }
                 
             </h4>
-            {/* {
-              !isSearchOrMain
-                ? <h1 id='store_name' className=" w-full flex justify-end text-slate-400 [#8f8f91] text-xs greater-than-md:text-sm font-[600]">
-                  {
-                    noPrd
-                      ? <div className="no-prd-field w-[30%] h-6 border rounded-md bg-gradient-to-tr from-slate-400 to-slate-500 animate-pulse opacity-30"></div>
-                      : <span >
-                        {product?.store.name.length > 16 ? product?.store.name.slice(0, 16) + '...' : product?.store.name}
-                        </span>
-                  }
-
-
-                </h1>
-                : ""
-            } */}
           </div>
         </div>
         <h2 id="product_price" className=" text-[#2967FF] text-sm greater-than-md:text-[1.2rem]  font-semibold lining-nums tabular-nums">
@@ -163,8 +148,8 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
                 <span>
 
                   {product.isDiscounted[0] === true
-                    ? 'from ' + calcDisc(product.priceRange.sort((a, b) => a - b)[0], product.isDiscounted[1] ) + ' '+tags.currencyType
-                    : 'from ' + product.priceRange.sort((a, b) => a - b)[0] + ' ' + tags.currencyType
+                    ? 'from ' + tags.currencyType + calcDisc(product.priceRange.sort((a, b) => a - b)[0], product.isDiscounted[1] ) 
+                    : 'from ' + tags.currencyType + product.priceRange.sort((a, b) => a - b)[0]
                   }
                 </span>
                 <span id="discounted_price" className="w-max h-[25px] flex  pr-2 justify-between items-center gap-4  ">

@@ -56,9 +56,14 @@ export async function sha256(message) {
   return hashHex;
 }
 
-export const returnOnReload = () => window.onbeforeunload = function () {
-  window.setTimeout(function () {
-    window.location = '-1';
-  }, 0);
-  window.onbeforeunload = null; // necessary to prevent infinite loop, that kills your browser 
+export const returnOnReload =  ()=>{
+  let data = window.performance.getEntriesByType("navigation")
+  console.log(data)
 }
+// window.onbeforeunload = function () {
+//   window.setTimeout(function () {
+//     console.log("loc", window.location)
+//     // window.location = '-1';
+//   }, 0);
+//   window.onbeforeunload = null; // necessary to prevent infinite loop, that kills your browser 
+// }

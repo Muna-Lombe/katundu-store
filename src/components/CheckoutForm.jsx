@@ -1,4 +1,4 @@
-import React,{useRef} from 'react'
+import React,{useEffect, useRef} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -19,10 +19,22 @@ const CheckoutForm = ({ }) => {
   
   let navigate = useNavigate()
   const location = useLocation()
+  const goto  = useNavigate()
   const dateRef = useRef()
   const timeRef = useRef()
   const dispatch = useDispatch()
-  // returnOnReload()()
+  // returnOnReload()
+  useEffect(() => {
+    console.log("path", location)
+    if(location?.state?.from !== "/cart"){
+      goto("/cart")
+    }
+    
+    return () => {
+      
+    }
+  }, [])
+  
 
   const total = Number.parseInt(location.state?.total)
   const id = location.key
@@ -95,7 +107,7 @@ const CheckoutForm = ({ }) => {
     </>
   )
   
-  const CheckoutOrder = ({ totalPriceText = "Order total", deliveryCostText = "Delivery cost", sumTotal = "Total", checkoutBtnText = "Checkout" }) =>(
+  const CheckoutOrder = ({ children}) =>(
     <div className=" mt-14 w-full flex flex-col justify-center gap-6 lg:p-4 lining-nums tabular-nums">
       <div id="order_details" className="w-auto p-2 lg:p-4 flex flex-col justify-start md:justify-center lg:justify-center xl:justify-center items-center gap-4 border-[1px] border-[#F0F4FB] bg-[#F0F4FB] rounded-3xl">
         
@@ -103,9 +115,9 @@ const CheckoutForm = ({ }) => {
           <p className="p-2 w-full flex flex-start text-lg text-[#727280]">
             {"Ordered Items:"}
           </p>
-          {orderedItems.map((oi,x)=>
-            <div className="w-full less-than-xs:child:max-w-full  less-than-xs:child:justify-between">
-              <ProductDescriptor key={x} id={`${oi.productId}${x}`} label={<NameTag modelName={"Product"} item={{ id: oi.productId, prop: "     x" + oi.quantity}}/>} values={[Number.parseInt(oi.price*oi.quantity)]} />
+          {orderedItems?.map((oi,x)=>
+            <div key={x} className="w-full less-than-xs:child:max-w-full  less-than-xs:child:justify-between">
+              <ProductDescriptor id={`${oi.productId}${x}`} label={<NameTag modelName={"Product"} item={{ id: oi.productId, prop: "     x" + oi.quantity }} />} values={[tags.currencyType + Number.parseInt(oi.price*oi.quantity)]} />
 
             </div>
             )
@@ -118,22 +130,22 @@ const CheckoutForm = ({ }) => {
           <label htmlFor="order_cost">
             {tags.checkout.totalPriceText+":"}
           </label>
-          <input id="o_cost" className=" w-auto max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end text-xl bg-transparent text-end lining-nums tabular-nums" name="order_cost" form="checkout_form" type="text" value={(total || 0) +tags.currencyType} readOnly required  />
+          <input id="o_cost" className=" w-auto max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end text-xl bg-transparent text-end lining-nums tabular-nums" name="order_cost" form="checkout_form" type="text" value={tags.currencyType + (total || 0)} readOnly required  />
         </div>
 
         <div id="delivery_cost__wrapper" className="w-full  py-1 px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between items-center text-lg text-[#727280] font-raleway ">
           <label className="" htmlFor="delivery_cost">
             {tags.checkout.deliveryCostText+":"}
           </label>
-          <input id="d_cost" className="max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end  bg-transparent text-end lining-nums tabular-nums" name="delivery_cost" form="checkout_form" type="text" value={(deliveryPrice || 0) +tags.currencyType} readOnly required />
+          <input id="d_cost" className="max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end  bg-transparent text-end lining-nums tabular-nums" name="delivery_cost" form="checkout_form" type="text" value={tags.currencyType + (deliveryPrice || 0)} readOnly required />
         </div>
 
         <div id="total_cost__wrapper" className="w-full  px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between items-center text-xl text-[#727280] font-raleway font-medium ">
           <label className="bg-transparent" htmlFor="total_cost">
             {tags.checkout.sumTotalText+":"}
           </label>
-          <input id="t_cost" className="max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end  bg-transparent text-black font-bold text-end lining-nums tabular-nums" name="total_cost" form="checkout_form" type="text" value={(total 
-          + deliveryPrice) +tags.currencyType} readOnly required />
+          <input id="t_cost" className="max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end  bg-transparent text-black font-bold text-end lining-nums tabular-nums" name="total_cost" form="checkout_form" type="text" value={tags.currencyType + (total 
+          + deliveryPrice)} readOnly required />
         </div>
 
       </div>
@@ -142,7 +154,7 @@ const CheckoutForm = ({ }) => {
     </div>
   )
   return (
-    <div id="checkout_wrapper" className="w-full mx-2">
+    <div id="checkout_wrapper" className="w-full px-2">
       <div id="checkout_header" className="text-xl text-black font-raleway font-bold">
         <p>
         {tags.checkout.checkoutText}
@@ -151,7 +163,7 @@ const CheckoutForm = ({ }) => {
       <form id="checkout_form" name="checkout_form" action="/#" method='POST'  onSubmit={(e)=>handleSubmit(e)} >
         <div id="checkout_content" className="w-auto flex flex-col flex-wrap justify-center items-center sm:flex-col md:flex-row lg:flex lg:flex-row lg:justify-start lg:gap-8">
           
-          <div id="checkout_form__wrapper" className="p-4 w-full lg:w-[33%] max-w-[30rem]  flex flex-col justify-center align-middle gap-3 ">
+          <div id="checkout_form__wrapper" className="py-4 w-full lg:w-[33%] max-w-[30rem]  flex flex-col justify-center align-middle gap-3 ">
               <CheckoutForm />
             </div>
             <div id="checkout_order__wrapper" className="w-full max-w-[30rem] flex-grow    flex flex-col justify-center items-center gap-2">

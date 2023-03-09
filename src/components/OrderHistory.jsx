@@ -57,7 +57,7 @@ const OrderHistory = ({ itemsOrdered}) => {
         </div>
         <div id="order_cost">
           <p className="text-xs text-[#727280] font-medium"> {tags.orderHistory.orderCostText}</p>
-          <p className="text-xs text-black font-semibold"> {order?.OrderProps.totalCost + tags.currencyType}</p>
+          <p className="text-xs text-black font-semibold"> {tags.currencyType + order?.OrderProps.totalCost}</p>
         </div>
         <div id="delivery_address">
           <p className="text-xs text-[#727280] font-medium"> {tags.orderHistory.deliveryAddressText} </p>
@@ -70,7 +70,7 @@ const OrderHistory = ({ itemsOrdered}) => {
           <ContentDetails contentType={"ordered-items"} variations={(order?.OrderProps.quantity?.map((o, x) => ({ id: o.productId, text:o.productId})))}>
               {order?.OrderProps.quantity.map((oi, x) =>
                 <ContentDescription key={x} first={x === 0} id={`${oi.productId}`} >
-                  <ProductDescriptor key={x+10} id={`${oi.productId}${x}`} label={<NameTag modelName={"Product"} item={{ id: oi.productId, prop: "     x" + oi.quantity }} />} values={[Number.parseInt(oi.price * oi.quantity)]} />
+                  <ProductDescriptor key={x + 10} id={`${oi.productId}${x}`} label={<NameTag modelName={"Product"} item={{ id: oi.productId, prop: "     x" + oi.quantity }} />} values={[tags.currencyType + Number.parseInt(oi.price * oi.quantity)]} />
                 </ContentDescription>
               )
               }

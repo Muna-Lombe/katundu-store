@@ -1,7 +1,7 @@
 
 import { titleTagTypes as tags } from "../assets";
 
-const Courier = ({ delivery = { courier: "Courier Ozon", date: { day_tag: "tomorrow", date_text: "6 February" }, price: 149 } }) => (
+const Courier = ({ delivery = { courier: "Courier katundu", date: { day_tag: "tomorrow", date_text: "6 February" }, price: 149 } }) => (
   <span className="courier  p-2 flex flex-col  ">
     <span className="title text-lg ">
       {delivery.courier}

@@ -1,7 +1,7 @@
 
 import React from 'react'
 
-const DeleteIco = ({size}) => {
+const DeleteIco = ({size=30}) => {
   return (
     <svg width={size} height={size-2} viewBox="0 0 15 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M0.999756 3.6665H2.4442H13.9998" stroke="#AEC2EA" strokeLinecap="round" strokeLinejoin="round"/>
