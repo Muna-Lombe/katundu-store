@@ -13,11 +13,9 @@ const Footer = ({}) => {
           {/* <h3 className=" text-3xl md:text-5xl lg:text-5xl xl:text-5xl  font-bold font-raleway">
             {tags.footer.storename}
           </h3> */}
-          <Logo>
-            <div id="logo" className="p-1 less-than-xs:border-2 border-[4px] border-black border-spacing-2 rounded-[4px] text less-than-xs:text-base text-[2.4rem] leading-10 font-raleway font-bold">
-              <Link to="" > {tags.footer.storename} </Link>
-            </div>
-          </Logo>
+          <Link to="" >
+            <Logo logo={tags.footer.storename} size={{ h: 40, w: 25, x: 0, y: 32, font: 40 }} />
+          </Link> 
         </div>
         {/* <div id="footer_links" className="w-auto max-w-[400px] mx-4 flex flex-wrap gap-2"> */}
           <div id="footer_socials" className="w-max flex flex-wrap flex-col gap-2 text-xs  md:text-base lg:text-base xl:text-base text-slate-600 font-raleway font-semibold ">

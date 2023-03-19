@@ -1,7 +1,7 @@
 
-export const setTextBg = (text, size={h:1, w:1, x:0, y:1, font:8})=>(
+export const setTextBg = (text, color="initial",  size={h:1, w:1, x:0, y:1, font:8})=>(
   
-  { backgroundImage: 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' version=\'1.1\' height=\'' + size.h + 'px\' width=\'' + size.w + 'px\' style=\'\'><text x=\'' + size.x + '\' y=\'' + size.y + '\' fill=\'gray\' font-family=\'' + 'Raleway' +'\' font-size=\'' + size.font  +'\'>'+text+'</text></svg>")' }
+  { backgroundImage: 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' version=\'1.1\' height=\'' + size.h + 'px\' width=\'' + size.w + 'px\' style=\'\'><text x=\'' + size.x + '\' y=\'' + size.y + '\' fill=\''+color+'\' font-family=\'' + 'Raleway, San-Serif, Segoui, Monospace' +'\' font-size=\'' + size.font  +'\'>'+text+'</text></svg>")' }
 )
 
 export const filterData = {
@@ -100,12 +100,12 @@ export const titleTagTypes={
 }
 
 export const colorTags = {
-  1: 'bg-[#FFA601]',
-  2: 'bg-[#2967FF]',
-  3: 'bg-[#58CF18]',
-  4: 'bg-[#FF7CB4]',
-  5: 'bg-[#FFA601]',
-  6: 'bg-[#FF2D87]'
+  1: 'border-2 border-black text-red-500',
+  2: 'border-2 border-black text-red-500',
+  3: 'border-2 border-black text-red-500',
+  4: 'border-2 border-black text-red-500',
+  5: 'border-2 border-black text-red-500',
+  6: 'border-2 border-black text-red-500'
 }
 const tags = [
   [6, 'День Рождения Гриши'],
@@ -123,7 +123,7 @@ const productStores = [
   { id: 4, name: "Avita" }
 ]
 export const calcDisc = (price, discPerc) => {
-  return (price - (price * (discPerc / 100)))
+  return (price - (price * (discPerc / 100))).toFixed(0)
 }
 const sampleData = [
   [1, "some nice product 10% super CHEAP!", [tags[3], tags[4], tags[1]], productStores[0], 3000, [true, 5,]],
@@ -190,3 +190,4 @@ export { default as ThumbIco } from './ThumbIco';
 export { default as CancelIco } from './CancelIco';
 export { default as ToggleIco } from './ToggleIco';
 export { default as FilterIco } from './FilterIco';
+export { default as CouponIco } from './CouponIco';

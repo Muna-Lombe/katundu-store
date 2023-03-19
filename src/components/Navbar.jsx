@@ -170,25 +170,23 @@ const Navbar = () => {
     //  md:items-center
     <>
       <nav className=" p-2 relative w-full h-full flex justify-center gap-2 items-start  lg:items-center xl:items-center ">
-        <div id="navbar_left__wrapper" className=" w-full block md:block  lg:gap-6 lg:flex lg:flex-row xl:flex xl:flex-row justify-start items-center transition-all">
-          <div id="logo_location" className=" w-full lg:w-auto xl:auto flex justify-start gap-8">
-            <Logo>
-              <div id="logo" className="p-1 border-[4px] border-black border-spacing-2 rounded-[4px] text less-than-xs:text-lg text-[2.4rem] leading-10 font-raleway font-bold">
-                <Link to="" > {tags.footer.storename} </Link> 
-              </div>
-            </Logo>
-            <div id="address" className="relative flex flex-wrap items-center justify-between">
+        <div id="navbar_left__wrapper" className=" w-full block  gap-4 lg:flex lg:flex-row xl:flex xl:flex-row justify-start items-center transition-all">
+          <div id="logo_location" className=" w-full lg:w-auto xl:auto flex less-than-xs:flex-col less-than-xs:gap-4 justify-start gap-4">
+              <Link to="" > 
+                <Logo logo={tags.footer.storename} size={{ h: 40, w: 25, x: 0, y: 32, font: 40 }}/>
+              </Link> 
+            <div id="address" className=" px-1 relative flex flex-wrap items-center gap-2">
               <PinIco />
       
-              <h2 className=" hidden absolute w-max  less-than-xs:top-3 less-than-xs:left-6 greater-than-xs:p-2  greater-than-xs:relative greater-than-xs:w-auto md:flex lg:flex flex-wrap text-xs text-ellipsis ">
-                <p>{tags.location.city + ", "}</p>  <p>{tags.location.state}</p>
+              <h2 className="  less-than-xs:top-3 less-than-xs:left-6 greater-than-xs:p-2  greater-than-xs:relative greater-than-xs:w-auto flex flex-row text-xs text-ellipsis ">
+                <p>{tags.location.city + ", "}</p>  <p>{" "+tags.location.state}</p>
               </h2>
             </div>
           </div>
           {
             isNotAllowed()
             ? ""
-            :<div id="search_field_wrapper"  className="w-full greater-than-md:w-max max-h-14 lg:min-w-[2rem] xl:min-w-[2rem] py-2 flex flex-col justify-start items-start transition-all">
+            :<div id="search_field_wrapper"  className="w-full less-than-sm:mt-4 greater-than-md:w-max max-h-14 lg:min-w-[2rem] xl:min-w-[2rem] py-2 flex flex-col justify-start items-start transition-all">
               <div id="search_field_box" className='w-full flex flex-col items-center' onBlur ={(e) => handleBlur(e, "blur")}>
                 <SearchField/>
                 <optgroup name="search-suggestions" tabIndex={1} id="search-suggestions" className="min-w-[12rem] greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem]  p-2 overflow-ellipsis border bg-black opacity-70 rounded-b-3xl text-white cursor-pointer hidden">
@@ -199,7 +197,7 @@ const Navbar = () => {
           
           }
         </div>
-        <div id="navbar_right__wrapper" className=" absolute top-3  right-0 flex flex-row greater-than-sm:w-[8rem]  h-max md:items-start md:justify-end greater-than-lg:items-center greater-than-lg:justify-center greater-than-lg:m-0 greater-than-lg:p-0  gap-3">
+        <div id="navbar_right__wrapper" className=" absolute top-3  right-0 flex flex-row greater-than-sm:w-[8rem]  h-max md:items-start md:justify-end greater-than-lg:items-center greater-than-lg:justify-center greater-than-lg:m-0 greater-than-lg:p-0  gap-4">
             <GoToCartIco size={'1.5rem'}/>
             <GoToAvatarIco size={'1.5rem'}/>
         </div>

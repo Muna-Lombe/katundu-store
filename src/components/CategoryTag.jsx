@@ -73,9 +73,9 @@ const CategoryTag = ({borderId=1,id,text='tag'})=>{
     <div 
       id={`tag tag-${text}`} 
       onMouseDown={(e)=>handleScroll(e)}
-      className={`mx-1 py-[0.2rem] px-4 w-max h-[1.6rem] flex justify-center items-center gap-2whitespace-nowrap rounded-2xl text-white text-[0.9rem] font-sans font-semibold cursor-pointer ${colorTags[borderId]}`}
+      className={`mx-1 py-[0.2rem] px-4 w-max h-[1.6rem] flex justify-center items-center gap-2 whitespace-nowrap rounded-2xl  text-[0.9rem] font-sans font-semibold cursor-pointer ${colorTags[borderId]}`}
     >
-      <h2 className="px-1 h-full flex flex-row whitespace-nowrap flex-nowrap justify-center items-center" onClick={()=> handleFilter(id||borderId, "add")}>
+      <h2 className="px-1 h-full flex flex-row whitespace-nowrap flex-nowrap items-center" onClick={()=> handleFilter(id||borderId, "add")}>
       {text}
       </h2>
       <span>

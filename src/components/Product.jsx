@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector} from 'react-redux';
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BasketIco, calcDisc, titleTagTypes as tags } from '../assets';
+import { BasketIco, CouponIco, calcDisc, titleTagTypes as tags } from '../assets';
 import IMG, { imagepath } from '../assets/images';
 import no_product_img from '../assets/tests/jsonServer/img/placeholders/no_product_img.png'
 // assets
@@ -30,16 +30,47 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   }
-  const discountTag = (disc,old_price)=>(
+
+  const PriceTag =({children})=>{
+    const disc = product.isDiscounted[1] 
+    const old_price = product.priceRange.sort((a, b) => a - b)[0] 
+    const price = product.isDiscounted[0] ? calcDisc(product.priceRange.sort((a, b) => a - b)[0], product.isDiscounted[1]) : product.priceRange.sort((a, b) => a - b)[0] 
+    const DiscountTag = ()=>(
       <>
-        <h4 id="old_price" className="text-[#8D8D8E] line-through font-extralight text-sm  greater-than-md:text-[1.0rem] ">
-        {tags.currencyType + old_price}
-        </h4>
-      <h4 id="discount" className="text-[#FF2D87] font-semibold text-sm  greater-than-md:text-[1.0rem] ">
-          {'-'+disc+'%'}
-        </h4>
+        {product.isDiscounted[0] === true
+          ? <span id="discount" className=" less-than-sm:absolute -top-[18px] right-1 p-[2px] w-max flex flex-row items-baseline gap-[2px] border-1 rounded-md text-orange-400 text-xs  font-semibold  greater-than-md:text-[1.0rem] ">
+              {/* <span className="less-than-sm:hidden">save</span> */}
+              <span className=" less-than-sm:flex fill-orange-500" ><CouponIco /> </span>
+
+              {'-' + disc + '%'}
+            </span>
+          : ""
+
+        }
       </>
-  )
+    )
+    const Price = ()=>(
+      <span className="p-[2px] flex gap-1  border-1 rounded-md bg-green-500 text-white font-semibold items-baseline">
+        {tags.currencyType + price}
+        {product.isDiscounted[0] === true
+          ? <span id="old_price" className="text-slate-100 line-through font-[600] text-[10px] leading-[8px]  greater-than-md:text-[0.9rem] ">
+            {tags.currencyType + old_price}
+          </span>
+          : ""
+        }
+      </span>
+    )
+    return(
+      
+       <span className='py-1 flex gap-2 items-baseline text-md '>
+        <span>{'from '} </span>
+        <span className=' relative flex flex-col-reverse greater-than-sm:flex-row greater-than-sm:gap-1 items-baseline justify-end'>
+          <Price/>
+          <DiscountTag/>
+        </span>
+      </span>
+    )
+  }
   
   const handleAddToCart=(id)=>{
     dispatch(createdCartItem({
@@ -58,12 +89,12 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
   const BuyBtn=({})=>(
     <button
       id="add_to_cart_btn"
-      className={(isOrdered ? "relative " : " group   hover:bg-blue-500   hover:text-white ") + "  py-[3px] px-1 w-full h-max flex flex-row-reverse justify-center border-[#2967FF] rounded-lg border-[1px] text-blue-500 stroke-blue-500 cursor-pointer"}
+      className={(isOrdered ? "relative " : " group   hover:bg-blue-500   hover:text-white ") + " hidden greater-than-sm:flex  py-[3px] px-1 w-full h-max  flex-row-reverse justify-center border-[#2967FF] rounded-lg border-[1px] bg-blue-500 text-white stroke-blue-500 cursor-pointer"}
       disabled={isOrdered}
       onClick={() => userAuthed ? handleAddToCart(product.id) : handleRedirect()}
     >
       <span className={(isOrdered ? "peer " : " ")}>
-        <BasketIco isBurgerMenu={false} />
+        <BasketIco strokeColor={"white"} isBurgerMenu={false} />
       </span>
       <span className={(isOrdered ? "peer ": " ") +' px-1 h-full md:flex lg:flex xl:flex   text-sm  font-raleway font-[600] text-center'}>
         {tags.buyBtn.mainText}
@@ -88,7 +119,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
     // md:w-[14rem] lg:w-[14rem] xl:w-[14rem]
     // md:h-[21rem] lg:h-[21rem] xl:h-[21rem]
     // min - w - [8rem] w - full max - w - [12rem] md: max - w - [14rem] lg: max - w - [14rem] xl: max - w - [14rem] h - [14rem] md: h - [24rem] lg: h - [24rem] xl: h - [24rem]
-    <div id={"product_card_" + product?.id} className={(noPrd ? " " : " ") + " p-2 min-w-[10rem] greater-than-md:min-w-[10rem] greater-than-lg:min-w-[13rem] w-auto max-w-[15rem] h-full max-h-[20rem] flex flex-nowrap  flex-col justify-between gap-2 bg-white shadow-md border-t border-gray-200 rounded-md font-raleway "}>
+    <div id={"product_card_" + product?.id} className={(noPrd ? " " : " ") + " p-2 min-w-[8rem] greater-than-md:min-w-[10rem] greater-than-lg:min-w-[13rem] w-auto max-w-[15rem] h-full max-h-[20rem] flex flex-nowrap  flex-col justify-between gap-2 bg-white shadow-md border-t border-gray-200 rounded-md font-raleway "}>
       <div id="product_header" className="relative w-[100%] h-[50%] my-1  justify-center items-end  ">
         <Link to={"/product/" + product?.id} id="product_image" className="flex  justify-center items-end" >
           {
@@ -114,8 +145,8 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
                 noPrd
                   ? <div className="no-prd-field w-[20%] h-6 border rounded-md bg-gradient-to-tr from-slate-400 to-slate-500 animate-pulse opacity-30"></div>
                   : <span>
-                    {product?.store.name.length > 16 ? product?.store.name.slice(0, 16) + '...' : product?.store.name}
-                  </span>
+                      {product?.store.name.length > 16 ? product?.store.name.slice(0, 16) + '...' : product?.store.name}
+                    </span>
               }
             </h1>
             // : ""
@@ -137,7 +168,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
             </h4>
           </div>
         </div>
-        <h2 id="product_price" className=" text-[#2967FF] text-sm greater-than-md:text-[1.2rem]  font-semibold lining-nums tabular-nums">
+        <h2 id="product_price" className="  text-sm greater-than-md:text-[1.2rem]   lining-nums tabular-nums">
           {
             noPrd
             ? <>
@@ -145,28 +176,24 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
                 <div className="no-prd-field w-[6rem] h-6 border rounded-md bg-gradient-to-tr from-slate-400 to-slate-500 animate-pulse opacity-30"></div>
               </>
             : <>
-                <span>
-
-                  {product.isDiscounted[0] === true
-                    ? 'from ' + tags.currencyType + calcDisc(product.priceRange.sort((a, b) => a - b)[0], product.isDiscounted[1] ) 
-                    : 'from ' + tags.currencyType + product.priceRange.sort((a, b) => a - b)[0]
-                  }
+                <span className="price py-1 font-medium">
+                  <PriceTag/>
                 </span>
-                <span id="discounted_price" className="w-max h-[25px] flex  pr-2 justify-between items-center gap-4  ">
+                {/* <span id="discounted_price" className=" w-max h-[25px] flex  flex-row-reverse  justify-between items-center gap-3  ">
                   {
                     noPrd
                       ? <span className="no-prd-field w-[100%] h-2 border rounded-md bg-gradient-to-tr from-slate-400 to-slate-500 animate-pulse opacity-30"></span>
                       : isSearchOrMain
                         ? <>
                             {product.isDiscounted[0] === true
-                            ? discountTag(product.isDiscounted[1], product.priceRange.sort((a, b) => a - b)[0])
+                            ? <DiscountTag disc={product.isDiscounted[1]} old_price={product.priceRange.sort((a, b) => a - b)[0]}/>
                               : ''
                             }
                           </>
                         :""
                   }
                   
-                </span>
+                </span> */}
               </>}
         </h2>
         
