@@ -135,7 +135,7 @@ const ShowProduct = ()=>{
             <MiddleSection>
               <ContentViewer>
                 <ProductImageViewer images={productItem?.images}/>
-            <ContentDetails contentType={"product"} showLogo={<Logo logo={productItem?.store.name} bgColor="bg-slate-500"  color="rgb(100 116 139 / 1)" />} variations={productItem?.variations.map((p)=> ({...p, text:p.price}))}>
+            <ContentDetails contentType={"product"} showLogo={<Logo logo={productItem?.store.name} bgColor="bg-slate-500" />} variations={productItem?.variations.map((p)=> ({...p, text:p.price}))}>
                       { productItem?.variations.map((i,x)=>
                             <ContentDescription key={x} first={x===0} id={`${i.id}`} >
                               <div className="w-full  less-than-xs:child:max-w-[330px] less-than-xs:child:justify-between">
@@ -165,7 +165,7 @@ const ShowProduct = ()=>{
                   <PaymentType >
                     <Faqs />
                     <OrderInfo>
-                      <span className="order-pin py-3">
+                      <span className="order-pin py-2">
                         <PinIco />
                       </span>
                       <span className="order-pin-points">

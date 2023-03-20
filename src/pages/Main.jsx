@@ -45,7 +45,7 @@ const Main = () => {
         </div>
       </div>
 
-      <div id="mainbar__content" className={"w-auto h-[rem] p-2 grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(auto,6rem))] greater-than-xs:grid-cols-[repeat(auto-fit,minmax(auto,10rem))]  greater-than-sm:grid-cols-[repeat(auto-fit,minmax(13rem,1fr))] overflow-x-scroll scroll-smooth justify-center  transition-all  tag gap-2 greater-than-xs:gap-6"}>
+      <div id="mainbar__content" className={"w-auto h-[rem] p-2 grid grid-flow-row-dense grid-cols-2 greater-than-xs:grid-cols-[repeat(auto-fit,minmax(auto,14rem))]  greater-than-sm:grid-cols-[repeat(auto-fit,minmax(12rem,1fr))] overflow-x-scroll scroll-smooth justify-center  transition-all  tag gap-2 greater-than-xs:gap-6"}>
         {
           products.length
             ? products.map((i) => (<Product key={i.id} product={i} isSearchOrMain />))

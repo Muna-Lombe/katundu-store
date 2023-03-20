@@ -1,4 +1,4 @@
-import { attr,fk, many, Model } from "redux-orm";
+import { attr,fk, many, Model, oneToOne } from "redux-orm";
 
 import {  actions } from "../actions/actionTypes";
 import customReducer from "./reducer";
@@ -19,7 +19,7 @@ Order.fields = {
     // product: fk({ to: 'Product', as: 'product', through: "Product", throughFields: { itemId: attr(), itemQuantity: attr(), itemPrice: attr() }, relatedName: 'orders' }),
     productIds: many({to:'Product', relatedName: 'orders'}),
     DateCreated: attr(),
-    OrderProps:attr({
+    OrderProps: attr({
         quantity: attr([{ 
             itemId: fk({ to: 'Product', as: 'product', relatedName: 'orders' }), 
             itemQuantity: attr(), 
@@ -35,6 +35,8 @@ Order.fields = {
         deliveryCost: attr(),
         totalCost: attr()
     }),
+
+
     OrderStatus: attr()
 };
 export const {UPDATE:updatedOrder, REMOVE:removedOrder, ADD:addedOrder, CREATE:createdOrder, ADD_TO:addedOrderTo, REMOVE_FROM:removedOrderFrom} = actions().createDefaultFor('Order')

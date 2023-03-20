@@ -31,6 +31,20 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
     textOverflow: 'ellipsis',
   }
 
+  
+  const handleAddToCart=(id)=>{
+    dispatch(createdCartItem({
+      DateCreated: momentDate().full,
+      product: id,
+      productCount:1,
+      ItemStatus:types.IN_CART
+    }))
+    
+  }
+  
+  const handleRedirect = () => {
+    goto("/signin", {   state: { ...location } })
+  }
   const PriceTag =({children})=>{
     const disc = product.isDiscounted[1] 
     const old_price = product.priceRange.sort((a, b) => a - b)[0] 
@@ -72,24 +86,10 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
     )
   }
   
-  const handleAddToCart=(id)=>{
-    dispatch(createdCartItem({
-      DateCreated: momentDate().full,
-      product: id,
-      productCount:1,
-      ItemStatus:types.IN_CART
-      }))
-
-  }
-
-  const handleRedirect = () => {
-    goto("/signin", {   state: { ...location } })
-  }
-  
   const BuyBtn=({})=>(
     <button
       id="add_to_cart_btn"
-      className={(isOrdered ? "relative " : " group   hover:bg-blue-500   hover:text-white ") + " hidden greater-than-sm:flex  py-[3px] px-1 w-full h-max  flex-row-reverse justify-center border-[#2967FF] rounded-lg border-[1px] bg-blue-500 text-white stroke-blue-500 cursor-pointer"}
+      className={(isOrdered ? "relative " : " group   hover:bg-blue-600   hover:text-white ") + " hidden greater-than-sm:flex  py-[3px] px-1 w-full h-max  flex-row-reverse justify-center border-[#2967FF] rounded-lg border-[1px] bg-[#2967FF] text-white stroke-blue-500 cursor-pointer"}
       disabled={isOrdered}
       onClick={() => userAuthed ? handleAddToCart(product.id) : handleRedirect()}
     >

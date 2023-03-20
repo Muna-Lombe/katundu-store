@@ -13,7 +13,7 @@ const PaymentType = ({  plan = { amount: 109, period: { count: 6, type: "months"
         </div>
         <p className="installment flex gap-2 items-baseline">
           <span className="amount py-1 px-2 bg-yellow-400 rounded-md text-base font-[arial]">
-            {plan.amount + " ₽"}
+            {tags.currencyType + plan.amount}
           </span>
           <span className="time-span text-sm font-[arial]">
             {"× " + plan.period.count + " " + plan.period.type}

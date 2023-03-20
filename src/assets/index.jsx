@@ -78,7 +78,7 @@ export const titleTagTypes={
     quantityOrderedText : "Number of goods", orderCostText : "Order cost", deliveryAddressText :"Delivery address"
   },
   orderInfo:{
-    text : "information about delivery"
+    text : "Information about delivery"
   },
   paymentType:{
     mainText :"Katundu installments", subText :"Read more"
