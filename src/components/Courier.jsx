@@ -8,11 +8,11 @@ const Courier = ({ delivery = { courier: "Courier katundu", date: { day_tag: "to
     </span>
     <span className="details text-slate-400 text-sm">
       <span className='date'>
-        {delivery.date.day_tag + ", " + delivery.date.date_text}
+        {delivery.date.day_tag + ", " + delivery.date.date_text + " "}
       </span>
       -
       <span className="courier-price">
-        {delivery.price + tags.currencyType}
+        {" "+tags.currencyType+delivery.price}
       </span>
     </span>
   </span>

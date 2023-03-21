@@ -145,10 +145,10 @@ export const addToProductData = (product, id) => {
     isDiscounted: sampleData[id][5],
     unitValues:product.images[0]?.image_name?.includes("cf.jpg")
     ?[
-      { label: "белки", value: "10" },
-      { label: "жиры", value: "14" },
-      { label: "углеводы", value: "25" },
-      { label: "ккал", value:"270"}
+      {label: "Proteins", value: "10"},
+      {label: "Fats", value: "14"},
+      {label: "Carbohydrates", value: "25"},
+      {label: "Kcal", value: "270"}
     ]
     :[]
   })

@@ -12,7 +12,7 @@ const PickupPoints = ({  points = { date: { day_tag: "tomorrow", date_text: "6 F
         </span>
         -
         <span className="courier-price">
-          {points.price > 0 ? points.price + " ₽" : "бесплатно"}
+          {points.price > 0 ? tags.currencyType+points.price : "no charge"}
         </span>
       </span>
     </span>

@@ -14,12 +14,8 @@ const ContentDetails = ({showLogo, contentType, variations = [{ id: 1, name: "ye
     // console.log("curAct", nextContDesc)
   }
   return (
-    <div className="content-details p-2 w-auto h-max   flex  flex-col gap-3 order-2 ">
-      {
-        showLogo 
-        ? showLogo
-        :""
-      }
+    <div className="content-details p-2 h-max   flex  flex-col gap-3 order-2 ">
+      {showLogo || ""}
 
       <div className={contentType+"-variations w-full  flex flex-row gap-2 overflow-hidden child-hover:border-blue-500 [&>.active]:text-blue-500 child child:cursor-pointer"}>
 
@@ -31,7 +27,7 @@ const ContentDetails = ({showLogo, contentType, variations = [{ id: 1, name: "ye
           ))
         }
       </div>
-      <div className="children-wrapper  max-w-[400px] flex flex-col gap-4">
+      <div className="children-wrapper max-w-[400px] flex flex-col gap-4">
         {children}
 
       </div>

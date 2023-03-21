@@ -135,7 +135,7 @@ const ShowProduct = ()=>{
             <MiddleSection>
               <ContentViewer>
                 <ProductImageViewer images={productItem?.images}/>
-            <ContentDetails contentType={"product"} showLogo={<Logo logo={productItem?.store.name} bgColor="bg-slate-500" />} variations={productItem?.variations.map((p)=> ({...p, text:p.price}))}>
+                <ContentDetails contentType={"product"} showLogo={<Logo logo={productItem?.store.name} bgColor="bg-slate-500" />} variations={productItem?.variations.map((p)=> ({...p, text:p.price}))}>
                       { productItem?.variations.map((i,x)=>
                             <ContentDescription key={x} first={x===0} id={`${i.id}`} >
                               <div className="w-full  less-than-xs:child:max-w-[330px] less-than-xs:child:justify-between">
@@ -143,8 +143,8 @@ const ShowProduct = ()=>{
                               </div>
                               { i.properties.map((k,v)=> 
                                 <div key={v} className="w-full less-than-xs:child:max-w-[330px] less-than-xs:child:flex-wrap less-than-xs:child:justify-between">
-                                <ProductDescriptor key={v} id={`${i.id}${v}`} label={k.name} values={k.values || [`${k.type}`]} />
-                              </div>
+                                  <ProductDescriptor key={v} id={`${i.id}${v}`} label={k.name} values={k.values || [`${k.type}`]} />
+                                </div>
                               )}
                             </ContentDescription>
                           )
@@ -156,28 +156,27 @@ const ShowProduct = ()=>{
                           )
                         }
                       </ContentSpecification>
-                  </ContentDetails >
-                  <ContentPayment >
-                    <PriceTag tagFor={"product-variations"} original={productItem?.priceRange.sort((a, b) => b - a).at(-1)} discount={productItem?.isDiscounted[0] ? productItem?.isDiscounted[1] : false} />
-                    <DiscountInfo/>
-                    <BuyBtns id={productItem?.id}/>
-                  </ContentPayment> 
-                  <PaymentType >
-                    <Faqs />
-                    <OrderInfo>
-                      <span className="order-pin py-2">
-                        <PinIco />
+                </ContentDetails >
+                <ContentPayment >
+                  <PriceTag tagFor={"product-variations"} original={productItem?.priceRange.sort((a, b) => b - a).at(-1)} discount={productItem?.isDiscounted[0] ? productItem?.isDiscounted[1] : false} />
+                  <DiscountInfo/>
+                  <BuyBtns id={productItem?.id}/>
+                </ContentPayment> 
+                <PaymentType >
+                  <Faqs />
+                  <OrderInfo>
+                    <span className="order-pin py-2">
+                      <PinIco />
+                    </span>
+                    <span className="order-pin-points">
+                      <PinLocation />
+                      <span className="courier-points flex flex-col font-[arial]">
+                        <Courier />
+                        <PickupPoints />
                       </span>
-                      <span className="order-pin-points">
-                        <PinLocation />
-                        <span className="courier-points flex flex-col font-[arial]">
-                          <Courier />
-                          <PickupPoints />
-                        </span>
-                      </span>
-                    </OrderInfo> 
-                  </PaymentType>
-
+                    </span>
+                  </OrderInfo> 
+                </PaymentType>
               </ContentViewer>
               <RecommendedProducts/>
               <BuyTogetherProducts/>
