@@ -111,7 +111,7 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
         </div>
             {
               // images?.length ?
-              <img id="activeImage" alt="gallery" className={"w-full min-w-[300px] max-w-[400px]  aspect-square object-cover object-center block bg-white border-[1px] rounded-md"} src={imagepath(activeImage?.image_url || images[0]?.image_url) || no_img_path} />
+              <img id="activeImage" alt="gallery" className={"w-full min-w-[200px] max-w-[400px]  aspect-square object-cover object-center block bg-white border-[1px] rounded-md"} src={imagepath(activeImage?.image_url || images[0]?.image_url) || no_img_path} />
                 // : ""
             }
         <div className={"peer img-magnifier-glass absolute bottom-0 right-0 w-1/4 aspect-square hover:bg-white border-[3px] border-slate-600  rounded-md cursor-none"}></div>

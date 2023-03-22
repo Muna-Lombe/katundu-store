@@ -62,7 +62,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
     
     return(
       
-       <span className='py-1 flex gap-2 less-than-xs:justify-end items-baseline less-than-xs:text-xs text-md '>
+       <span className='py-1 flex gap-2  items-baseline less-than-xs:text-xs text-md '>
         <span className=" py-1 px-[0.25rem] flex gap-1  border-1 rounded-md text-orange-600 text-lg leading-[8px]   font-bold items-baseline">
           {tags.currencyType + price}
           {product.isDiscounted[0] === true

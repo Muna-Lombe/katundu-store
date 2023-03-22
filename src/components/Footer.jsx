@@ -21,14 +21,14 @@ const Footer = ({}) => {
           <div id="footer_socials" className="w-max flex flex-wrap flex-col gap-2 text-xs  md:text-base lg:text-base xl:text-base text-slate-600 font-raleway font-semibold ">
             <p>{tags.footer.joinus}</p>
             <span className="flex gap-2 child:cursor-pointer">
-              <span className="w-full  min-w-[30px] md:w-full lg:w-full xl:w-full  aspect-square">
+              <span className="w-full  min-w-[20px] md:w-full lg:w-full xl:w-full  aspect-square">
                 <FbIco />
               </span>
-              <span className="w-full  min-w-[30px] md:w-full lg:w-full xl:w-full aspect-square">
+              <span className="w-full  min-w-[20px] md:w-full lg:w-full xl:w-full aspect-square">
                 <InstaIco />
 
               </span>
-              <span className="w-full  min-w-[30px] md:w-full lg:w-full xl:w-full aspect-square">
+              <span className="w-full  min-w-[20px] md:w-full lg:w-full xl:w-full aspect-square">
                 <VkIco />
 
               </span>

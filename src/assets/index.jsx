@@ -50,7 +50,7 @@ export const titleTagTypes={
   },
   cart:{
     currencyType : "zmw", cartTag:"Cart", emptyCartBtnTag:"Empty Cart",
-    qtyType: "pcs.", promoCountdown: "to ", priceMinTag: "from", checkoutTag:"Checkout", totalInCartTag:"Cart Total"
+    qtyType: "pcs.", promoCountdown: "ends in ", priceMinTag: "from", checkoutTag:"Checkout", totalInCartTag:"Cart Total"
   },
   checkout:{
     checkoutText: "Complete Checkout", orderWhenText : "Delivery date", orderToWhereText : "Delivery address",

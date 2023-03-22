@@ -23,7 +23,7 @@ const PriceTag = ({tagFor,original, discount=false }) => {
   return (
     <div className="price-tag my-2">
       <div className="price-details  py-2 flex flex-row flex-wrap justify-start  gap-2 items-baseline">
-        <p className="main-price text-4xl text-red-500 font-[arial] font-medium">
+        <p className="main-price text-4xl text-orange-500 font-[arial] font-medium">
           {
             discount
               ? tags.currencyType +(currPriceTag.discounted|| setDisc(original,discount).discounted) 
@@ -33,7 +33,7 @@ const PriceTag = ({tagFor,original, discount=false }) => {
         {
           discount
           ?
-            <p className="sub-price text-xl text-slate-400 text font-[arial] font-medium">
+            <p className="sub-price text-xl text-slate-400 text font-[arial] font-medium line-through">
               {tags.currencyType +(currPriceTag.oldPrice || original )}
             </p>
           :""

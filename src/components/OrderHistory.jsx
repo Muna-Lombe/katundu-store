@@ -18,8 +18,13 @@ const OrderHistory = ({ itemsOrdered}) => {
     if (e.type === "click") e.stopPropagation()
     const ordSum = document.getElementById("order-summary")
     const ordLst = document.getElementById("order-list")
+    const ico = document.querySelector(".order-item-expand-ico")
     const findNear=(child)=>{
       return child.previousSibling || child.nextSibling
+    }
+    const toggleReplace=(classList,one, two)=>{
+      classList.replace(one, two) ||
+      classList.replace(two, one)
     }
     const clickedSvg = () => elem.tagName === "svg"
     const clickedP = () => elem.tagName === "p"
@@ -27,20 +32,20 @@ const OrderHistory = ({ itemsOrdered}) => {
     if (clickedSvg()) child = elem
     if (clickedP()) child = elem.firstChild
 
-    if (child.classList.contains("-rotate-90")) {
-      child.classList.replace("-rotate-90", "rotate-90")
-      // const nearChild = findNear(child)
-      // if (nearChild.tagName === "INPUT" && nearChild.type === "checkbox" && nearChild.id === "show-more-checkbox"){
-      //   nearChild.checked=true
+    if (ico.classList.contains("-rotate-180")) {
+      ico.classList.replace("-rotate-180", "rotate-180")
+      // const nearico = findNear(ico)
+      // if (nearico.tagName === "INPUT" && nearico.type === "checkbox" && nearico.id === "show-more-checkbox"){
+      //   nearico.checked=true
       // }
-      ordLst.classList.replace("visible","hidden", )
-      ordSum.classList.replace("hidden", "visible")
+      toggleReplace(ordLst.classList,"visible","hidden" )
+      toggleReplace(ordSum.classList,"hidden", "visible")
 
     } else {
-      child.classList.replace("rotate-90", "-rotate-90")
+      ico.classList.replace("rotate-180", "-rotate-180")
       // optgrp().classList.replace("visible", "hidden")
-      ordSum.classList.replace("visible", "hidden",)
-      ordLst.classList.replace("hidden", "visible")
+      toggleReplace(ordSum.classList,"visible", "hidden",)
+      toggleReplace(ordLst.classList,"hidden", "visible")
 
     }
 
@@ -83,10 +88,10 @@ const OrderHistory = ({ itemsOrdered}) => {
     <div id="item" className=" max-w-[400px] mx-1 px-2 pt-2 pb-9  border-[1px] border-gray-300 rounded-2xl lining-nums tabular-nums">
       <div id="item_wrapper" className="p-2 flex flex-col justify-center gap-2">
         <div id="item_header" className=" flex less-than-xs:flex-wrap justify-between gap-2">
-          <div id="item_img" className="w-auto flex flex-row items-center border-[1px] border-transparent rounded-2xl">
+          <div id="item_img" className="w-auto flex flex-row items-center gap-1 border-[1px] border-transparent rounded-2xl">
             {/* <img className="border-[1px] border-transparent rounded-[25px]" src={logo} alt="" /> */}
-              <Logo logo={order?.OrderProps.storeName} size={{ font:30, h:40, w:40, x: 0, y: 30 }} addLogo addText={false}/>
-              <div id="item_name" className="text-base text-black font-semibold ">
+              <Logo logo={order?.OrderProps.storeName} size={{ font:30, h:40, w:40, x: 5, y: 30 }} addLogo addText={false}/>
+              <div id="item_name" className="text-base text-slate-600 font-semibold ">
                 <p>{order?.OrderProps.storeName} </p>
               </div>
           
@@ -103,7 +108,7 @@ const OrderHistory = ({ itemsOrdered}) => {
             
           </div>
           <div onClick={handleRotateIco} className="show-more w-min relative">
-            <OpenIco/>
+            <OpenIco className={"order-item-expand-ico"}/>
               {/* <ArrowDown size={18} handleClick={handleRotateIco} /> */}
           </div>
         </div>
@@ -114,8 +119,8 @@ const OrderHistory = ({ itemsOrdered}) => {
               <p className="text-xs text-black font-semibold">{order?.status[0]+'/'+order?.status[1]} </p>
             </div>
             <div id="order_number">
-              <p className="text-xs text-[#727280] font-medium"> {tags.orderHistory.orderNumberText} </p>
-              <p className="flex justify-between gap-2 text-xs text-[#2967FF] font-semibold" > {id} <CopyIco text={id.toString()} /> </p>
+                <p className="text-xs text-[#727280] font-medium"> {tags.orderHistory.orderNumberText} <CopyIco text={id.toString()} /></p>
+              <p className="flex justify-between gap-2 text-xs text-[#2967FF] font-semibold" > {id}  </p>
               
 
             </div>

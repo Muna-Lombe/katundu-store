@@ -24,6 +24,18 @@ export const momentDate = () => {
 
 // let a = new serializableMap()
 // a.
+export const copyToClipboard = (e, text,setter) => {
+  // console.log(text)
+  navigator.clipboard.writeText(text)
+  if(setter){
+    setter((prevState) => !prevState)&&
+    setTimeout(() => {
+      setter(false)
+
+    }, 1500)
+  }
+
+}
 
 export const mapper = (obj)=>{
 
