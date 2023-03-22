@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 // assets
 import { DeleteIco } from '../assets'
 import { useDispatch, useSelector } from 'react-redux';
-import  { imagepath } from '../assets/images';
+import  { imagepath, no_img_path } from '../assets/images';
 import { checkedOutCartItem, removedCartItem, updatedCartItem } from '../orm/models/CartModel';
 import types from '../orm/actions/actionTypes';
 import { titleTagTypes as tags } from "../assets";
@@ -60,7 +60,7 @@ const Cart = ({ unOrd, ord }) => {
                 <Link to={"/product/" + orderItem.product.id} id="product_image"
                 className="w-max max-h-[5rem] px-2 flex justify-center items-center">
 
-                  <img className=" max-w-[5rem] max-h-[5rem] md:w-full md:h-full lg:w-full lg:h-full xl:w-full xl:h-full object-contain" src={imagepath(orderItem.product.images[0].image_url)} alt="IGM" />
+                  <img className=" max-w-[5rem] max-h-[5rem] md:w-full md:h-full lg:w-full lg:h-full xl:w-full xl:h-full object-contain" src={imagepath(orderItem.product.images[0]?.image_url )|| no_img_path} alt="IGM" />
                 </Link>
               
               
@@ -143,7 +143,7 @@ const Cart = ({ unOrd, ord }) => {
 
    const CartStoreItem = ({keyId,storeName,orders, total, isOrdered})=> { 
      const disableItem = isOrdered
-     const state = { storeName, cartItemIds:orders.map(o=> o.id),total, orderedItems: orders.map(oi=> ({productId: oi.product.id, price:oi.product.isDiscounted || oi.product.price, quantity: oi.productCount})) }
+     const state = { from: "/cart" , storeName, cartItemIds:orders.map(o=> o.id),total, orderedItems: orders.map(oi=> ({productId: oi.product.id, price:oi.product.isDiscounted || oi.product.price, quantity: oi.productCount})) }
 
      return (
           <div id="cart_item__wrapper"
@@ -160,8 +160,8 @@ const Cart = ({ unOrd, ord }) => {
                 >
                   <Link 
                     to={ "/checkout"} 
-                    state={{...state,from:"/cart"}} 
-                    
+                    from={"/cart"}
+                    state={state} 
                     className={" less-than-xs:w-[5rem] less-than-xs:h-[1rem] w-[7rem] h-[2.1rem] md:w-[10rem] md:h-[2.5rem] lg:w-[10rem] lg:h-[2.5rem] xl:w-[10rem] xl:h-[2.5rem] px-8 py-5 bg-orange-600 active:bg-orange-500 border-[1px] border-orange-600  flex justify-center items-center rounded-2xl less-than-xs:text-base text-lg md:text-xl lg:text-xl xl:text-xl text-white font-medium" + (disableItem ? " pointer-events-none cursor-auto": "") }    
                   > 
                     {tags.cart.checkoutTag} 

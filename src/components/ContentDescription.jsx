@@ -1,6 +1,6 @@
 const ContentDescription = ({ id, first, children }) => {
   return (
-    <div id={'content_desc_' + id} className={"content-description " + (first ? "flex" : "hidden") + " flex-col gap-3 text-sm"}>
+    <div id={'content_desc_' + id} className={"content-description " + (first ? "flex" : "hidden") + " flex-col gap-1"}>
       {children}
     </div>
   )

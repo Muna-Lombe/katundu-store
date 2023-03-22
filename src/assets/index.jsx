@@ -1,7 +1,7 @@
 
 export const setTextBg = (text, color="initial",  size={h:1, w:1, x:0, y:1, font:8})=>(
   
-  { backgroundImage: 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' version=\'1.1\' height=\'' + size.h + 'px\' width=\'' + size.w + 'px\' style=\'\'><text x=\'' + size.x + '\' y=\'' + size.y + '\' fill=\''+color+'\' font-family=\'' + 'Raleway, San-Serif, Segoui, Monospace' +'\' font-size=\'' + size.font  +'\'>'+text+'</text></svg>")' }
+  { backgroundImage: 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' version=\'1.1\' height=\'' + size.h + 'px\' width=\'' + size.w + 'px\' style=\'\'><text x=\'' + size.x + '\' y=\'' + size.y + '\' color=\'' + color +'\' fill=\''+color+'\' font-family=\'' + 'Raleway, San-Serif, Segoui, Monospace' +'\' font-size=\'' + size.font+'px'  +'\'>'+text+'</text></svg>")' }
 )
 
 export const filterData = {

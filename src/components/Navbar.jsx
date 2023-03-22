@@ -203,7 +203,7 @@ const Navbar = () => {
         <div id="navbar_left__wrapper" className=" w-full block  gap-4 lg:flex lg:flex-row xl:flex xl:flex-row justify-start items-center transition-all">
           <div id="logo_location" className=" w-full lg:w-auto xl:auto flex less-than-xs:flex-col less-than-xs:gap-4 justify-start gap-4">
               <Link to="" > 
-                <Logo logo={tags.footer.storename} size={{ h: 40, w: 25, x: 0, y: 32, font: 40 }}/>
+                <Logo logo={tags.footer.storename} size={{ h: 40, w: 40, x:10, y: 32, font: 38 }}/>
               </Link> 
             <div id="address" className=" px-1 relative flex flex-wrap items-center gap-2">
               <PinIco />

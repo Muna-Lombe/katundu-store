@@ -25,7 +25,7 @@ const CheckoutForm = ({ }) => {
   const dispatch = useDispatch()
   // returnOnReload()
   useEffect(() => {
-    console.log("path", location)
+    // console.log("path", location)
     if(location?.state?.from !== "/cart"){
       goto("/cart")
     }

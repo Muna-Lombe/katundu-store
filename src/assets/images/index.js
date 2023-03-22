@@ -5,8 +5,10 @@ import image13_4 from './image13_4.png';
 import image13_5 from './image13_5.png';
 import image13_6 from './image13_6.png';
 import image13_7 from './image13_7.png';
+import no_img from '../../assets/tests/jsonServer/img/placeholders/no_product_img.png'
 
 // export * as imagepaths from '../tests/jsonServer/images';
+export const no_img_path = no_img
 export const imagepath = (path)=> {
     if(path === undefined) return false;
     let image;
