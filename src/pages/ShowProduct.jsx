@@ -1,9 +1,10 @@
-import { Suspense, } from "react";
+import { Suspense, useEffect, } from "react";
 import { ArrowLeft,  PinIco } from "../assets";
 import { filteredProductsFromModel } from "../orm/selectors";
 import { useSelector } from "react-redux";
 import { Link,useParams, useLocation, } from "react-router-dom";
 import { BuyBtns, ContentDescription, ContentDetails, ContentPayment, ContentSpecification, ContentViewer, Courier, DiscountInfo, EmbeddedProducts, Faqs, FullProductCharacteristics, FullProductDescription, Logo, NoItems, OrderInfo,  PaymentType, PickupPoints, PinLocation, PriceTag, ProductDescriptor, ProductImageViewer, ProductSpecificationDetail, ProductTags,  ReviewsAndQuestions } from "../components";
+import { imagepath, no_img_path } from "../assets/images";
 
 
 const ShowProduct = ()=>{
@@ -94,6 +95,36 @@ const ShowProduct = ()=>{
   const RecommendedProducts = () => (<EmbeddedProducts title={"Recommended Products"} tagname="recommended-products"/>)
   const OfferedProducts = () => (<EmbeddedProducts title={"Offered Products"} tagname="offered-products" />)
   const BuyTogetherProducts = () => (<EmbeddedProducts title={"Buy Together"} tagname="buy-matching-products" />)
+  const ProductMinified = ({productMini})=> {
+    
+
+    // useEffect(()=>{
+    //   const showProdPage = document.querySelector(".middle")
+    //   showProdPage.on
+    //   return(
+
+    //   )
+    // })
+
+    return (
+    
+        <div className="product-minified sticky top-[129px]  right-0 px-2  flex flex-row justify-end items-center gap-2 bg-white border border-y-orange-400 z-50 ">
+          <div className="product-minified-img">
+            <img src={imagepath(productMini?.images[0].image_url) || no_img_path} alt="" className="w-[60px] aspect-square" />
+          </div>
+          <div className="product-minified-product-name overflow-clip text-base text-ellipsis">
+            <span>{productMini?.name}</span>
+          </div>
+          <div className="product-minified-product-price child:m-0 text-[16px]">
+            <PriceTag tagFor={"product-variations"} original={productMini?.priceRange.sort((a, b) => b - a).at(-1)} discount={productMini?.isDiscounted[0] ? productMini?.isDiscounted[1] : false} onlyPrice={true} />
+          </div>
+          <div className="product-minified-buy-btn px-6 child:appearance-none child:w-max child:h-max child:m-0 child:p-0 child:text-sm child:font-semibold">
+            <BuyBtns id={productMini?.id} onlyBtn/>
+          </div>
+
+        </div>
+    )
+  }
   const MiddleSection =({children})=>{
     const NoItems = () => (
       <div 
@@ -124,8 +155,9 @@ const ShowProduct = ()=>{
     )
   }
   return(
-    <>
-        <Suspense fallback={<NoItems />}>
+    <Suspense fallback={<NoItems />} >
+        <div className="show-product-page relative">
+          <ProductMinified productMini={productItem} />
           <div className="top w-full flex border hide-sidebar gap-2 ">
             <BackBtn/>
             {/* <p>
@@ -189,8 +221,8 @@ const ShowProduct = ()=>{
           <div className="bottom w-full border "></div>
       
             {/* <Outlet /> */}
+       </div>   
           </Suspense>
-       </>   
     )
   
 }

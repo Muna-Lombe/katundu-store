@@ -40,7 +40,12 @@ export const titleTagTypes={
   currencyType : "K",
   location: { city: "Lusaka", state: " Lusaka Province" },
   buyBtn:{
-    mainText :"Add to cart", subText :"Delivery Tomorrow", tooltip :"Item already in cart"
+    mainText :"Add to cart",
+    miniMainText:"To cart", 
+    subText :"Delivery Tomorrow", 
+    tooltip: "Item already in cart",
+    miniTooltip:"In cart"
+
   },
   collectionCard:{
     text:"New Collection"

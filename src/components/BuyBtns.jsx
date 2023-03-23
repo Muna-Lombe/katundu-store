@@ -7,7 +7,7 @@ import { createdCartItem } from "../orm/models/CartModel";
 import { titleTagTypes as tags } from "../assets";
 import { useLocation, useNavigate } from "react-router-dom";
 
-const BuyBtns = ({ id, }) => {
+const BuyBtns = ({ id, onlyBtn }) => {
   const goto = useNavigate()
   const location = useLocation()
   const isOrdered = useSelector(isInCart(id))
@@ -29,14 +29,21 @@ const BuyBtns = ({ id, }) => {
   }
   return (
     <div className={" buy-btns   my-3 flex flex-col items-center gap-2 "}>
-      <button onClick={() => userAuthed ? handleAddToCart(id) : handleRedirect() } onSubmit={() => ""} disabled={isOrdered} className={(isOrdered ? "bg-slate-400 " : " bg-orange-500 active:bg-orange-400  ") + "buy-now w-10/12 h-max py-1 px-2  max-w-xs flex justify-center rounded-2xl text-white text-lg font-[arial] font-thin cursor-pointer transition-transform"}>
-        <span className={" flex"}>
-          {isOrdered ? tags.buyBtn.tooltip : tags.buyBtn.mainText}
+      <button onClick={() => userAuthed ? handleAddToCart(id) : handleRedirect()} onSubmit={() => ""} disabled={isOrdered} className={(isOrdered ? "bg-slate-400 " : " bg-orange-500 active:bg-orange-400  ") + "buy-now  h-max py-1 px-2  max-w-xs flex justify-center rounded-2xl text-white " + (onlyBtn ? "" :" w-10/12 font-[arial] font-thin ")+" cursor-pointer transition-transform"}>
+        <span className={" flex text-center leading-5"}>
+          { onlyBtn
+            ? isOrdered ? tags.buyBtn.miniTooltip : tags.buyBtn.miniMainText
+            : isOrdered ? tags.buyBtn.tooltip : tags.buyBtn.mainText
+          }
         </span>
       </button>
-      <div className="delivery-type px-2 flex justify-center text-slate-500  text-sm font-[arial] ">
-        {tags.buyBtn.subText}
-      </div>
+      {
+        onlyBtn
+        ? ""
+        : <div className="delivery-type px-2 flex justify-center text-slate-500  text-sm font-[arial] ">
+          {tags.buyBtn.subText}
+        </div>
+      }
     </div>
   )
 }
