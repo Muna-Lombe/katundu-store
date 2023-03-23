@@ -10,8 +10,29 @@ import Logo from './Logo'
 import NoItems from './NoItems'
 import { Link } from 'react-router-dom'
 import ToggleableField from './ToggleableField'
+import { useDispatch } from 'react-redux'
+import { createdOrder } from '../orm/models/OrderModel'
 
 const OrderHistory = ({ itemsOrdered}) => {
+  const dispatch = useDispatch()
+
+
+  const handleLoadTest =()=>{
+    const finalOrderData = [{
+      "type": "orm/Order/CREATE",
+      "payload": { "id": "aqr5hr7e-1", "DateCreated": "2023-2-23,08:29:51 GMT+0300 (Moscow Standard Time)", "productIds": [2001, 2017, 2011], "OrderProps": { "quantity": [{ "productId": 2001, "price": "329", "quantity": 1 }, { "productId": 2017, "price": "44", "quantity": 1 }, { "productId": 2011, "price": "408", "quantity": 1 }], "deliveryDate": "2023-03-23", "deliveryTime": "11:33", "deliveryAddress": "Ylitsa Dement'yeva", "receiver": "Tony valeska", "receiverPhone": "+79656229755", "orderCost": 781, "deliveryCost": 200, "totalCost": 981, "storeName": "Davies' Store" }, "status": ["ordered", "complete"] }
+    },
+    {
+      "type": "orm/Order/CREATE",
+      "payload": { "id": "q1ndxo6p-2", "DateCreated": "2023-2-23,08:30:50 GMT+0300 (Moscow Standard Time)", "productIds": [2012], "OrderProps": { "quantity": [{ "productId": 2012, "price": "9", "quantity": 1 }], "deliveryDate": "2023-03-23", "deliveryTime": "09:32", "deliveryAddress": "Ylitsa Dement'yeva", "receiver": "Tony valeska", "receiverPhone": "+79656229755", "orderCost": 9, "deliveryCost": 200, "totalCost": 209, "storeName": "Clear fawn" }, "status": ["ordered", "complete"] }
+    },
+    {
+      "type": "orm/Order/CREATE",
+      "payload": { "id": "n3z6tjk7-3", "DateCreated": "2023-2-23,08:31:21 GMT+0300 (Moscow Standard Time)", "productIds": [2010], "OrderProps": { "quantity": [{ "productId": 2010, "price": 104, "quantity": 1 }], "deliveryDate": "2023-03-23", "deliveryTime": "11:33", "deliveryAddress": "Ylitsa Dement'yeva", "receiver": "Tony valeska", "receiverPhone": "+79656229755", "orderCost": 104, "deliveryCost": 200, "totalCost": 304, "storeName": "Avita" }, "status": ["ordered", "complete"] }
+    }]
+    finalOrderData.forEach(od=>dispatch(createdOrder(od.payload)))
+    
+  }
   const handleRotateIco = (e, id) => {
     const elem = e.target || e
     // console.log(elem)
@@ -53,24 +74,67 @@ const OrderHistory = ({ itemsOrdered}) => {
     }
     const handleReadMore=(e, itemId, setter)=>{
       e.preventDefault()
+      
+      const shadowDiv = document.getElementById("shadow-div")
+      const contentWrapper = document.getElementById("content_wrapper")
       const item = document.getElementById(itemId)
+      const itemContent = item?.querySelector("#item_content")
       const prevActiveElem = document.querySelector(".active-open")
+      const prevItemContent = prevActiveElem?.querySelector("#item_content")
       const openState = "active-open"
-      const toggleActiveState =(elem)=>{
-        if (prevActiveElem?.id.includes("item")){
-          prevActiveElem.classList.toggle(openState)
-          prevActiveElem.classList.toggle("col-span-1")
-          prevActiveElem.classList.toggle("order-1")
-        }
-        elem.classList.toggle(openState)
-        elem.classList.toggle("col-span-1")
-        elem.classList.toggle("order-1")
+      const [itemOrder, prevActOrder] = [
+        item?.className.match(/\b(order)[-][0-9]/)[0] ||"null",
+        prevActiveElem?.className.match(/\b(order)[-][0-9]/)[0] ||"null"
+      ]
+      console.log(shadowDiv, contentWrapper)
+      prevActiveElem?.classList.toggle(openState)
+      item.classList.toggle(openState)
+      
+      const elems = {
+        isOpen: [prevActiveElem, item].filter(el => el?.classList.contains("active-open"))[0] || false,
+        notOpen: [prevActiveElem, item].filter(el => !el?.classList.contains("active-open"))[0] || false
       }
-      toggleActiveState(item)
-      setter(prevState=> !prevState)
+    
+      const toggleShowContent =(elem,ignore )=>{
+        elem?.querySelector("#item_content").classList.contains("hidden")
+          ? ignore||elem?.querySelector("#item_content").classList.replace("hidden", "flex")
+          : elem?.querySelector("#item_content").classList.replace("flex", "hidden")
+      }
+      const toggleMoveContent = (parent, elem, {ignoreAdd=false, ignoreRemove=false}) => {
+        if (!elem) return
+        parent.contains(elem)
+          ? ignoreRemove || parent.removeChild(elem)
+          : ignoreAdd || parent.appendChild(elem)
+      }
+    
+      const toggleActiveState =(elem)=>{
+       
+        if (elems.notOpen){
+          // remove class
+          elems.isOpen.classList.remove(itemOrder)
+          elems.notOpen.classList.remove("col-span-1")
+          elems.notOpen.classList.remove("row-span-1")
+          elems.notOpen.classList.remove(prevActOrder)
+          toggleShowContent(elems.notOpen, "ignore")
+          // toggleMoveContent(contentWrapper, elems.isOpen, {ignoreAdd:true})
+          // toggleMoveContent(shadowDiv, elems.notOpen,{ignoreAdd : true})
+
+          
+        }
+        // add classes
+        elems.notOpen?.classList?.add(itemOrder)
+        elems.isOpen.classList.add("col-span-1")
+        elems.isOpen.classList.add("row-span-1")
+        elems.isOpen.classList.add(prevActOrder)
+        toggleShowContent(elems.isOpen)
+        // toggleMoveContent(contentWrapper, elems.notOpen, {ignoreRemove : false})
+        // toggleMoveContent(shadowDiv, elems.isOpen, {ignoreRemove : false})
+        
+      }
+      
+      toggleActiveState()
     }
     const Item = ({ idx, order})=>{
-      const [readMore, setReadMore] = useState(false)
       const id = '#'+ order.id
       let date = order.DateCreated.split(",")[0]
     const OrderSummary = () =>(
@@ -122,14 +186,14 @@ const OrderHistory = ({ itemsOrdered}) => {
     }
 
     const ItemContent =()=>(
-      <div id="item_content" className="child:p-0 flex flex-col justify-center gap-2 font-raleway text-sm child:gap-[3px]">
+      <div id="item_content" className=" hidden child:p-0  flex-col justify-center gap-2 font-raleway text-sm child:gap-[3px]">
         <OrderDetails/>
       </div>
     )
 
 
     return (
-    <div id={"item-"+order.id} className={(idx===0 ? " order-1 " : "")+" max-w-[400px] mx-1 px-2 pt-2 pb-2  border-[1px] border-gray-300 rounded-2xl lining-nums tabular-nums"}>
+    <div id={"item-"+order.id} className={("order-"+(+idx+1))+" max-w-[400px] mx-1 px-2 pt-2 pb-2  border-[1px] border-gray-300 rounded-2xl lining-nums tabular-nums"}>
       <div id="item_wrapper" className="p-2 flex flex-col justify-center gap-2">
         <div id="item_header" className=" flex flex-col less-than-xs:flex-wrap justify-between gap-2">
           <div id="item_img" className="w-auto flex flex-row items-center gap-1 border-[1px] border-transparent rounded-2xl">
@@ -145,7 +209,7 @@ const OrderHistory = ({ itemsOrdered}) => {
               <div id="order_date" className="flex items-center text-[12px] text-[#727280] font-semibold">
                 <p> {date} </p>
               </div>
-                <div id="show_more" onClick={(e) => handleReadMore(e, ("item-" + order.id), setReadMore)} className="flex items-baseline text-[12.2px] text-[#2967FF] font-semibold cursor-pointer">
+                <div id="show_more" onClick={(e) => handleReadMore(e, ("item-" + order.id))} className="flex items-baseline text-[12.2px] text-[#2967FF] font-semibold cursor-pointer">
                 <p className="flex items-end"> {tags.orderHistory.showMoretext} </p>
               </div>
             </div>
@@ -165,11 +229,9 @@ const OrderHistory = ({ itemsOrdered}) => {
             </div>
 
           </div>
-        {
-          readMore
-          ? <ItemContent/>
-          : <></>
-        }
+          <ItemContent/>
+      
+          
         
       </div>
       
@@ -182,10 +244,11 @@ const OrderHistory = ({ itemsOrdered}) => {
         <p>
           {tags.orderHistory.mainText}
         </p>
-        
+        <p onClick={handleLoadTest} className="test-order accent-red-600 underline text-sm font-semibold cursor-pointer">load test data</p>
       </div>
       <div id="order_history__content" className="w-full ">
-        <div id="content_wrapper" className="w-full grid  grid-flow-rows grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-6">
+        <div id='shadow-div' className="shadow-div"></div>
+        <div id="content_wrapper" className="w-full grid  grid-flow-cols grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-6">
          {
           itemsOrdered.length
           ? itemsOrdered?.map((item,x) => <Item key={x} idx={x} order={item}/>) 

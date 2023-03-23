@@ -14,7 +14,7 @@ const Footer = ({}) => {
             {tags.footer.storename}
           </h3> */}
           <Link to="" >
-            <Logo logo={tags.footer.storename} size={{ h: 40, w: 25, x: 0, y: 32, font: 40 }} />
+            <Logo logo={tags.footer.storename} size={{ h: 40, w: 40, x: 10, y: 32, font: 38 }} />
           </Link> 
         </div>
         {/* <div id="footer_links" className="w-auto max-w-[400px] mx-4 flex flex-wrap gap-2"> */}
