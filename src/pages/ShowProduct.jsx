@@ -105,6 +105,14 @@ const ShowProduct = ()=>{
 
     //   )
     // })
+    const textStyle = {
+      maxWidth: '100%',
+      display: '-webkit-box',
+      WebkitBoxOrient: 'vertical',
+      WebkitLineClamp: 2,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+    }
 
     return (
     
@@ -113,7 +121,7 @@ const ShowProduct = ()=>{
             <img src={imagepath(productMini?.images[0].image_url) || no_img_path} alt="" className="w-[60px] aspect-square" />
           </div>
           <div className="product-minified-product-name overflow-clip text-base text-ellipsis">
-            <span>{productMini?.name}</span>
+            <span style={textStyle}>{productMini?.name}</span>
           </div>
           <div className="product-minified-product-price child:m-0 text-[16px]">
             <PriceTag tagFor={"product-variations"} original={productMini?.priceRange.sort((a, b) => b - a).at(-1)} discount={productMini?.isDiscounted[0] ? productMini?.isDiscounted[1] : false} onlyPrice={true} />

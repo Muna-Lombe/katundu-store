@@ -106,15 +106,23 @@ const OrderHistory = ({ itemsOrdered}) => {
           ? ignoreRemove || parent.removeChild(elem)
           : ignoreAdd || parent.appendChild(elem)
       }
-    
+      
+      const onlyIfNotMobile=(action)=>{
+        if(window.innerWidth > 500){
+          action()
+        }
+      }
       const toggleActiveState =(elem)=>{
        
         if (elems.notOpen){
           // remove class
+          
           elems.isOpen.classList.remove(itemOrder)
           elems.notOpen.classList.remove("col-span-1")
           elems.notOpen.classList.remove("row-span-1")
           elems.notOpen.classList.remove(prevActOrder)
+          onlyIfNotMobile(()=>elems.isOpen.classList.remove(itemOrder))
+          onlyIfNotMobile(()=>elems.notOpen.classList.remove(prevActOrder))
           toggleShowContent(elems.notOpen, "ignore")
           // toggleMoveContent(contentWrapper, elems.isOpen, {ignoreAdd:true})
           // toggleMoveContent(shadowDiv, elems.notOpen,{ignoreAdd : true})
@@ -122,10 +130,10 @@ const OrderHistory = ({ itemsOrdered}) => {
           
         }
         // add classes
-        elems.notOpen?.classList?.add(itemOrder)
+        onlyIfNotMobile(() => elems.notOpen?.classList?.add(itemOrder))
         elems.isOpen.classList.add("col-span-1")
         elems.isOpen.classList.add("row-span-1")
-        elems.isOpen.classList.add(prevActOrder)
+        onlyIfNotMobile(() => elems.isOpen.classList.add(prevActOrder))
         toggleShowContent(elems.isOpen)
         // toggleMoveContent(contentWrapper, elems.notOpen, {ignoreRemove : false})
         // toggleMoveContent(shadowDiv, elems.isOpen, {ignoreRemove : false})
