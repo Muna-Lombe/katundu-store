@@ -10,17 +10,9 @@ const ContentDetails = ({showLogo, contentType, variations = [{ id: 1, name: "ye
       elemArr.forEach(el=> classArr.forEach(cl=> el.classList.toggle(cl)))
     }
     batchToggleClass([curAct, e.target], [(contentType + "-active"), 'text-blue-500', 'border-blue-500']) 
-    // curAct.classList.toggle((contentType + "-active"))
-    // e.target.classList.toggle((contentType + "-active"))
 
-    // curAct.classList.toggle('text-blue-500')
-    // e.target.classList.toggle('text-blue-500')
-
-    // curAct.classList.toggle('border-blue-500')
-    // e.target.classList.toggle('border-blue-500')
     curContDesc.classList.replace("flex", "hidden")
     nextContDesc.classList.replace("hidden", "flex")
-    // console.log("curAct", nextContDesc)
   }
   return (
     <div className={"content-details-"+contentType+" p-2 h-max   flex  flex-col gap-2 order-2 "}>

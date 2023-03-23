@@ -1,5 +1,5 @@
 import { Suspense, useEffect, } from "react";
-import { ArrowLeft,  PinIco } from "../assets";
+import { ArrowLeft,  BasketIco,  CartIco,  PinIco } from "../assets";
 import { filteredProductsFromModel } from "../orm/selectors";
 import { useSelector } from "react-redux";
 import { Link,useParams, useLocation, } from "react-router-dom";
@@ -8,6 +8,9 @@ import { imagepath, no_img_path } from "../assets/images";
 
 
 const ShowProduct = ()=>{
+
+  
+
   const  id = useParams().id || 2001
   const productItem = useSelector(filteredProductsFromModel([])).find(i=> i.id.toString() === id.toString())
   // console.log("show", product)
@@ -60,7 +63,7 @@ const ShowProduct = ()=>{
   
   }
 
-  const descriptiveText = `Instant coffee Egoiste Platinum 100g is a premium product, which is produced using patented Swiss technology. For its preparation, only elite varieties of Arabica are used: Kenyan and Colombian. Selected grains are subjected to gentle roasting, and then turned into original instant crystals. The finished drink has a strong rich taste with light shades of fruit (this is a feature of Kenyan Arabica), invigorating aroma and delicate aftertaste with chocolate notes. Packed in a stylish glass jar with a \"crystal\" lid.`
+  const descriptiveText = `Instant coffee Egoiste Platinum 100g is a premium product, which is produced using patented Swiss technology. For its preparation, only elite varieties of Arabica are used: Kenyan and Colombian. Selected grains are subjected to gentle roasting, and then turned into original instant crystals. The finished drink has a strong rich taste with light shades of fruit (this is a feature of Kenyan Arabica), invigorating aroma and delicate aftertaste with chocolate notes. Packed in a stylish glass jar with a "crystal" lid.`
 
   const descTag1 = "100% Natural Instant Freeze-Dried Coffee"
   const descTag2 = " Storage conditions, including after opening: store tightly closed in a cool, dry place without foreign odors"
@@ -97,14 +100,6 @@ const ShowProduct = ()=>{
   const BuyTogetherProducts = () => (<EmbeddedProducts title={"Buy Together"} tagname="buy-matching-products" />)
   const ProductMinified = ({productMini})=> {
     
-
-    // useEffect(()=>{
-    //   const showProdPage = document.querySelector(".middle")
-    //   showProdPage.on
-    //   return(
-
-    //   )
-    // })
     const textStyle = {
       maxWidth: '100%',
       display: '-webkit-box',
@@ -113,46 +108,48 @@ const ShowProduct = ()=>{
       overflow: 'hidden',
       textOverflow: 'ellipsis',
     }
+    // const changeOnScroll =()=>{
+    //   const showProdPage = document.getElementById("show-middle")
+    //   console.log("eeyeyee")
+    //   const toggleProductMini = (e) => {
+    //     e.preventDefault()
+    //     console.log("eee", e)
+    //     // document.querySelector(".product-minified").classList.toggle("hidden")
+    //     return (
+    //       showProdPage.removeEventListener("scroll", toggleProductMini)
+    //     )
+    //   }
+    //   showProdPage.addEventListener("scroll", ev => toggleProductMini(ev))
+    // }
+    // useEffect(() => {
+    //   console.log("jsdhffdalfj")
+    //   changeOnScroll()
+    // })
 
     return (
     
-        <div className="product-minified sticky top-[129px]  right-0 px-2  flex flex-row justify-end items-center gap-2 bg-white border border-y-orange-400 z-50 ">
-          <div className="product-minified-img">
-            <img src={imagepath(productMini?.images[0].image_url) || no_img_path} alt="" className="w-[60px] aspect-square" />
-          </div>
-          <div className="product-minified-product-name overflow-clip text-base text-ellipsis">
-            <span style={textStyle}>{productMini?.name}</span>
-          </div>
-          <div className="product-minified-product-price child:m-0 text-[16px]">
-            <PriceTag tagFor={"product-variations"} original={productMini?.priceRange.sort((a, b) => b - a).at(-1)} discount={productMini?.isDiscounted[0] ? productMini?.isDiscounted[1] : false} onlyPrice={true} />
-          </div>
-          <div className="product-minified-buy-btn px-6 child:appearance-none child:w-max child:h-max child:m-0 child:p-0 child:text-sm child:font-semibold">
-            <BuyBtns id={productMini?.id} onlyBtn/>
-          </div>
-
-        </div>
+          <div className="product-minified sticky less-than-xs:top-[150px] top-[129px]  right-0 px-2  flex flex-row justify-end items-center gap-2 bg-white border border-y-orange-400 z-50 ">
+              <div className="product-minified-img">
+                <img src={imagepath(productMini?.images[0].image_url) || no_img_path} alt="" className="w-[60px] aspect-square" />
+              </div>
+              <div className="product-minified-product-name overflow-clip less-than-xs:text-xs text-base text-ellipsis">
+                <span style={textStyle}>{productMini?.name}</span>
+              </div>
+            <div className="product-minified-product-price child:m-0 less-than-xs:text-xs  text-[16px]">
+                <PriceTag tagFor={"product-variations"} original={productMini?.priceRange.sort((a, b) => b - a).at(-1)} discount={productMini?.isDiscounted[0] ? productMini?.isDiscounted[1] : false} onlyPrice={true} />
+              </div>
+              <div className="product-minified-buy-btn child:p-2 h-[180%]  border rounded-md child:appearance-none child:w-max child:h-max child:text-sm child:font-semibold">
+                <BuyBtns id={productMini?.id} onlyBtn>
+                  <BasketIco />
+                </BuyBtns>
+              </div>
+            </div>
     )
   }
   const MiddleSection =({children})=>{
-    const NoItems = () => (
-      <div 
-        className="loading-product w-full  flex flex-col justify-center items-center">
-        <div id="no_items_banner__header"
-          className="text-base text-black font-raleway font-semibold">
-          <h3>
-            🙅 looks like no items here 👀
-          </h3>
-        </div>
-        <div id="no_items_banner__footer"
-          className="text-lg text-black font-raleway font-bold">
-          <h3>
-            😃 Waiting for products to load 😃
-          </h3>
-        </div>
-      </div>
-    )
+    
     return (
-      <div className="middle w-full flex flex-wrap border  ">
+      <div id="show-middle" className="middle w-full flex flex-wrap ">
         {
           (!productItem)
           ?  <NoItems/>
@@ -164,14 +161,19 @@ const ShowProduct = ()=>{
   }
   return(
     <Suspense fallback={<NoItems />} >
+        <div className="top w-full flex border hide-sidebar gap-2 ">
+          <BackBtn/>
+          {/* <p>
+            {navigate.pathname}
+          </p> */}
+        </div>
         <div className="show-product-page relative">
-          <ProductMinified productMini={productItem} />
-          <div className="top w-full flex border hide-sidebar gap-2 ">
-            <BackBtn/>
-            {/* <p>
-              {navigate.pathname}
-            </p> */}
-          </div>
+          {
+            productItem
+            ? <ProductMinified productMini={productItem} />
+            : ""
+          }
+          
             <MiddleSection>
               <ContentViewer>
                 <ProductImageViewer images={productItem?.images}/>

@@ -83,8 +83,8 @@ const OrderHistory = ({ itemsOrdered}) => {
       const prevItemContent = prevActiveElem?.querySelector("#item_content")
       const openState = "active-open"
       const [itemOrder, prevActOrder] = [
-        item?.className.match(/\b(order)[-][0-9]/)[0] ||"null",
-        prevActiveElem?.className.match(/\b(order)[-][0-9]/)[0] ||"null"
+        item?.className.match(/\b(order)[-][0-9]/)?.0 :"null",
+        prevActiveElem?.className.match(/\b(order)[-][0-9]/)?.0 : "null"
       ]
       console.log(shadowDiv, contentWrapper)
       prevActiveElem?.classList.toggle(openState)
@@ -163,7 +163,7 @@ const OrderHistory = ({ itemsOrdered}) => {
     )
     
     const OrderList = ()=>{
-      const contentType =  "ordered-items"
+      const contentType =  "toggle-ordered-items"
       const contentArray = order?.OrderProps.quantity.map(oi => ({ 
           ...oi, 
           specificId: oi.productId, 
@@ -171,7 +171,7 @@ const OrderHistory = ({ itemsOrdered}) => {
             modelName: "Product", 
             item: { id: oi.productId, prop: "     x" + oi.quantity }
           }, 
-          values: [tags.currencyType + Number.parseInt(oi.price * oi.quantity)] 
+          valuesArray: [tags.currencyType + Number.parseInt(oi.price * oi.quantity)] 
         }))  
       const variations = order?.OrderProps.quantity?.map((o, x) => ({ id: o.productId, text: o.productId }))
     
@@ -183,9 +183,9 @@ const OrderHistory = ({ itemsOrdered}) => {
     }
     const OrderDetails =()=>{
       const contentType = "toggle-orders-details"
-      const variations = [{ id: "list-" + 0, text: "list" }, { id: "summary-"+1, text:"summary"}]
+      const variations = [{ id: order.id+"-list-" + 0, text: "list" }, { id: order.id+"-summary-"+1, text:"summary"}]
       const contentArray = variations.map((v,x) => ({
-        specificId: v.text+'-'+x,
+        specificId: v.id,
         ChildElement: v.text === "list" ? OrderList : OrderSummary 
       }))
       return(

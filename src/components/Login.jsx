@@ -17,20 +17,25 @@ export default function Login({userId}) {
   const goto = useNavigate()
 
   const handleSignin = async(e)=>{
+    try {
       e.preventDefault()
-    const forms = document.forms
-    const data = {}
-   
-    for (const form of forms) {
-      new FormData(form).forEach((k, v, x) => {
-        let target = v.split("-")[0]
-        data[target] =  k 
-      });
+      const forms = document.forms
+      const data = {}
+     
+      for (const form of forms) {
+        new FormData(form).forEach((k, v, x) => {
+          let target = v.split("-")[0]
+          data[target] =  k 
+        });
+      }
+      const h = await Promise.all([sha256(data.password)])
+      dispatch(createdAuth({dateCreated:momentDate().shortDate, timeCreated:new Date().toString(),  authStatus:types.AUTH_VALID}))
+      location.state.pathname ||= "/"
+      goto(location.state,{state:{from: location.pathname}})
+      
+    } catch (error) {
+      alert(error)
     }
-    const h = await Promise.all([sha256(data.password)])
-    dispatch(createdAuth({dateCreated:momentDate().shortDate, timeCreated:new Date().toString(),  authStatus:types.AUTH_VALID}))
-    location.state.pathname ||= "/"
-    goto(location.state,{state:{from: location.pathname}})
   }
   return (
     <>
