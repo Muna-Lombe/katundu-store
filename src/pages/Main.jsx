@@ -46,7 +46,7 @@ const Main = () => {
       </div>
       
       {/* grid-cols-[repeat(auto-fit,minmax(auto,7rem))] */}
-      <div id="mainbar__content" className={"w-auto h-[rem] p-2 grid grid-flow-row-dense less-than-xs:grid-cols-2 greater-than-xs:grid-cols-[repeat(auto-fit,minmax(auto,12rem))] greater-than-sm:grid-cols-[repeat(auto-fit,minmax(12rem,14rem))] overflow-x-scroll scroll-smooth justify-center  transition-all  tag gap-3 greater-than-xs:gap-6"}>
+      <div id="mainbar__content" className={"w-auto h-[rem] p-2 grid grid-flow-row-dense less-than-xs:grid-cols-2 greater-than-xs:grid-cols-[repeat(auto-fit,minmax(auto,9rem))] greater-than-sm:grid-cols-[repeat(auto-fit,minmax(auto,12rem))] overflow-x-scroll scroll-smooth justify-center  transition-all  tag gap-3 greater-than-xs:gap-6"}>
         {
           products.length
             ? products.map((i) => (<Product key={i.id} product={i} isSearchOrMain={true} />))
