@@ -112,7 +112,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
     // md:w-[14rem] lg:w-[14rem] xl:w-[14rem]
     // md:h-[21rem] lg:h-[21rem] xl:h-[21rem]
     // min - w - [8rem] w - full max - w - [12rem] md: max - w - [14rem] lg: max - w - [14rem] xl: max - w - [14rem] h - [14rem] md: h - [24rem] lg: h - [24rem] xl: h - [24rem]
-    <div id={"product_card_" + product?.id} className={(noPrd ? " " : " ")  + (isSearchOrMain ? " min-w-[6rem] " : " min-w-[8rem] " ) +"greater-than-md:min-w-[10rem] greater-than-lg:min-w-[13rem] w-auto max-w-[15rem] h-full max-h-[20rem] flex flex-nowrap  flex-col justify-start bg-white shadow-md border border-gray-200 rounded-md font-raleway "}>
+    <div id={"product_card_" + product?.id} className={(noPrd ? " " : " ")  + (isSearchOrMain ? " min-w-[6rem] " : " min-w-[8rem] " ) +"greater-than-md:min-w-[10rem] greater-than-lg:min-w-[13rem] w-auto max-w-[15rem] h-full max-h-[20rem] flex flex-nowrap  flex-col justify-start bg-white shadow-md border border-gray-200 rounded-md font-raleway overflow-y-hidden"}>
       <div id="product_header" className="relative px-1 w-[100%] h-[100%]  justify-center items-end  ">
         <Link to={"/product/" + product?.id} id="product_image" className="flex  justify-center items-end" >
           {
@@ -167,7 +167,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
         </div>
         {
           noPrd
-            ? <div className="no-prd-field mx-auto w-[10rem] h-6  border rounded-md bg-gradient-to-tr from-slate-400 to-slate-500 animate-pulse opacity-30"></div>
+            ? ""//<div className="no-prd-field mx-auto w-[10rem] h-6  border rounded-md bg-gradient-to-tr from-slate-400 to-slate-500 animate-pulse opacity-30"></div>
             : ""
         }
           

@@ -63,6 +63,8 @@ const ShowProduct = ()=>{
   
   }
 
+  console.log("prod", productItem)
+
   const descriptiveText = `Instant coffee Egoiste Platinum 100g is a premium product, which is produced using patented Swiss technology. For its preparation, only elite varieties of Arabica are used: Kenyan and Colombian. Selected grains are subjected to gentle roasting, and then turned into original instant crystals. The finished drink has a strong rich taste with light shades of fruit (this is a feature of Kenyan Arabica), invigorating aroma and delicate aftertaste with chocolate notes. Packed in a stylish glass jar with a "crystal" lid.`
 
   const descTag1 = "100% Natural Instant Freeze-Dried Coffee"
@@ -108,27 +110,31 @@ const ShowProduct = ()=>{
       overflow: 'hidden',
       textOverflow: 'ellipsis',
     }
-    // const changeOnScroll =()=>{
-    //   const showProdPage = document.getElementById("show-middle")
-    //   console.log("eeyeyee")
-    //   const toggleProductMini = (e) => {
-    //     e.preventDefault()
-    //     console.log("eee", e)
-    //     // document.querySelector(".product-minified").classList.toggle("hidden")
-    //     return (
-    //       showProdPage.removeEventListener("scroll", toggleProductMini)
-    //     )
-    //   }
-    //   showProdPage.addEventListener("scroll", ev => toggleProductMini(ev))
-    // }
-    // useEffect(() => {
-    //   console.log("jsdhffdalfj")
-    //   changeOnScroll()
-    // })
+    const changeOnScroll =()=>{
+      const showProdPage = document.getElementById("product-minified")
+      const toggleProductMini = (e) => {
+        e.preventDefault()
+        const scrollTop = e.target.scrollingElement.scrollTop
+        showProdPage.classList.replace("visible","invisible")
+        if(scrollTop > 0){
+          showProdPage.classList.replace("invisible", "visible")
+        }
+        
+        // document.querySelector(".product-minified").classList.toggle("hidden")
+        return (()=>
+          window.removeEventListener("scroll", toggleProductMini)
+        )
+      }
+      window.addEventListener("scroll", toggleProductMini)
+    }
+    useEffect(() => {
+      // console.log("jsdhffdalfj")
+      changeOnScroll()
+    })
 
     return (
     
-          <div className="product-minified sticky less-than-xs:top-[150px] top-[129px]  right-0 px-2  flex flex-row justify-end items-center gap-2 bg-white border border-y-orange-400 z-50 ">
+      <div id="product-minified" className="product-minified invisible sticky less-than-xs:top-[150px] top-[129px]  right-0 px-2 flex flex-row justify-end items-center gap-2 bg-white border border-y-orange-400 z-50 ">
               <div className="product-minified-img">
                 <img src={imagepath(productMini?.images[0].image_url) || no_img_path} alt="" className="w-[60px] aspect-square" />
               </div>
@@ -202,7 +208,7 @@ const ShowProduct = ()=>{
                 <ContentPayment >
                   <PriceTag tagFor={"product-variations"} original={productItem?.priceRange.sort((a, b) => b - a).at(-1)} discount={productItem?.isDiscounted[0] ? productItem?.isDiscounted[1] : false} />
                   <DiscountInfo/>
-                  <BuyBtns id={productItem?.id}/>
+                  <BuyBtns deliveryInfo={productItem?.deliveryOptions} id={productItem?.id}/>
                 </ContentPayment> 
                 <PaymentType >
                   <Faqs />

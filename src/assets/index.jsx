@@ -1,3 +1,6 @@
+import { ProductDeliveries as deliveryOpts } from './tests/jsonServer'
+
+
 
 export const setTextBg = (text, color="initial",  size={h:1, w:1, x:0, y:1, font:8})=>(
   
@@ -30,7 +33,7 @@ export const filterData = {
       type: "range",
       data: {
         id: "price", label: "Price",
-        prices: { min: { id: "priceMin", value: 500 }, max: { id: "priceMax", value: 3210 } }
+        prices: { min: { id: "priceMin", value: 300 }, max: { id: "priceMax", value: 32100 } }
       }
     }
 
@@ -155,17 +158,11 @@ export const addToProductData = (product, id) => {
       {label: "Carbohydrates", value: "25"},
       {label: "Kcal", value: "270"}
     ]
-    :[]
+    :[],
+    deliveryOptions: product.images[0]?.image_name?.includes("cf.jpg")
+    ? deliveryOpts
+    : {}
   })
-
- 
- 
-  
-  
-  
-  
-  
-  
   return newProduct
 }
 

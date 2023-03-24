@@ -1,7 +1,9 @@
 {
-    "reviewsSummary": {
-      "reviewsImages": [1,2,3,4,5],
-      "ratings": {
+  "id":1,
+  "product_id": 2001,
+  "reviewsSummary": {
+    "reviewsImages": [1,2,3,4,5],
+    "ratings": {
         "summary": [
         {"grade": 1, "value": 26},
         {"grade": 2, "value": 12},

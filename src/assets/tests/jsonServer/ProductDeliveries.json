@@ -1,0 +1,14 @@
+{
+  "id":1,
+  "product_id": 2001,
+  "data": {
+        "id": "delivery-time",
+        "label": "Delivery Time",
+        "options": [
+          { "id": "7days", "type": "regular", "text": "Up to 7 days" },
+          { "id": "todayTomorrow", "type": "sameDay", "text": "Today or tomorrow"},
+          { "id": "30mins", "type": "express", "text": "From 30 minutes" },
+          { "id": "5days", "type": "regular", "text": "Up to 5 days" }
+        ]
+      }
+}
