@@ -27,7 +27,7 @@ const EmbeddedProducts = ({title, tagname}) => {
           : Number.parseInt(div1.slot) + 2
 
 
-    console.log('drag tso scroll', s)
+    // console.log('drag tso scroll', s)
     if (s === 0 || s === childs.length) return 0
     const nthChild = childs[s]
 

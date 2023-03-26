@@ -1,12 +1,12 @@
 import { titleTagTypes as tags} from "../assets";
 
 
-const ContentSpecification = ({ children})=>{
+const ContentSpecification = ({pathId, children})=>{
     return(
       <div className="content-specification w-full max-w-[342px] ">
-        <p className=' text-blue-500 text-sm font-[arial] font-medium cursor-pointer'>
+        <a href={`#${pathId}`}  target="_self" rel="no-referer no-reopenner" className=' text-blue-500 text-sm font-[arial] font-medium cursor-pointer'>
           {tags.contentSpecification.mainText}
-        </p>
+        </a>
 
         {children.length
         ?

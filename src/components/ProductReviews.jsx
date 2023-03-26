@@ -33,7 +33,7 @@ const ProductReviews=({prs})=>{
       
     </p>
   )
-  const OverallRating = ({summary})=> {
+  const OverallRating = ({hasGap=false, summary})=> {
     
     const GradeCount =({grade=2, maxCount=10, total=100})=>(
       <div className="rating-count flex flex-row gap-4">
@@ -59,7 +59,7 @@ const ProductReviews=({prs})=>{
       const avg = (summaryValues.reduce((a, b) => a + b) / summaryValues.sort((a, b) => b-a)[0]).toFixed(1)
       const total = summaryValues.length
       return (
-        <div className="rating-total py-2 flex flex-row justify-between items-baseline gap-4 border-b-2 text-xl">
+        <div className="rating-total my-2 px-1 flex flex-row justify-center items-baseline gap-4 border-b-[3px] text-xl">
           <div className="star-count">
             {/* {"⭐⭐⭐⭐⭐"} */}
             <Stars count={avg} max={total} />
@@ -72,7 +72,7 @@ const ProductReviews=({prs})=>{
       }
 
     const RatingsSummary=()=>(
-      <div className="varied-rating-grade-totals my-5">
+      <div className="varied-rating-grade-totals less-than-md:hidden my-5">
         {
           summary.ratings.summary.map((s,x)=> <GradeCount key={x} grade={s.grade} maxCount={s.value} total={summary.reviewTotal} />)
         }
@@ -80,10 +80,14 @@ const ProductReviews=({prs})=>{
       </div>
     )
     const ReviewBtn=()=>(
-      <input type="button" value="Review" className="p-2 w-full bg-blue-500 rounded-xl text-white text-lg font-[arial] font-semibold"/>
+      <p className="review-btn  ">
+        <input type="button" value="Add Review" className=" less-than-md:hidden p-2 w-full bg-blue-500 rounded-xl text-white text-lg font-[arial] font-semibold cursor-pointer" />
+        <input type="button" value="Add Review" className="greater-than-md:hidden p-2 w-full  rounded-xl hover:text-orange-600 text-orange-500 text-xl font-[arial] font-semibold cursor-pointer hover:underline hover:underline-orange-600 hover:underline-offset-[6px]" />
+      </p>
     )
     return (
-      <div className="overall-rating px-2  hidden lg:flex lg:flex-col">
+      <div className={"overall-rating px-2 flex lg:flex-col"+ (hasGap ? " gap-4 justify-between items-center " : "")}>
+
         <RatingAverage/>
         <RatingsSummary/>
         <ReviewBtn/>
@@ -185,9 +189,17 @@ const ProductReviews=({prs})=>{
     <div className="reviews-container py-1 px-2 w-full  flex flex-row justify-between gap-3">
       <div className="reviews-wrapper w-full flex flex-col">
         <ReviewImages imageArray={prs.reviewsSummary.reviewsImages} />
+        <div className="rating-hidden-at-big-screen greater-than-md:hidden">
+          <OverallRating summary={prs.reviewsSummary} hasGap={true}/>
+
+        </div>
+
         <Reviews reviews={prs.reviews}/>
       </div>
-      <OverallRating summary={prs.reviewsSummary}/>
+      <div className="rating-visible-at-big-screen less-than-md:hidden">
+        <OverallRating summary={prs.reviewsSummary}/>
+
+      </div>
 
     </div>
   )

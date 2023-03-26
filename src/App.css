@@ -180,7 +180,6 @@ body:has(.modal-open)::-webkit-scrollbar {
 /*  */
 
 
-
 .range-inputs>input[type="range"]:focus::-moz-range-track{
   pointer-events: none;
 }

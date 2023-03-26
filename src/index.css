@@ -12,6 +12,6 @@ body{
   max-height:1200px; 
   min-height: 100vh;
 }
-/* html{
-  min-width: 400px;
-} */
+html{
+  scroll-behavior: smooth;
+}

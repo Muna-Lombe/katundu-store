@@ -1,12 +1,12 @@
 
 import './App.css';
 import React,{lazy} from 'react';
-import {Routes, Route } from "react-router-dom";
+import {Routes, Route, BrowserRouter } from "react-router-dom";
 import AppWrapper from './components/AppWrapper';
 import { Login } from './components';
 import { PrivateRoute } from './pages';
 
-
+// BrowserRouter
 
 function App() {
 

@@ -4,13 +4,34 @@ import { Product,CategoryTag, NoItems, Sidebar } from '../components'
 import { filteredProductsFromModel, categories } from '../orm/selectors';
 import { titleTagTypes as tags } from '../assets';
 const Main = () => {
-    let cats = useSelector(categories)
-    let products = useSelector(filteredProductsFromModel([]))
-    const hScroll=(e)=>{
-      e.preventDefault()
-      // console.log(e)
-      // e.target.offsetParent.classList.toggle("pointer-event-none")
+  let cats = useSelector(categories)
+  let products = useSelector(filteredProductsFromModel([]))
+
+  const handleSetScroll =(e)=> {
+    const mainbar = document.getElementById("mainbar_container_wrapper")
+    e.preventDefault()
+    console.log(e.type)
+    if(e.type === "mouseenter"){
+      mainbar.classList.replace("overflow-y-auto", "overflow-visible")
+      document.addEventListener("wheel", 
+        function (event, delta) {
+          console.log("delter", event, delta)
+          
+          document.scrollLeft += (event.deltaY* 30);
+        }
+      )
+      
     }
+    if (e.type === "mouseleave") {
+      mainbar.classList.replace("overflow-visible", "overflow-y-auto")
+      document.removeEventListener("wheel", 
+        function (event, delta) {
+          console.log("delter removed", event,delta)
+          document.scrollLeft += (event.deltaY* 30);
+        }
+      )
+    }
+  }
   const bigScreens = "grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-8"
   const smallScreens = "grid-cols-[repeat(auto-fit,minmax(auto,8rem))] gap-2"
   const MainContent =({children})=>(
@@ -32,7 +53,8 @@ const Main = () => {
         </div>
         <div id="product_tags" className=" w-auto  flex flex-row flex-nowrap overflow-x-hidden" >
           <CategoryTag borderId={'type_clear'} text={'clear'} />
-          <div onMouseEnter={(e) => hScroll(e)} onMouseLeave={(e) => hScroll(e)} className="scrollable_product_tags mr-2  w-max  flex flex-row overflow-x-scroll overflow-y-hidden tag">
+          {/*  onMouseEnter={handleSetScroll} onMouseLeave={handleSetScroll}*/}
+          <div  id="scrollable_product_tags"  className="scrollable_product_tags mr-2  w-max  flex flex-row overflow-x-scroll overflow-y-hidden tag">
             {
 
               cats.map((tag, idx) => {

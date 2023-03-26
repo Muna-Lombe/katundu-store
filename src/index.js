@@ -5,7 +5,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
-import { HashRouter } from 'react-router-dom';
+import { BrowserRouter, HashRouter } from 'react-router-dom';
 import Store from './js/store';
 import { asyncThunk,} from './orm/utilities/StateLoader';
 
@@ -21,11 +21,13 @@ Store.dispatch(asyncThunk())
 // loadProducts()
 ReactDOM.render(
   <React.StrictMode>
-    <HashRouter>
-      <Provider store={Store}>
-        <App />
-      </Provider>
-    </HashRouter>
+    <BrowserRouter basename='katundu-store/'>
+      {/* <HashRouter> */}
+        <Provider store={Store}>
+          <App />
+        </Provider>
+      {/* </HashRouter> */}
+    </BrowserRouter>
     
   </React.StrictMode>,
   document.getElementById('root')

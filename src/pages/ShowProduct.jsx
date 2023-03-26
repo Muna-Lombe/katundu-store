@@ -1,10 +1,11 @@
 import { Suspense, useEffect, } from "react";
 import { ArrowLeft,  BasketIco,  CartIco,  PinIco } from "../assets";
-import { filteredProductsFromModel } from "../orm/selectors";
+import { categories, filteredProductsFromModel } from "../orm/selectors";
 import { useSelector } from "react-redux";
-import { Link,useParams, useLocation, } from "react-router-dom";
+import { Link,useParams, useLocation, createSearchParams, } from "react-router-dom";
 import { BuyBtns, ContentDescription, ContentDetails, ContentPayment, ContentSpecification, ContentViewer, Courier, DiscountInfo, EmbeddedProducts, Faqs, FullProductCharacteristics, FullProductDescription, Logo, NoItems, OrderInfo,  PaymentType, PickupPoints, PinLocation, PriceTag, ProductDescriptor, ProductImageViewer, ProductSpecificationDetail, ProductTags,  ReviewsAndQuestions } from "../components";
 import { imagepath, no_img_path } from "../assets/images";
+import { createImmutableStateInvariantMiddleware } from "@reduxjs/toolkit";
 
 
 const ShowProduct = ()=>{
@@ -13,6 +14,11 @@ const ShowProduct = ()=>{
 
   const  id = useParams().id || 2001
   const productItem = useSelector(filteredProductsFromModel([])).find(i=> i.id.toString() === id.toString())
+  const cat = useSelector(categories).find(cat => cat.id === productItem?.categoryIds[0])
+  // console.log("names", cat)
+  // createSearchParams({ query: JSON.stringify([curtext]) })
+
+  const crumbs = [{path:"/",text:"products/"}, {path:("/?category="+cat?.id),text:(cat?.name.toString().slice(0,10)+".../")}||{path:"/", text:"category/"}, (productItem?.name.slice(0, 10)+"...")]
   // console.log("show", product)
   // const navigate = useLocation()
   const location = useLocation()
@@ -63,21 +69,13 @@ const ShowProduct = ()=>{
   
   }
 
-  console.log("prod", productItem)
+  // console.log("prod", productItem)
 
   const descriptiveText = `Instant coffee Egoiste Platinum 100g is a premium product, which is produced using patented Swiss technology. For its preparation, only elite varieties of Arabica are used: Kenyan and Colombian. Selected grains are subjected to gentle roasting, and then turned into original instant crystals. The finished drink has a strong rich taste with light shades of fruit (this is a feature of Kenyan Arabica), invigorating aroma and delicate aftertaste with chocolate notes. Packed in a stylish glass jar with a "crystal" lid.`
 
   const descTag1 = "100% Natural Instant Freeze-Dried Coffee"
   const descTag2 = " Storage conditions, including after opening: store tightly closed in a cool, dry place without foreign odors"
   
-  const BackBtn = () =>{
-    const path = (location.state?.from?.includes("signin") ? "/" : -1)
-    return(
-      <Link to={path} className="back-btn">
-        <ArrowLeft size={22}/>
-      </Link>
-    )
-  }
   
   const ViewImageModal = ({openModal, modalAction}) => {
     
@@ -100,6 +98,29 @@ const ShowProduct = ()=>{
   const RecommendedProducts = () => (<EmbeddedProducts title={"Recommended Products"} tagname="recommended-products"/>)
   const OfferedProducts = () => (<EmbeddedProducts title={"Offered Products"} tagname="offered-products" />)
   const BuyTogetherProducts = () => (<EmbeddedProducts title={"Buy Together"} tagname="buy-matching-products" />)
+  const BreadCrumbs =()=>{
+
+    return(
+      <span className="crumbs">
+        {
+          crumbs?.map((cr,x)=> 
+          <Link to={cr.path || "/"}  key={x} className={"text-lg text-center leading-4 font-semibold " + (x === crumbs.length - 1 ? "  pointer-events-none text-slate-500" : " text-orange-500 ")}>
+            {cr.text}
+          </Link>)
+
+        }
+      </span>
+    )
+  }
+
+  const BackBtn = () =>{
+    const path = (location.state?.from?.includes("signin") ? "/" : -1)
+    return(
+      <Link to={path} className="back-btn">
+        <ArrowLeft size={22}/>
+      </Link>
+    )
+  }
   const ProductMinified = ({productMini})=> {
     
     const textStyle = {
@@ -134,7 +155,7 @@ const ShowProduct = ()=>{
 
     return (
     
-      <div id="product-minified" className="product-minified invisible sticky less-than-xs:top-[150px] top-[129px]  right-0 px-2 flex flex-row justify-end items-center gap-2 bg-white border border-y-orange-400 z-50 ">
+      <div id="product-minified" className="product-minified invisible sticky top-[150px] greater-than-xs:top-[129px] greater-than-sm:top-[113px] greater-than-md:top-[70px] right-0 px-2 flex flex-row justify-end items-center gap-2 bg-white border border-y-orange-400 z-50 ">
               <div className="product-minified-img">
                 <img src={imagepath(productMini?.images[0].image_url) || no_img_path} alt="" className="w-[60px] aspect-square" />
               </div>
@@ -166,79 +187,92 @@ const ShowProduct = ()=>{
     )
   }
   return(
-    <Suspense fallback={<NoItems />} >
-        <div className="top w-full flex border hide-sidebar gap-2 ">
-          <BackBtn/>
-          {/* <p>
-            {navigate.pathname}
-          </p> */}
-        </div>
-        <div className="show-product-page relative">
-          {
-            productItem
-            ? <ProductMinified productMini={productItem} />
-            : ""
-          }
-          
-            <MiddleSection>
-              <ContentViewer>
-                <ProductImageViewer images={productItem?.images}/>
-                <ContentDetails contentType={"product"} showLogo={<Logo logo={productItem?.store.name} bgColor="bg-slate-500" />} variations={productItem?.variations.map((p)=> ({...p, text:p.price}))}>
-                      { productItem?.variations.map((i,x)=>
-                            <ContentDescription key={x} first={x===0} id={`${i.id}`} >
-                              <div className="w-full  less-than-xs:child:max-w-[330px] less-than-xs:child:justify-between">
-                                <ProductDescriptor key={101} id={`${i.id}${x}`} label={"In stock"} values={[i.stock]} />
-                              </div>
-                              { i.properties.map((k,v)=> 
-                                <div key={v} className="w-full less-than-xs:child:max-w-[330px] less-than-xs:child:flex-wrap less-than-xs:child:justify-between">
-                                  <ProductDescriptor key={v} id={`${i.id}${v}`} label={k.name} values={k.values || [`${k.type}`]} />
-                                </div>
-                              )}
-                            </ContentDescription>
-                          )
-                      }
+    <>
+      <Suspense fallback={<NoItems />} >
+          <div className="top w-full flex border hide-sidebar gap-2 ">
+            <BackBtn/>
+            <BreadCrumbs/>
+            {/* <p>
+              {navigate.pathname}
+            </p> */}
+          </div>
+            {
+              productItem
+              ? <ProductMinified productMini={productItem} />
+              : ""
+            }
+          <div className="show-product-page relative">
+            
+              <MiddleSection>
+                <ContentViewer>
+                  <section id="product-details">
+                    <ProductImageViewer images={productItem?.images}/>
+                    <ContentDetails contentType={"product"} showLogo={<Logo logo={productItem?.store.name} bgColor="bg-slate-500" />} variations={productItem?.variations.map((p)=> ({...p, text:p.price}))}>
+                          { productItem?.variations.map((i,x)=>
+                                <ContentDescription key={x} first={x===0} id={`${i.id}`} >
+                                  <div className="w-full  less-than-xs:child:max-w-[330px] less-than-xs:child:justify-between">
+                                    <ProductDescriptor key={101} id={`${i.id}${x}`} label={"In stock"} values={[i.stock]} />
+                                  </div>
+                                  { i.properties.map((k,v)=> 
+                                    <div key={v} className="w-full less-than-xs:child:max-w-[330px] less-than-xs:child:flex-wrap less-than-xs:child:justify-between">
+                                      <ProductDescriptor key={v} id={`${i.id}${v}`} label={k.name} values={k.values || [`${k.type}`]} />
+                                    </div>
+                                  )}
+                                </ContentDescription>
+                              )
+                          }
 
-                      <ContentSpecification>
-                        {
-                          productItem?.unitValues.map((uv,x)=><ProductSpecificationDetail key={x} label={uv.label} value={uv.value} />
-                          )
-                        }
-                      </ContentSpecification>
-                </ContentDetails >
-                <ContentPayment >
-                  <PriceTag tagFor={"product-variations"} original={productItem?.priceRange.sort((a, b) => b - a).at(-1)} discount={productItem?.isDiscounted[0] ? productItem?.isDiscounted[1] : false} />
-                  <DiscountInfo/>
-                  <BuyBtns deliveryInfo={productItem?.deliveryOptions} id={productItem?.id}/>
-                </ContentPayment> 
-                <PaymentType >
-                  <Faqs />
-                  <OrderInfo>
-                    <span className="order-pin py-2">
-                      <PinIco />
-                    </span>
-                    <span className="order-pin-points">
-                      <PinLocation />
-                      <span className="courier-points flex flex-col font-[arial]">
-                        <Courier />
-                        <PickupPoints />
-                      </span>
-                    </span>
-                  </OrderInfo> 
-                </PaymentType>
-              </ContentViewer>
-              <RecommendedProducts/>
-              <BuyTogetherProducts/>
-              <OfferedProducts/>
-              <FullProductDescription description={{text: descriptiveText, tags: [descTag1, descTag2] }}/>
-              <FullProductCharacteristics/>
-              <ProductTags/>
-              <ReviewsAndQuestions handleClassToggle={handleClassToggle}/>
-            </MiddleSection>
-          <div className="bottom w-full border "></div>
-      
-            {/* <Outlet /> */}
-       </div>   
-          </Suspense>
+                          <ContentSpecification pathId={"product-description"}>
+                            {
+                              productItem?.unitValues.map((uv,x)=><ProductSpecificationDetail key={x} label={uv.label} value={uv.value} />
+                              )
+                            }
+                          </ContentSpecification>
+                    </ContentDetails >
+                  </section>
+                  <section id="produc-price-details">
+                    <ContentPayment >
+                      <PriceTag tagFor={"product-variations"} original={productItem?.priceRange.sort((a, b) => b - a).at(-1)} discount={productItem?.isDiscounted[0] ? productItem?.isDiscounted[1] : false} />
+                      <DiscountInfo/>
+                      <BuyBtns deliveryInfo={productItem?.deliveryOptions} id={productItem?.id}/>
+                    </ContentPayment>
+                    <PaymentType >
+                      <Faqs />
+                      <OrderInfo>
+                        <span className="order-pin py-2">
+                          <PinIco />
+                        </span>
+                        <span className="order-pin-points">
+                          <PinLocation />
+                          <span className="courier-points flex flex-col font-[arial]">
+                            <Courier />
+                            <PickupPoints />
+                          </span>
+                        </span>
+                      </OrderInfo> 
+                    </PaymentType>
+                  </section> 
+                </ContentViewer>
+                <section id="product-recommendations" className="w-full">
+                  <RecommendedProducts/>
+                  <BuyTogetherProducts/>
+                  <OfferedProducts/>
+                </section>
+                <section id="product-description">
+                  <FullProductDescription description={{text: descriptiveText, tags: [descTag1, descTag2] }}/>
+                  <FullProductCharacteristics/>
+                  <ProductTags/>
+                </section>
+                <section id="product-reviews">
+                  <ReviewsAndQuestions handleClassToggle={handleClassToggle}/>
+                </section>
+              </MiddleSection>
+            <div className="bottom w-full border "></div>
+        
+              {/* <Outlet /> */}
+        </div>   
+        </Suspense>
+    </>
     )
   
 }
