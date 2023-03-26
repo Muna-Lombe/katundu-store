@@ -79,14 +79,18 @@ const ProductReviews=({prs})=>{
         
       </div>
     )
+    const AddBtn =()=>(
+      <svg fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M12 4C7.58172 4 4 7.58172 4 12C4 16.4183 7.58172 20 12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4ZM2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12ZM12 7C12.5523 7 13 7.44772 13 8V11H16C16.5523 11 17 11.4477 17 12C17 12.5523 16.5523 13 16 13H13V16C13 16.5523 12.5523 17 12 17C11.4477 17 11 16.5523 11 16V13H8C7.44772 13 7 12.5523 7 12C7 11.4477 7.44772 11 8 11H11V8C11 7.44772 11.4477 7 12 7Z" /> </svg>
+
+    )
     const ReviewBtn=()=>(
       <p className="review-btn  ">
         <input type="button" value="Add Review" className=" less-than-md:hidden p-2 w-full bg-blue-500 rounded-xl text-white text-lg font-[arial] font-semibold cursor-pointer" />
-        <input type="button" value="Add Review" className="greater-than-md:hidden p-2 w-full  rounded-xl hover:text-orange-600 text-orange-500 text-xl font-[arial] font-semibold cursor-pointer hover:underline hover:underline-orange-600 hover:underline-offset-[6px]" />
+        <input type="button" value="Add" className="greater-than-md:hidden p-2 w-full border border-orange-400 hover:border-orange-500  rounded-xl hover:text-orange-600 text-orange-500 text-xl leading-3 font-[arial] font-semibold cursor-pointer " />
       </p>
     )
     return (
-      <div className={"overall-rating px-2 flex lg:flex-col"+ (hasGap ? " gap-4 justify-between items-center " : "")}>
+      <div className={"overall-rating px-2 flex lg:flex-col"+ (hasGap ? " gap-4 justify-start items-center " : "")}>
 
         <RatingAverage/>
         <RatingsSummary/>
