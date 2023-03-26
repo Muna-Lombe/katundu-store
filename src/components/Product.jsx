@@ -76,31 +76,9 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
       </span>
     )
   }
-  
-  // const BuyBtn=({})=>(
-  //   <button
-  //     id="add_to_cart_btn"
-  //     // bg-[#2967FF]
-  //     // border-[#2967FF]
-  //     className={(isOrdered ? "relative " : " group   hover:bg-orange-600   hover:text-white ") + " hidden greater-than-xs:flex  py-[3px] px-1 w-full h-max  flex-row-reverse justify-center border-orange-600 rounded-lg border-[1px] bg-orange-500 text-white stroke-blue-500 cursor-pointer"}
-  //     disabled={isOrdered}
-  //     onClick={() => userAuthed ? handleAddToCart(product.id) : handleRedirect()}
-  //   >
-  //     <span className={(isOrdered ? "peer " : " ")}>
-  //       <BasketIco strokeColor={"white"} isBurgerMenu={false} />
-  //     </span>
-  //     <span className={(isOrdered ? "peer ": " ") +' px-1 h-full md:flex lg:flex xl:flex   text-sm  font-raleway font-[600] text-center'}>
-  //       {tags.buyBtn.mainText}
-  //     </span>
-  //     <span className="is-ordered-tooltip peer-hover:flex absolute hidden -top-5 -right-2  px-1 rounded-lg text-xs text-slate-500 font-raleway font-[600] text-center transition-transform ease-in-out delay-500">
-  //       {"Item already in cart"}
-  //     </span>
-  //   </button>
-  // )
-
 
   const Image = ({ imagepath }) => (
-    <div className={"  flex items-end  " + (noPrd ? " min-w-[100px] min-h-[100px] border rounded animate-pulse " : " ")}>
+    <div className={" py-1  flex items-end  " + (noPrd ? " min-w-[100px] min-h-[100px] border rounded animate-pulse " : " ")}>
       <img alt="gallery" className="min-w-[80%] min-h-[100px] w-auto aspect-square object-cover object-center z-0" src={imagepath} />
       </div>
   
