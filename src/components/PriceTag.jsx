@@ -9,10 +9,10 @@ const PriceTag = ({tagFor,original, discount=false, onlyPrice }) => {
     return { oldPrice }
   }
   useEffect(() => {
-    const currPrice = document.querySelector("."+tagFor)
+    const currPrice = document.querySelector(("."+tagFor))
     let watcher
     currPrice?.childNodes.forEach((c, x) => {
-      watcher = new ClassWatcher(c, "active", () => setCurrPriceTag(setDisc(Number.parseInt(c.innerText), discount)), () => "");
+      watcher = new ClassWatcher(c, "product-active", () => setCurrPriceTag(setDisc(Number.parseInt(c.innerText), discount)), () => "");
 
       // c.addEventListener()
     })
