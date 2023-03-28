@@ -1,19 +1,15 @@
 import React, { Suspense } from 'react'
 import { useSelector } from 'react-redux'
 import { Cart, NoItems } from '../components'
-import { cartItemAdded, itemsInCart, selectCartItems } from '../js/slices/cart/cartSlice'
-import { selectProductIds } from '../js/slices/products/productsSlice'
-import { Outlet } from 'react-router-dom'
-import { filteredCartItemsFromModel, filteredOrdersFromModel } from '../orm/selectors'
+
+import { filteredCartItemsFromModel } from '../orm/selectors'
 import types from '../orm/actions/actionTypes'
-import { calcDisc } from '../orm/utilities'
 
 const Basket = () => {
 
   // recieve the state
-  const items = useSelector(filteredCartItemsFromModel()) //useSelector(state => state.cart.entities)
-  // const testItems = useSelector(filteredOrdersFromModel([]))
-  // console.log("test", items)
+  const items = useSelector(filteredCartItemsFromModel()) 
+  console.log("test", items)
   // convert received state to array of state
   
   // filter it by store

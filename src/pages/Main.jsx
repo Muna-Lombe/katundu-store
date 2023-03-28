@@ -49,7 +49,7 @@ const Main = () => {
     <div id="products_list" className="w-full flex flex-col gap-6">
       <div className="product-category-tags">
         <div id="products_list__header" className="m-3 w-auto flex  flex-col md:flex-row lg:flex-row xl:flex-row justify-start gap-2  items-baseline ">
-          <h3 className=" text-2xl text-black  font-raleway font-[700]">{tags.home.categoriesText}</h3>
+          <h3 className=" text-2xl text-black  font-raleway lining-nums tabular-nums  font-[700]">{tags.home.categoriesText}</h3>
         </div>
         <div id="product_tags" className=" w-auto  flex flex-row flex-nowrap overflow-x-hidden" >
           <CategoryTag borderId={'type_clear'} text={'clear'} />

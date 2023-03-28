@@ -44,7 +44,7 @@ export default function Login({userId}) {
           <div className="flex flex-col items-center">
             {/* <Logo logo="Katundu"/> */}
             <Logo>
-              <div id="logo" className="p-1 less-than-xs:border-2 border-[4px] border-black border-spacing-2 rounded-[4px] text less-than-xs:text-base text-[2.4rem] leading-10 font-raleway font-bold">
+              <div id="logo" className="p-1 less-than-xs:border-2 border-[4px] border-black border-spacing-2 rounded-[4px] text less-than-xs:text-base text-[2.4rem] leading-10 font-raleway lining-nums tabular-nums  font-bold">
                 <Link to="/" > {tags.footer.storename} </Link>
               </div>
             </Logo>

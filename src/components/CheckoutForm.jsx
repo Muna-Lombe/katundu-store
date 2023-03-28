@@ -72,33 +72,33 @@ const CheckoutForm = ({ }) => {
 
   const CheckoutForm = ({})=> (
     <>
-      <div id="date_time" className="py-2 text-lg font-relaway" >
+      <div id="date_time" className="py-2 text-lg font-raleway lining-nums tabular-nums " >
         <p className="text-md font-semibold ">{tags.checkout.orderWhenText}</p> 
       </div>
       <div id="delivery_date_time__wrapper" className="w-auto  flex less-than-xs:flex-wrap  gap-4">
         <div id="date" className="max-w-[9rem] flex flex-col justify-center border-b-[1px] border-b-gray-300">
           <label htmlFor="delivery_date" className="w-0 h-0"></label>
-          <input id="d_date" className=" focus:outline-none" form="checkout_form" type="text" name="delivery_date" placeholder="Выберите дату"  ref={dateRef} onFocus={() => (dateRef.current.type = "date")} onBlur={() => (dateRef.current.type = "text")} required  ></input>
+          <input id="d_date" className=" appearance-none focus:outline-none " form="checkout_form" type="text" name="delivery_date" placeholder="Выберите дату"  ref={dateRef} onFocus={() => (dateRef.current.type = "date")} onBlur={() => (dateRef.current.type = "text")} required  ></input>
         </div>
         <div id="time" className="max-w-[9rem] flex flex-col justify-center border-b-[1px] border-b-gray-300 ">
           <label htmlFor="delivery_time" className="w-0 h-0"></label>
           <input id="d_time" className="  w-full  px-2 focus:outline-none"  form="checkout_form"  type="text" name="delivery_time" placeholder="Выберите время" ref={timeRef} onFocus={() => (timeRef.current.type = "time")} onBlur={() => (timeRef.current.type = "text")} required ></input>
         </div>
       </div>
-      <div id="address__wrapper" className="less-than-xs:min-w-[8rem] min-w-[15rem] py-2 flex flex-col justify-center font-raleway">
+      <div id="address__wrapper" className="less-than-xs:min-w-[8rem] min-w-[15rem] py-2 flex flex-col justify-center font-raleway lining-nums tabular-nums ">
         <label htmlFor="delivery_address" className="text-md font-semibold">{tags.checkout.orderToWhereText+"?"}</label>
         <div className="h-[2.5rem] px-2 flex items-center gap-1 border-[1px] border-gray-300 rounded-3xl">
           <LocationIco />
           <input id="d_addr" className=" max-w-[314px] w-full  px-2 focus:outline-none" form="checkout_form" type="text" name="delivery_address"  placeholder="Выберите адрес доставки" required />
         </div>
       </div>
-      <div id="name__wrapper" className="less-than-xs:min-w-[8rem] min-w-[15rem]  py-2 flex flex-col justify-center font-raleway">
+      <div id="name__wrapper" className="less-than-xs:min-w-[8rem] min-w-[15rem]  py-2 flex flex-col justify-center font-raleway lining-nums tabular-nums ">
         <label htmlFor="receiver_name" className="text-md font-semibold">{tags.checkout.receiverNameText}</label>
         <div className="h-[2.5rem] px-2 flex items-center gap-1 border-[1px] border-gray-300 rounded-3xl">
           <input id="rcv_name" className=" max-w-[314px] w-full  px-2 focus:outline-none" form="checkout_form" type="text" name="receiver" required />
         </div>
       </div>
-      <div id="phone__wrapper" className="less-than-xs:min-w-[8rem] min-w-[15rem] py-2 flex flex-col justify-center font-raleway">
+      <div id="phone__wrapper" className="less-than-xs:min-w-[8rem] min-w-[15rem] py-2 flex flex-col justify-center font-raleway lining-nums tabular-nums ">
         <label htmlFor="receiver_phone" className=" text-md font-semibold">{tags.checkout.phoneText}</label>
         <div className="h-[2.5rem] px-2 flex items-center gap-1 border-[1px] border-gray-300 rounded-3xl">
           <input id="rcv_phone" className=" max-w-[314px] w-full  px-2 focus:outline-none" form="checkout_form" type="text" name="receiver_phone" required />
@@ -126,21 +126,21 @@ const CheckoutForm = ({ }) => {
           </span>
         </div>
         
-        <div id="order_cost__wrapper" className="w-full   py-1 px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between  items-center text-lg text-[#727280]  font-raleway ">
+        <div id="order_cost__wrapper" className="w-full   py-1 px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between  items-center text-lg text-[#727280]  font-raleway lining-nums tabular-nums  ">
           <label htmlFor="order_cost">
             {tags.checkout.totalPriceText+":"}
           </label>
           <input id="o_cost" className=" w-auto max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end text-xl bg-transparent text-end lining-nums tabular-nums" name="order_cost" form="checkout_form" type="text" value={tags.currencyType + (total || 0)} readOnly required  />
         </div>
 
-        <div id="delivery_cost__wrapper" className="w-full  py-1 px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between items-center text-lg text-[#727280] font-raleway ">
+        <div id="delivery_cost__wrapper" className="w-full  py-1 px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between items-center text-lg text-[#727280] font-raleway lining-nums tabular-nums  ">
           <label className="" htmlFor="delivery_cost">
             {tags.checkout.deliveryCostText+":"}
           </label>
           <input id="d_cost" className="max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end  bg-transparent text-end lining-nums tabular-nums" name="delivery_cost" form="checkout_form" type="text" value={tags.currencyType + (deliveryPrice || 0)} readOnly required />
         </div>
 
-        <div id="total_cost__wrapper" className="w-full  px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between items-center text-xl text-[#727280] font-raleway font-medium ">
+        <div id="total_cost__wrapper" className="w-full  px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between items-center text-xl text-[#727280] font-raleway lining-nums tabular-nums  font-medium ">
           <label className="bg-transparent" htmlFor="total_cost">
             {tags.checkout.sumTotalText+":"}
           </label>
@@ -150,12 +150,12 @@ const CheckoutForm = ({ }) => {
 
       </div>
       
-      <input type="submit" form="checkout_form" id="checkout_btn" value={tags.checkout.checkoutBtnText} className="w-auto p-3 flex justify-center  items-center border-[1px] border-orange-600 bg-orange-600 active:bg-orange-400 rounded-3xl active: text-2xl text-white font-raleway font-normal cursor-pointer" required/>
+      <input type="submit" form="checkout_form" id="checkout_btn" value={tags.checkout.checkoutBtnText} className="w-auto p-3 flex justify-center  items-center border-[1px] border-orange-600 bg-orange-600 active:bg-orange-400 rounded-3xl active: text-2xl text-white font-raleway lining-nums tabular-nums  font-normal cursor-pointer" required/>
     </div>
   )
   return (
     <div id="checkout_wrapper" className="w-full px-2">
-      <div id="checkout_header" className="text-xl text-black font-raleway font-bold">
+      <div id="checkout_header" className="text-xl text-black font-raleway lining-nums tabular-nums  font-bold">
         <p>
         {tags.checkout.checkoutText}
         </p>

@@ -10,7 +10,7 @@ const SidebarBanner = ({ onClick, mainText = "Receive goods", subText = "For Fre
         className="w-[55%] h-[26%] fill-[#2967FF] cursor-pointer">
       </rect>
       <text x='157' y='109' z={50} fontFamily='Raleway' dominantBaseline={"middle"} className="w-auto flex gap-2 "  >
-        <tspan className="w-max h-max border text-base fill-white font-raleway hover:font-semibold font-medium" >
+        <tspan className="w-max h-max border text-base fill-white font-raleway lining-nums tabular-nums  hover:font-semibold font-medium" >
           {ctaText}
         </tspan>
       </text>

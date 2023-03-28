@@ -125,8 +125,8 @@ export const filteredProductsFromModel = (ex)=> createSelector(
       });
       
       return productsArray
-      // console.log("running products selector 2",ex, productsArray[1].category_id)
       // return (ex.length ? productsArray.filter(el=> ex.includes(el.category_id))/*.some((e)=> e === el.category_id))*/ :  productsArray)
+      // console.log("running products selector 2",ex, productsArray[1].category_id)
     }
     )
     export const useGetName=(model, id)=>{
@@ -163,17 +163,18 @@ export const filteredProductsFromModel = (ex)=> createSelector(
       (state, products) => {
 
         // console.log("p", products)
-        const findProd = (id) => {
-          const prod = products.find(p => p.id === id)
+        const findProd = (id, priceVarId) => {
+          const prod = products.find(p => (p.id === id))
+          prod.priceRange = prod.priceRange.find(pr => pr.id === priceVarId)
           // console.log("p", prod)
           const getDisc = (disc) => {
             if (disc[0]) {
 
-              return calcDisc(prod.priceRange.sort((a, b) => a - b)[0], disc[1])
+              return calcDisc(prod.priceRange, disc[1])
             }
             return false
           }
-          return { id: prod.id, name: prod.name, store: prod.store, price: prod.priceRange.sort((a, b) => a - b)[0], isDiscounted: getDisc(prod.isDiscounted), images: [prod.images[0]] }
+          return { id: prod.id, name: prod.name, store: prod.store, price: prod.priceRange, isDiscounted: getDisc(prod.isDiscounted), images: [prod.images[0]] }
         }
         // 
         // console.log("rods", state.CartItem.all().toModelArray().products)

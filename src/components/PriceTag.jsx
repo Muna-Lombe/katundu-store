@@ -23,7 +23,7 @@ const PriceTag = ({tagFor,original, discount=false, onlyPrice }) => {
   return (
     <div className="price-tag my-2">
       <div className="price-details  py-2 flex flex-row flex-wrap justify-start  gap-2 items-baseline">
-        <p className={"main-price " + (onlyPrice ? "" : " less-than-sm:text-3xl text-4xl ")+" text-orange-500 font-[arial] font-medium"}>
+        <p className={"main-price " + (onlyPrice ? "" : " less-than-sm:text-3xl text-4xl ")+" text-orange-500 font-raleway lining-nums tabular-nums  font-medium"}>
           {
             discount
               ? tags.currencyType +(currPriceTag.discounted|| setDisc(original,discount).discounted) 
@@ -33,7 +33,7 @@ const PriceTag = ({tagFor,original, discount=false, onlyPrice }) => {
         {
           discount
           ?
-            <p className={"disc-price " + (onlyPrice ? "text-[80%]" : " less-than-sm:text-lg text-xl ")+" text-slate-400 text font-[arial] font-medium line-through"}>
+            <p className={"disc-price " + (onlyPrice ? "text-[80%]" : " less-than-sm:text-lg text-xl ")+" text-slate-400 text font-raleway lining-nums tabular-nums  font-medium line-through"}>
               {tags.currencyType +(currPriceTag.oldPrice || original )}
             </p>
           :""
@@ -44,7 +44,7 @@ const PriceTag = ({tagFor,original, discount=false, onlyPrice }) => {
         ? ""
         :  discount 
           ?
-            <p className="price-note w-full  px-2  flex flex-row whitespace-nowrap justify-start items-center  gap-1 text-orange-400 rounded-xl  font-[arial] font-medium text-base less-than-xs:child:text-sm">
+            <p className="price-note w-full  px-2  flex flex-row whitespace-nowrap justify-start items-center  gap-1 text-orange-400 rounded-xl  font-raleway lining-nums tabular-nums  font-medium text-base less-than-xs:child:text-sm">
               <span className="w-auto less-than-xs:hidden">
                 {tags.currencyType+(((currPriceTag.oldPrice || original) - (currPriceTag.discounted)) || setDisc(original, discount).discounted-10).toFixed(2)} {" less if paying with a Katundu card"}
               </span>

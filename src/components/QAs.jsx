@@ -11,10 +11,10 @@ const QAs = ({ qas}) => {
     
     return(
       <div className="question-input p-6  flex flex-col gap-2 bg-slate-200 border rounded-lg">
-        <p className="main-title text-lg font-[arial] font-medium">
+        <p className="main-title text-lg font-raleway lining-nums tabular-nums  font-medium">
           {tags.questionBanner.mainText}
         </p>
-        <p className="sub-title text-sm font-[arial] font-normal">
+        <p className="sub-title text-sm font-raleway lining-nums tabular-nums  font-normal">
           {tags.questionBanner.subText}
         </p>
         <input type="text" name="question-input" placeholder='Write your question' id="" className="p-1 max-w-sm border-2 border-slate-400 rounded-lg" />
@@ -112,7 +112,7 @@ const QAs = ({ qas}) => {
                   {question.poster.name}
                 </div>
                 <div className="vote flex items-baseline gap-1 bg- border-1 rounded-lg cursor-pointer">
-                  <p className="rank-yes py-1 px-2 w-max flex flex-row items-baseline bg-slate-300 rounded-3xl text-slate-600 font-[arial]" role="button">
+                  <p className="rank-yes py-1 px-2 w-max flex flex-row items-baseline bg-slate-300 rounded-3xl text-slate-600 font-raleway lining-nums tabular-nums " role="button">
                     <span className="text-slate-500">
                       <ThumbIco />
                     </span>
@@ -125,7 +125,7 @@ const QAs = ({ qas}) => {
             </div>
           </div>
           <div className="question-timestamp py-1 less-than-xs:contents flex flex-col justify-self-end  self-start child:py-0">
-            <div className="question-date whitespace-nowrap text-base text-slate-500 font-[arial] font-semibold">
+            <div className="question-date whitespace-nowrap text-base text-slate-500 font-raleway lining-nums tabular-nums  font-semibold">
               {question.datePosted}
             </div>
             <MoreActions/>
@@ -133,7 +133,7 @@ const QAs = ({ qas}) => {
         </div>
         <div className="question-answer-details w-full flex flex-col gap-1">
           <div className="question-content my-2 px-2 flex flex-col gap-6 ">
-            <div className="question-details px-4 w-full flex flex-row justify-between gap-2 font-[arial] font-medium">
+            <div className="question-details px-4 w-full flex flex-row justify-between gap-2 font-raleway lining-nums tabular-nums  font-medium">
               
               </div>
 
@@ -144,7 +144,7 @@ const QAs = ({ qas}) => {
             <div className="has-more-responses p-4">
               {
                 question.responseCount > 3
-                  ? <p className="response-count text-sm text-blue-500 font-[arial] font-semibold cursor-pointer">
+                  ? <p className="response-count text-sm text-blue-500 font-raleway lining-nums tabular-nums  font-semibold cursor-pointer">
                       {"+ "+question.responseCount+" more answer"}
                     </p>
                 : ""
@@ -170,7 +170,7 @@ const QAs = ({ qas}) => {
               <div className="w-full flex flex-wrap">
                 <img src={response?.poster?.avtr_url || no_img_path} lazy="true" alt="" className="w-[40px] min-w-[40px] aspect-square flex justify-center border rounded-3xl" />
                 <div className="answerer-name py-2 flex items-center gap-2">
-                  <span className="text-base font-[arial] font-semibold">
+                  <span className="text-base font-raleway lining-nums tabular-nums  font-semibold">
                     {response.poster.name}
                   </span>
                   {
@@ -183,8 +183,8 @@ const QAs = ({ qas}) => {
                   
                 </div>
               </div>
-              <div className="answer-timestamp min-w-max flex flex-col justify-between items-center font-[arial]">
-                <div className="question-date text-base text-slate-500 font-[arial] font-semibold">
+              <div className="answer-timestamp min-w-max flex flex-col justify-between items-center font-raleway lining-nums tabular-nums ">
+                <div className="question-date text-base text-slate-500 font-raleway lining-nums tabular-nums  font-semibold">
                   {response.datePosted}
                 </div>
                 <MoreActions />
@@ -200,7 +200,7 @@ const QAs = ({ qas}) => {
               <div className="helpful-answer-rank w-max flex flex-col gap-2 ">
                 <p className="title text-slate-400 text-sm ">{"Was this answer helpful?"}</p>
                 <div className="ranking flex flex-row gap-2">
-                  <p className="rank-yes py-1 px-2 w-max flex flex-row items-baseline bg-slate-300 rounded-3xl text-slate-600 font-[arial]" role="button">
+                  <p className="rank-yes py-1 px-2 w-max flex flex-row items-baseline bg-slate-300 rounded-3xl text-slate-600 font-raleway lining-nums tabular-nums " role="button">
                     <span className="text-slate-500">
                       <ThumbIco />
                     </span>
@@ -208,7 +208,7 @@ const QAs = ({ qas}) => {
                       {response.rating.upvotes}
                     </span>
                   </p>
-                  <p className="rank-no py-1 px-2 w-max flex flex-row items-baseline bg-slate-300 rounded-3xl text-slate-600  font-[arial]" role="button">
+                  <p className="rank-no py-1 px-2 w-max flex flex-row items-baseline bg-slate-300 rounded-3xl text-slate-600  font-raleway lining-nums tabular-nums " role="button">
                     <span className="text-slate-500">
                       <ThumbIco invert />
                     </span>

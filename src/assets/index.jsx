@@ -98,6 +98,10 @@ export const titleTagTypes={
     mainText: "Ask a question about the product",
     subText: "You will be answered by the seller, brand representative or user who bought this product.We will send a notification when a response is received"
   },
+  addReview:{
+    mainText:"Share your review of the product.",
+    subText: "Let everyone know how great the product is."
+  },
   reviewsAndQuestions:{
     mainText:"Reviews and questions about the product", 
     productReviewsText:"PRODUCT REVIEWS",

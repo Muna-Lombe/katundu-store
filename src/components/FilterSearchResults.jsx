@@ -181,14 +181,14 @@ const FilterSearchResults = ({ children }) => {
       className={` py-[3px] px-8 w-max text-base h-max flex flex-row-reverse justify-center border-[#2967FF]  rounded-lg border-[1px] active:bg-[#2967FF] stroke-blue-500`}
       onClick={(e) => handleApplyFilters(e)}
     >
-      <span className='px-1 md:flex lg:flex xl:flex   text-sm  text-[#2967FF]    active:text-[#ffffff] font-raleway font-[600] text-center'>
+      <span className='px-1 md:flex lg:flex xl:flex   text-sm  text-[#2967FF]    active:text-[#ffffff] font-raleway lining-nums tabular-nums  font-[600] text-center'>
         {tags.filterSearchResults.applyFiltersText}
       </span>
     </button>
   )
   const FilterComponent = ()=>(
-    <div id="filter-search-results" className="filter-search-results hidden w-full h-screen py-2 mx-1 greater-than-md:w-52 greater-than-sm:flex flex-col gap-6 bg-white font-[arial] z-[5] overflow-y-clip scrollbar" >
-      <h4 className="title text-lg text-blue-500 font-[arial] font-semibold underline underline-offset-1">{"Filters"}</h4>
+    <div id="filter-search-results" className="filter-search-results hidden w-full h-screen py-2 mx-1 greater-than-md:w-52 greater-than-sm:flex flex-col gap-6 bg-white font-raleway lining-nums tabular-nums  z-[5] overflow-y-clip scrollbar" >
+      <h4 className="title text-lg text-blue-500 font-raleway lining-nums tabular-nums  font-semibold underline underline-offset-1">{"Filters"}</h4>
       
       <Categories categories={filterData.categories}/>
       {

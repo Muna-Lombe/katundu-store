@@ -194,7 +194,7 @@ const OrderHistory = ({ itemsOrdered}) => {
     }
 
     const ItemContent =()=>(
-      <div id="item_content" className=" hidden child:p-0  flex-col justify-center gap-2 font-raleway text-sm child:gap-[3px]">
+      <div id="item_content" className=" hidden child:p-0  flex-col justify-center gap-2 font-raleway lining-nums tabular-nums  text-sm child:gap-[3px]">
         <OrderDetails/>
       </div>
     )
@@ -212,7 +212,7 @@ const OrderHistory = ({ itemsOrdered}) => {
               </div>
           
           </div>
-          <div id="item_description" className=" px-1 less-than-xs:w-full less-than-xs:order-3 max-w-[21rem] flex flex-wrap  justify-start gap-1 font-raleway">
+          <div id="item_description" className=" px-1 less-than-xs:w-full less-than-xs:order-3 max-w-[21rem] flex flex-wrap  justify-start gap-1 font-raleway lining-nums tabular-nums ">
             <div id="item_details" className=" flex justify-start gap-4">
               <div id="order_date" className="flex items-center text-[12px] text-[#727280] font-semibold">
                 <p> {date} </p>
@@ -248,7 +248,7 @@ const OrderHistory = ({ itemsOrdered}) => {
 
   return (
     <div id="order_history__container" className="w-full px-2 flex flex-col justify-center gap-2  ">
-      <div id="order_history__header" className="text-xl text-black font-raleway font-semibold">
+      <div id="order_history__header" className="text-xl text-black font-raleway lining-nums tabular-nums  font-semibold">
         <p>
           {tags.orderHistory.mainText}
         </p>

@@ -25,7 +25,16 @@ const Cart = ({ unOrd, ord }) => {
   
     e.preventDefault()
 
-    item[1].forEach(ci => dispatch(checkedOutCartItem( Object.assign({id:ci.id, set: {ItemStatus: types.ORDERED_PENDING}}))) )
+    item[1].forEach(ci => 
+      dispatch(
+        checkedOutCartItem( 
+          Object.assign({
+            id:ci.id, 
+            set: {ItemStatus: types.ORDERED_PENDING}
+          })
+        )
+      )
+    )
   
   }
   
@@ -75,16 +84,16 @@ const Cart = ({ unOrd, ord }) => {
                   <div 
                     className="w-max flex  lg:flex-row xl:flex-row justify-between -gap-1 ">
                     <div 
-                      className="w-max h-[2rem] p-2 flex justify-center items-center border-[1px] border-orange-600 rounded-r-3xl rounded-bl-xl text-md text-orange-600 font-raleway font-semibold" >
+                      className="w-max h-[2rem] p-2 flex justify-center items-center border-[1px] border-orange-600 rounded-r-3xl rounded-bl-xl text-md text-orange-600 font-raleway lining-nums tabular-nums  font-semibold" >
                       <p> {promoQty+tags.cart.qtyType} </p>
                     </div>
                     <div 
-                      className="w-max h-[2rem] p-2 flex justify-center items-center -z-10 border-t-[1px] border-r-[1px] border-b-[1px] border-slate-400 rounded-r-3xl ext-md text-slate-400 font-raleway font-semibold lining-nums tabular-nums ">
+                      className="w-max h-[2rem] p-2 flex justify-center items-center -z-10 border-t-[1px] border-r-[1px] border-b-[1px] border-slate-400 rounded-r-3xl ext-md text-slate-400 font-raleway lining-nums tabular-nums  font-semibold lining-nums tabular-nums ">
                       <p>{tags.cart.promoCountdown+promoDeadline}</p> 
                     </div>
                   </div>
                   <div id="purchased_count" 
-                    className=" w-max flex justify-between items-center gap-1 font-raleway">
+                    className=" w-max flex justify-between items-center gap-1 font-raleway lining-nums tabular-nums ">
                     <p>
                       {"Carted:"}
                     </p>
@@ -110,7 +119,7 @@ const Cart = ({ unOrd, ord }) => {
                   className="less-than-xs:px-2 px-3 cursor-pointer" onClick={() => handleCounter("plus")}>+</p>
               </div>
               <div id="product_price" 
-                className="w-max  mx-2 flex items-center gap-2">
+                className="w-max  mx-2 flex items-center gap-2 font-raleway lining-nums tabular-nums  lining-nums tabular-nums">
                 <h2 id="new_price" 
                   className=" text-orange-600 less-than-xs:text-[18px] text-[1.2rem] md:text-[1.3rem] lg:text-[1.3rem] xl:text-[1.3rem] font-semibold">
                     
@@ -141,6 +150,47 @@ const Cart = ({ unOrd, ord }) => {
      )
    }
 
+   /**
+    * @description To be implemented later!
+    */
+   const BuyAllBtn = ({storeName, orders, disableItem, state}) => {
+    // console.log("unord",unOrd)
+    // //  storeName = { store.storeName }  orders = { store.orders } total = { store.currentCummulativeTotal }
+    // const ordItms = unOrd.map((ui)=>(
+    //   {
+    //     storeName: ui.storeName , 
+    //     cartItemIds: ui.orders.map(o => o.id), 
+    //     total: ui.currentCummulativeTotal, 
+    //     orderedItems: ui.orders.map(oi => (
+    //       { productId: oi.product.id,
+    //         price: oi.product.isDiscounted || oi.product.price, 
+    //         quantity: oi.productCount 
+    //       }
+    //     )) 
+    //   }
+    // ))
+    
+    // const state = { from: "/cart", ordItms }
+
+
+    return (<></>)
+    return (
+      <button id="Checkout_btn"
+        onClick={(e) => handleItemOrdered(e, [storeName, orders])}
+        disabled={disableItem}
+        className="flex sm:hidden md:hidden lg:hidden xl:hidden"
+      >
+        <Link
+          to={"/checkout"}
+          from={"/cart"}
+          state={state}
+          className={" less-than-xs:w-[5rem] less-than-xs:h-[1rem] w-[7rem] h-[2.1rem] md:w-[10rem] md:h-[2.5rem] lg:w-[10rem] lg:h-[2.5rem] xl:w-[10rem] xl:h-[2.5rem] px-8 py-5 bg-orange-600 active:bg-orange-500 border-[1px] border-orange-600  flex justify-center items-center rounded-2xl text-base greater-than-md:text-xl text-white font-medium" + (disableItem ? " pointer-events-none cursor-auto" : "")}
+        >
+          {tags.cart.checkoutTag}
+        </Link>
+      </button>  
+    )
+   }
    const CartStoreItem = ({keyId,storeName,orders, total, isOrdered})=> { 
      const disableItem = isOrdered
      const state = { from: "/cart" , storeName, cartItemIds:orders.map(o=> o.id),total, orderedItems: orders.map(oi=> ({productId: oi.product.id, price:oi.product.isDiscounted || oi.product.price, quantity: oi.productCount})) }
@@ -149,44 +199,45 @@ const Cart = ({ unOrd, ord }) => {
           <div id="cart_item__wrapper"
             className={"w-full flex flex-col mb-2"+(disableItem ? " filter grayscale contrast-50" : ""  ) }>
             <div id="cart_item__header" 
-              className=" flex flex-wrap p-2 justify-around items-center gap-3 border-[1px] border-gray-300 rounded-lg text-xl font-raleway">
+              className=" flex less-than-xs:flex-col flex-row p-2 justify-around items-center gap-3 border-[1px] border-gray-300 rounded-lg text-xl font-raleway lining-nums tabular-nums ">
               <div id="item_name" 
                 className="w-full sm:w-max md:w-max lg:w-max xl:w-max  font-bold flex justify-between  items-center">
-                <h4>{storeName}</h4> 
+                <div className="text-base greater-than-md:text-xl">{storeName}</div > 
                 <button id="Checkout_btn"
-                onClick={(e)=>handleItemOrdered(e,[storeName, orders])} 
-                disabled={disableItem}
-                className="flex sm:hidden md:hidden lg:hidden xl:hidden" 
+                  onClick={(e)=>handleItemOrdered(e,[storeName, orders])} 
+                  disabled={disableItem}
+                  className="greater-than-xs:hidden " 
                 >
                   <Link 
                     to={ "/checkout"} 
                     from={"/cart"}
                     state={state} 
-                    className={" less-than-xs:w-[5rem] less-than-xs:h-[1rem] w-[7rem] h-[2.1rem] md:w-[10rem] md:h-[2.5rem] lg:w-[10rem] lg:h-[2.5rem] xl:w-[10rem] xl:h-[2.5rem] px-8 py-5 bg-orange-600 active:bg-orange-500 border-[1px] border-orange-600  flex justify-center items-center rounded-2xl less-than-xs:text-base text-lg md:text-xl lg:text-xl xl:text-xl text-white font-medium" + (disableItem ? " pointer-events-none cursor-auto": "") }    
+                 className={" less-than-xs:w-[5rem] less-than-xs:h-[1rem] w-[7rem] h-[2.1rem] md:w-[10rem] md:h-[2.5rem] lg:w-[10rem] lg:h-[2.5rem] xl:w-[10rem] xl:h-[2.5rem] px-8 py-5 bg-orange-600 active:bg-orange-500 border-[1px] border-orange-600  flex justify-center items-center rounded-2xl text-base greater-than-md:text-xl text-white font-medium" + (disableItem ? " pointer-events-none cursor-auto": "") }    
                   > 
                     {tags.cart.checkoutTag} 
                   </Link>
                 </button>          
               </div>
               <div id="cart_item__total_price" 
-                className=" flex justify-between gap-8 items-center lining-nums tabular-nums">
+                className=" flex justify-between less-than-sm:gap-4 gap-8  items-center text-base greater-than-md:text-xl lining-nums tabular-nums">
                 <p 
-                  className=" less-than-xs:text-base">
+                  className=" less-than-xs:text-base whitespace-nowrap">
                   {tags.cart.totalInCartTag}:
                 </p>
                 <p 
-                  className=" text-orange-600 less-than-xs:text-base text-xl font-bold">
-               {tags.currencyType + total} 
+                  className=" text-orange-600 less-than-xs:text-base font-bold">
+                  {tags.currencyType + total} 
                 </p>
+
                 <button id="Checkout_btn"
                 onClick={(e)=>handleItemOrdered(e,[storeName, orders])} 
                 disabled={disableItem}
-                className="hidden sm:flex md:flex lg:flex xl:flex" 
+                className="less-than-xs:hidden" 
                 >
                   <Link 
                     to={{pathname: "/checkout"}} 
                     state={state} 
-                    className={"w-[7rem] h-[2.1rem] md:w-[10rem] md:h-[2.5rem] lg:w-[10rem] lg:h-[2.5rem] xl:w-[10rem] xl:h-[2.5rem] px-8 py-5 bg-[#2967FF] border-[1px] border-[#2967FF]  flex justify-center items-center rounded-2xl text-lg md:text-xl lg:text-xl xl:text-xl text-white font-medium" + (disableItem ? " pointer-events-none cursor-auto": "") }    
+                 className={"w-[7rem] h-[2.1rem] md:w-[10rem] md:h-[2.5rem] lg:w-[10rem] lg:h-[2.5rem] xl:w-[10rem] xl:h-[2.5rem] px-8 py-5 bg-orange-600 active:bg-orange-500 border-[1px] border-orange-600   flex justify-center items-center rounded-2xl text-base greater-than-md:text-xl text-white font-medium" + (disableItem ? " pointer-events-none cursor-auto": "") }    
                   > 
                     {tags.cart.checkoutTag} 
                   </Link>
@@ -206,13 +257,13 @@ const Cart = ({ unOrd, ord }) => {
       <div id="no_items" 
         className="w-full flex flex-col justify-center items-center">
         <div id="no_items_banner__header" 
-          className="text-base text-black font-raleway font-semibold">
+          className="text-base text-black font-raleway lining-nums tabular-nums  font-semibold">
           <h3>
             🙅 looks like no items here 👀
           </h3>
         </div>
         <div id="no_items_banner__footer" 
-          className="text-lg text-black font-raleway font-bold text-center">
+          className="text-lg text-black font-raleway lining-nums tabular-nums  font-bold text-center">
           <h3>
             <span> {"😃 "} <Link to={"/"} className='text-blue-500 hover:underline text-center'>{"Buy something"} </Link>  {" to start your shopping journey 😃"} </span>
           </h3>
@@ -225,10 +276,10 @@ const Cart = ({ unOrd, ord }) => {
         <div id="cart_header" 
           className=" flex justify-start gap-6 items-baseline">
           <div 
-            className="text-lg text-black font-raleway font-[800]">
+            className="text-lg text-black font-raleway lining-nums tabular-nums  font-[800]">
               {tags.cart.cartTag}
           </div>
-          <div className="text-md text-orange-600 font-raleway font-semibold">
+          <div className="text-md text-orange-600 font-raleway lining-nums tabular-nums  font-semibold">
             {tags.cart.emptyCartBtnTag}
           </div>
         </div>
@@ -239,16 +290,23 @@ const Cart = ({ unOrd, ord }) => {
 
           { unOrd.length > 0
             
-            ? unOrd.map((store,idx) => {return <CartStoreItem key={idx} keyId={idx} storeName={store.storeName}  orders={store.orders} total={store.currentCummulativeTotal}/> })
+            ? 
+             <div className="unordered-items flex flex-col items-end">
+               {
+                unOrd.map((store,idx) => {return <CartStoreItem key={idx} keyId={idx} storeName={store.storeName}  orders={store.orders} total={store.currentCummulativeTotal}/> })
+                }
+             </div>
             : <NoItems/>
           }
           { ord.length > 0
             
             ? <div id="cart_history__wrapper" className="w-full mt-4 ">
-                <div id="cart_history__header" className=" text-lg text-black font-raleway font-medium">
+                <div id="cart_history__header" className=" text-lg text-black font-raleway lining-nums tabular-nums  font-medium">
                   <h3>{"Cart History"}</h3>
                 </div>
-              {ord.map((store, idx) => { return <CartStoreItem key={idx} storeName={store.storeName} orders={store.orders} isOrdered={true} total={store.currentCummulativeTotal} />  })}
+                {
+                  ord.map((store, idx) => { return <CartStoreItem key={idx} storeName={store.storeName} orders={store.orders} isOrdered={true} total={store.currentCummulativeTotal} />  })
+                }
               </div> 
             
             : null //<NoItems/>

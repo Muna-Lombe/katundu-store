@@ -5,13 +5,13 @@ const NoItems = ({ subText, mainText }) => {
     <div
       className="loading-product w-full min-w-[200px] flex flex-col justify-center items-center">
       <div id="no_items_banner__header"
-        className=" less-than-xs:text-base text-lg text-black font-raleway font-semibold">
+        className=" less-than-xs:text-base text-lg text-black font-raleway lining-nums tabular-nums  font-semibold">
         <h4>
           {subText || tags.noItem.subText}
         </h4>
       </div>
       <div id="no_items_banner__footer"
-        className=" less-than-xs:text-sm text-base text-black font-raleway font-bold">
+        className=" less-than-xs:text-sm text-base text-black font-raleway lining-nums tabular-nums  font-bold">
         <h3>
           {mainText || tags.noItem.mainText}
         </h3>

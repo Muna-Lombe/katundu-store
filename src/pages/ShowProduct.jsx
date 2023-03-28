@@ -157,7 +157,7 @@ const ShowProduct = ()=>{
     
       <div id="product-minified" className="product-minified invisible sticky top-[150px] greater-than-xs:top-[129px] greater-than-sm:top-[113px] greater-than-md:top-[70px] right-0 px-2 flex flex-row justify-end items-center gap-2 bg-white border border-y-orange-400 z-50 ">
               <div className="product-minified-img">
-                <img src={imagepath(productMini?.images[0].image_url) || no_img_path} alt="" className="w-[60px] aspect-square" />
+                <img src={imagepath(productMini?.images[0].image_url) || no_img_path} alt="" className="w-[60px] aspect-square object-cover" />
               </div>
               <div className="product-minified-product-name overflow-clip less-than-xs:text-xs text-base text-ellipsis">
                 <span style={textStyle}>{productMini?.name}</span>
@@ -205,7 +205,7 @@ const ShowProduct = ()=>{
             
               <MiddleSection>
                 <ContentViewer>
-                  <section id="product-details">
+                  {/* <section id="product-details"> */}
                     <ProductImageViewer images={productItem?.images}/>
                     <ContentDetails contentType={"product"} showLogo={<Logo logo={productItem?.store.name} bgColor="bg-slate-500" />} variations={productItem?.variations.map((p)=> ({...p, text:p.price}))}>
                           { productItem?.variations.map((i,x)=>
@@ -229,8 +229,8 @@ const ShowProduct = ()=>{
                             }
                           </ContentSpecification>
                     </ContentDetails >
-                  </section>
-                  <section id="produc-price-details">
+                  {/* </section> */}
+                  {/* <section id="produc-price-details"> */}
                     <ContentPayment >
                       <PriceTag tagFor={"product-variations"} original={productItem?.priceRange.sort((a, b) => b - a).at(-1)} discount={productItem?.isDiscounted[0] ? productItem?.isDiscounted[1] : false} />
                       <DiscountInfo/>
@@ -244,14 +244,14 @@ const ShowProduct = ()=>{
                         </span>
                         <span className="order-pin-points">
                           <PinLocation />
-                          <span className="courier-points flex flex-col font-[arial]">
+                          <span className="courier-points flex flex-col font-raleway lining-nums tabular-nums ">
                             <Courier />
                             <PickupPoints />
                           </span>
                         </span>
                       </OrderInfo> 
                     </PaymentType>
-                  </section> 
+                  {/* </section>  */}
                 </ContentViewer>
                 <section id="product-recommendations" className="w-full">
                   <RecommendedProducts/>
