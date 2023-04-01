@@ -27,12 +27,12 @@ const Main = () => {
     e.preventDefault()
     console.log(e.type)
     if(e.type === "mouseenter"){
-      mainbar.classList.replace("overflow-y-auto", "overflow-visible")
+      // mainbar.classList.replace("overflow-y-auto", "overflow-visible")
       document.addEventListener("mousewheel", scrollFn)
       
     }
     if (e.type === "mouseleave") {
-      mainbar.classList.replace("overflow-visible", "overflow-y-auto")
+      // mainbar.classList.replace("overflow-visible", "overflow-y-auto")
       document.removeEventListener("mousewheel", scrollFn)
     }
   }
@@ -58,7 +58,7 @@ const Main = () => {
         <div id="product_tags" className=" w-auto  flex flex-row flex-nowrap overflow-x-hidden" >
           <CategoryTag borderId={'type_clear'} text={'clear'} />
           
-          <div  id="scrollable_product_tags" onMouseEnter={handleSetScroll} onMouseLeave={handleSetScroll}  className="scrollable_product_tags mr-2  w-max  flex flex-row overflow-x-scroll overflow-y-hidden tag">
+          <div  id="scrollable_product_tags" onMouseEnter={handleSetScroll} onMouseLeave={handleSetScroll}  className="scrollable_product_tags mr-2  w-max  flex flex-row overflow-x-scroll overflow-y-hidden  shadow-slate-600  tag">
             {
 
               cats.map((tag, idx) => {

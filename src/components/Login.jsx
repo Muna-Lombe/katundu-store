@@ -53,7 +53,7 @@ export default function Login({userId}) {
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
               Or{' '}
-              <a href="&/" className="font-medium text-orange-600 hover:text-orange-500">
+              <a href="/" className="font-medium text-orange-600 hover:text-orange-500">
                 create a new account for free
               </a>
             </p>
