@@ -10,18 +10,12 @@ import Store from './js/store';
 import { asyncThunk,} from './orm/utilities/StateLoader';
 
 
-// export const cachedProduct = new Cache()
 
 Store.dispatch(asyncThunk())
-// StateLoadMiddleware(Store)
-// Store.dispatch(createAsyncThunk(`orm/load${ThunkTypes[0].dataName}`, async () => {
-//   return await load(ThunkTypes[0])
-//   }))
-// console.log("store", Store.getState())
-// loadProducts()
+
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter basename='/'>
+    <BrowserRouter basename='katundu-store/'>
       {/* <HashRouter> */}
         <Provider store={Store}>
           <App />
@@ -33,7 +27,4 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
