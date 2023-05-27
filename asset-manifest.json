@@ -1,9 +1,9 @@
 {
   "files": {
-    "main.css": "/katundu-store/static/css/main.852cc20a.css",
-    "main.js": "/katundu-store/static/js/main.7a8293ec.js",
-    "static/js/565.dc6906eb.chunk.js": "/katundu-store/static/js/565.dc6906eb.chunk.js",
-    "static/js/279.7027707c.chunk.js": "/katundu-store/static/js/279.7027707c.chunk.js",
+    "main.css": "/katundu-store/static/css/main.a9116463.css",
+    "main.js": "/katundu-store/static/js/main.5abeefeb.js",
+    "static/js/565.9fed3c40.chunk.js": "/katundu-store/static/js/565.9fed3c40.chunk.js",
+    "static/js/279.266c0e02.chunk.js": "/katundu-store/static/js/279.266c0e02.chunk.js",
     "static/js/787.7af71dae.chunk.js": "/katundu-store/static/js/787.7af71dae.chunk.js",
     "static/media/601a7316507cf.jpg": "/katundu-store/static/media/601a7316507cf.234517002bfc9d07d123.jpg",
     "static/media/image13_6.png": "/katundu-store/static/media/image13_6.234517002bfc9d07d123.png",
@@ -71,14 +71,14 @@
     "static/media/601a731656eaf.jpg": "/katundu-store/static/media/601a731656eaf.1817ce75ac650274fac2.jpg",
     "static/media/601a731659703.jpg": "/katundu-store/static/media/601a731659703.1817ce75ac650274fac2.jpg",
     "index.html": "/katundu-store/index.html",
-    "main.852cc20a.css.map": "/katundu-store/static/css/main.852cc20a.css.map",
-    "main.7a8293ec.js.map": "/katundu-store/static/js/main.7a8293ec.js.map",
-    "565.dc6906eb.chunk.js.map": "/katundu-store/static/js/565.dc6906eb.chunk.js.map",
-    "279.7027707c.chunk.js.map": "/katundu-store/static/js/279.7027707c.chunk.js.map",
+    "main.a9116463.css.map": "/katundu-store/static/css/main.a9116463.css.map",
+    "main.5abeefeb.js.map": "/katundu-store/static/js/main.5abeefeb.js.map",
+    "565.9fed3c40.chunk.js.map": "/katundu-store/static/js/565.9fed3c40.chunk.js.map",
+    "279.266c0e02.chunk.js.map": "/katundu-store/static/js/279.266c0e02.chunk.js.map",
     "787.7af71dae.chunk.js.map": "/katundu-store/static/js/787.7af71dae.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.852cc20a.css",
-    "static/js/main.7a8293ec.js"
+    "static/css/main.a9116463.css",
+    "static/js/main.5abeefeb.js"
   ]
 }
