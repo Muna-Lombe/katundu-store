@@ -208,8 +208,15 @@ const Navbar = () => {
             <div id="address" className=" px-1 relative flex flex-wrap items-center gap-2">
               <PinIco />
       
-              <h2 className="  less-than-xs:top-3 less-than-xs:left-6 greater-than-xs:p-2  greater-than-xs:relative greater-than-xs:w-auto flex flex-row text-xs text-ellipsis ">
-                <p>{tags.location.city + ", "}</p>  <p>{" "+tags.location.state}</p>
+              <h2 className="  less-than-xs:top-3 less-than-xs:left-6 greater-than-xs:p-2  greater-than-xs:relative greater-than-xs:w-auto flex flex-row text-[0.9rem] text-ellipsis ">
+                {/* <p>{tags.locations[0].city + ", "}</p>  <p>{" "+tags.locations[0].state}</p> */}
+                <select name="location" id="location_select" className="outline-none">
+                  {
+                    tags.locations.map((loc,x)=>
+                      <option value={loc.idx}>{loc.city},{loc.state}</option>
+                    )
+                  }
+                </select>
               </h2>
             </div>
           </div>
