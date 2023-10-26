@@ -17,11 +17,11 @@ const PriceTag = ({tagFor,original, discount=false, onlyPrice }) => {
       // c.addEventListener()
     })
     return () => {
-      watcher.disconnect()
+      watcher?.disconnect()
     }
   }, [])
   return (
-    <div className="price-tag my-2">
+    <div className="price-tag my-2 ">
       <div className="price-details  py-2 flex flex-row flex-wrap justify-start  gap-2 items-baseline">
         <p className={"main-price " + (onlyPrice ? "" : " less-than-sm:text-3xl text-4xl ")+" text-orange-500 font-raleway lining-nums tabular-nums  font-medium"}>
           {

@@ -1,7 +1,7 @@
 import React from 'react'
 import { setTextBg } from '../assets'
 
-const Logo = ({ children, logo = "Logo Store", textColor = "text-orange-600", bgColor ="bg-orange-600", textHoverColor ="text-orange-500", size = { h: 40, w: 40, x: 1, y: 30, font: "32" }, addLogo=true, addText=true  }) => {
+const Logo = ({ children, clickEv, logo = "Logo Store", textColor = "text-orange-600", bgColor ="bg-orange-600", textHoverColor ="text-orange-500", size = { h: 40, w: 40, x: 1, y: 30, font: "32" }, addLogo=true, addText=true  }) => {
   const bgLogo = logo.split(" ").map((i, x) => i[0]).join("").toString().toLocaleUpperCase()
   
   return(
