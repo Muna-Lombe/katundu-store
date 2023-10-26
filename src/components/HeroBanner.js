@@ -71,8 +71,8 @@ import { ArrowRight } from '../assets'
             activePageIdx: get.newActiveId//splitId(e.currentTarget.id).at(-1)
           }))
       }
-      const host = {xpz:"192.168.1.66", local:"localhost"}
-      const imgSrc = (i)=>"http://"+host.xpz+":3143/images/banner/Banner_"+i+".png"
+      const host = {xpz:"192.168.1.66:3143", local:"localhost:3000",global:"https://disk.yandex.ru/d/BGZbx6uGaVCv3w"}
+      const imgSrc = (i)=>"http://"+host.global+"/images/banner/Banner_"+i+".png"
       return(
         <>
           <span className="scroll-gallery relative block">
