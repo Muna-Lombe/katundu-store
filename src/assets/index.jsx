@@ -41,7 +41,13 @@ export const filterData = {
 }
 export const titleTagTypes={
   currencyType : "K",
-  location: { city: "Lusaka", state: " Lusaka Province" },
+  locations: [
+    { idx:"loc_cx_1",city: "Lusaka", state: " Lusaka Province" },
+    { idx:"loc_cx_2",city: "Kabwe", state: " Central Province" },
+    { idx:"loc_cx_3",city: "Ndola", state: " Copperbel Province" },
+    { idx:"loc_cx_4",city: "Kitwe", state: " Copperbel Province" },
+    { idx:"loc_cx_5",city: "Livingstone", state: " Southern Province" },
+  ],
   buyBtn:{
     mainText :"Add to cart",
     miniMainText:"To cart", 
