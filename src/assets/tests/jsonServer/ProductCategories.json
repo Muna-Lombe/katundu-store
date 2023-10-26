@@ -1,13 +1,16 @@
 [
-  {"id":21,"name":"officia velit hic", "active":false},
-  {"id":22,"name":"velit asperiores voluptas", "active":false},
-  {"id":23,"name":"consequatur reiciendis officiis", "active":false},
-  {"id":24,"name":"aut laudantium non", "active":false},
-  {"id":25,"name":"voluptatem incidunt soluta", "active":false},
-  {"id":26,"name":"voluptas non earum", "active":false},
-  {"id":27,"name":"qui similique placeat", "active":false},
-  {"id":28,"name":"quidem voluptatem similique", "active":false},
-  {"id":29,"name":"est et aliquam", "active":false},
-  {"id":30,"name":"perspiciatis in totam", "active":false}
+  {"id":21,"name":"Mobile Phones & Accessories", "active":false},
+  {"id":22,"name":"Computers & Office", "active":false},
+  {"id":23,"name":"Electronics", "active":false},
+  {"id":24,"name":"Household appliances", "active":false},
+  {"id":25,"name":"Security & Protection", "active":false},
+  {"id":26,"name":"Construction and renovation", "active":false},
+  {"id":27,"name":"Illumination", "active":false},
+  {"id":28,"name":"Home & Garden", "active":false},
+  {"id":29,"name":"Tooling", "active":false},
+  {"id":30,"name":"Stationery for office and home", "active":false}
 ]
-  
+ 
+
+
+

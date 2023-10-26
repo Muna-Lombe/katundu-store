@@ -199,7 +199,7 @@ const Navbar = () => {
   return (
     //  md:items-center
     <>
-      <nav className=" p-2 relative w-full h-full flex justify-center gap-2 items-start  lg:items-center xl:items-center ">
+      <nav className=" p-5 relative w-full h-full flex justify-center gap-2 items-start  lg:items-center xl:items-center ">
         <div id="navbar_left__wrapper" className=" w-full block  gap-4 lg:flex lg:flex-row xl:flex xl:flex-row justify-start items-center transition-all">
           <div id="logo_location" className=" w-full lg:w-auto xl:auto flex less-than-xs:flex-col less-than-xs:gap-4 justify-start gap-4">
               <Link to="" > 

@@ -17,6 +17,8 @@ function App() {
   const Checkout = lazy(() => import("./pages/Checkout"))
   const History = lazy(() => import("./pages/History"))
   const ShowProduct = lazy(() => import("./pages/ShowProduct"))
+  const Categories = lazy(() => import("./pages/Categories"))
+
   // const PrivateRoute = lazy(()=> import("./pages/PrivateRoute"))
   
   
@@ -26,6 +28,7 @@ function App() {
         <Route path="/" exact element={<Main/>} />
         <Route path="/product/:id" exact element={<ShowProduct />} />
         <Route path="/search" exact element={<Search />} />
+        <Route path="/categories" exact element={<Categories />} />
         <Route path="/cart" exact element={
           <PrivateRoute component={Basket} />
         } />

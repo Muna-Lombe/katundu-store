@@ -1,7 +1,7 @@
 
 import React from 'react'
 
-const SidebarBanner = ({ onClick, mainText = "Receive goods", subText = "For Free!",ctaText = "Learn more" }) => {
+const SidebarBanner = ({ onClick, mainText = "Receive orders", subText = "For Free!",ctaText = "Learn more" }) => {
 
   // width="310" height="142"
   const CTA = () => (
@@ -27,7 +27,7 @@ const SidebarBanner = ({ onClick, mainText = "Receive goods", subText = "For Fre
     </text>
   )
   return (
-    <div className=" lg:w-[22rem] lg:h-[10rem] top-4 ">
+    <div className=" min-w-[16rem] top-4 ">
   {/* // className="absolute w-[425px] h-[225px] top-0 -left-[0.5rem] -z-50" */}
       <svg   viewBox="0 0 330 143" fill="none" xmlns="http://www.w3.org/2000/svg"
           className="w-auto flex justify-center items-center"
