@@ -213,7 +213,7 @@ const Navbar = () => {
                 <select name="location" id="location_select" className="outline-none">
                   {
                     tags.locations.map((loc,x)=>
-                      <option value={loc.idx}>{loc.city},{loc.state}</option>
+                      <option key={x} value={loc.idx}>{loc.city},{loc.state}</option>
                     )
                   }
                 </select>
