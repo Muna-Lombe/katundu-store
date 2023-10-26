@@ -37,4 +37,6 @@ export { default as NameTag } from './NameTag';
 export { default as Login } from './Login';
 export { default as ToggleableField } from './ToggleableField';
 export { default as HeroBanner } from './HeroBanner';
+export { default as ProductMinified } from './ProductMinified';
+export { default as BackBtn } from './BackBtn';
 // export { default as SearchResults } from './SearchResults';

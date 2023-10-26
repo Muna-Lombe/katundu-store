@@ -6,7 +6,8 @@ import { AvatarIco, CartIco, PinIco, SearchIco, titleTagTypes as tags } from '..
 import { useDispatch, useSelector } from 'react-redux';
 import { selectProductNamesThatMatch, setSearchedProductId } from '../js/slices/products/productsSlice';
 import Logo from './Logo';
-const Navbar = () => {
+import { imagepath } from '../assets/images';
+const Navbar = ({children}) => {
   
   const prodNames = useSelector(selectProductNamesThatMatch());
   const dispatch = useDispatch();
@@ -67,6 +68,9 @@ const Navbar = () => {
     location.pathname.includes("checkout" )
     || location.pathname.includes("history") 
     
+  )
+  const isShowProductPath = () => (
+    location.pathname.includes("product")
   )
   
 
@@ -138,7 +142,7 @@ const Navbar = () => {
       
     }
       return(
-        <div id="navbar_right__wrapper" className="menu flex flex-col  absolute top-3  right-2 ">
+        <div id="navbar_right__wrapper" className="menu flex flex-col  absolute top-6  right-2 ">
           <menu  className='burger-menu peer less-than-xs:flex hidden cursor-pointer'>
             <svg onClick={handleClick} id="closed-menu-icon" className="w-[1.6rem] aspect-square active flex  transition-transform" fill="currentColor"  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path fillRule="evenodd" clipRule="evenodd" d="M4 7C4 6.44772 4.44772 6 5 6H19C19.5523 6 20 6.44772 20 7C20 7.55228 19.5523 8 19 8H5C4.44772 8 4 7.55228 4 7ZM4 12C4 11.4477 4.44772 11 5 11H19C19.5523 11 20 11.4477 20 12C20 12.5523 19.5523 13 19 13H5C4.44772 13 4 12.5523 4 12ZM4 17C4 16.4477 4.44772 16 5 16H19C19.5523 16 20 16.4477 20 17C20 17.5523 19.5523 18 19 18H5C4.44772 18 4 17.5523 4 17Z" />
             </svg>
@@ -196,29 +200,61 @@ const Navbar = () => {
       </div>
     )
   }
+
+  const Location = ({locations})=>{
+    const [location, setLocation]=useState({loc:locations[0]})
+    const handleToggleLocation =(e)=>{
+      e.preventDefault()
+
+      const autoTog = () => document.getElementById("location-text").classList.toggle("less-than-xs:hidden")
+
+      const t_o = setTimeout(() => {
+        console.log(1)
+        autoTog()
+        clearTimeout(t_o)
+      }, 10000);
+      console.log(2)
+      autoTog()
+  
+
+    }
+    return(
+      <div id="address" className=" px-1 relative flex flex-row items-center gap-2">
+        <span onClick={handleToggleLocation} className="child:pointer-events-none">
+          <PinIco />
+        </span>
+
+      < h2 id = 'location-text' className ="less-than-xs:hidden less-than-xs:top-3 less-than-xs:left-6 less-than-xs:text-sm greater-than-xs:p-2  greater-than-xs:relative greater-than-xs:w-auto flex flex-row text-[0.9rem] text-ellipsis ">
+           
+
+          <select name="location" id="location_select" className="outline-none appearance-none  bg-inherit">
+
+            {
+              locations.map((loc,x)=>
+                <option key={x} value={loc.idx}>{loc.city},{loc.state}</option>
+              )
+            }
+          </select>
+        </h2>
+      </div>
+    )
+  }
+
   return (
     //  md:items-center
     <>
-      <nav className=" p-5 relative w-full h-full flex justify-center gap-2 items-start  lg:items-center xl:items-center ">
+      <nav className=" p-5 pb-1 relative w-full h-full flex justify-center gap-2 items-start  lg:items-center xl:items-center ">
         <div id="navbar_left__wrapper" className=" w-full block  gap-4 lg:flex lg:flex-row xl:flex xl:flex-row justify-start items-center transition-all">
-          <div id="logo_location" className=" w-full lg:w-auto xl:auto flex less-than-xs:flex-col less-than-xs:gap-4 justify-start gap-4">
-              <Link to="" > 
-                <Logo logo={tags.footer.storename} size={{ h: 40, w: 40, x:10, y: 32, font: 38 }}/>
-              </Link> 
-            <div id="address" className=" px-1 relative flex flex-wrap items-center gap-2">
-              <PinIco />
-      
-              <h2 className="  less-than-xs:top-3 less-than-xs:left-6 greater-than-xs:p-2  greater-than-xs:relative greater-than-xs:w-auto flex flex-row text-[0.9rem] text-ellipsis ">
-                {/* <p>{tags.locations[0].city + ", "}</p>  <p>{" "+tags.locations[0].state}</p> */}
-                <select name="location" id="location_select" className="outline-none">
-                  {
-                    tags.locations.map((loc,x)=>
-                      <option key={x} value={loc.idx}>{loc.city},{loc.state}</option>
-                    )
-                  }
-                </select>
-              </h2>
-            </div>
+          <div id="logo_location" className=" w-full lg:w-auto xl:auto flex less-than-xs:flex-wrap less-than-xs:gap-4 justify-start gap-4 transition-all ease-in-out delay-700">
+              {/* <Logo clickEv={()=>""} logo={tags.footer.storename} size={{ h: 40, w: 40, x:10, y: 32, font: 38 }}/> */}
+              <Logo>
+                <Link to={''} className='cursor-pointer '>
+              {/* <img src={ imagepath("/img/placeholders/Katundu.png") } alt = "" /> */}
+                  <img src={ imagepath("/img/placeholders/Katundu.png")} className="max-w-[14rem]" alt="" />
+                </Link>
+              </Logo>
+           
+            <Location locations={tags.locations}/>
           </div>
           {
             isNotAllowed()
@@ -241,9 +277,11 @@ const Navbar = () => {
         </Menu>
       
       </nav>
+        {isShowProductPath()?
+          children
+          : ""
+        }
     </>
-    
-    
   )
 }
 

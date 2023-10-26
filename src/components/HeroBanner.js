@@ -4,7 +4,7 @@ import { ArrowRight } from '../assets'
 
  const HeroBanner=()=>{
     const BtnBasic = ({btnClass, id, clickEv, children}) => (
-      <div id={id} onClick={(e)=> clickEv(e)} className={btnClass + " w-[5%] aspect-square border flex top-[40%] bottom-[50%] items-center justify-end rounded-l-[30px] cursor-pointer "}>
+      <div id={id} onClick={(e)=> clickEv(e)} className={btnClass + " w-[5%] aspect-[3/4] border flex top-[40%] bottom-[50%] items-center justify-end rounded-l-[30px] cursor-pointer "}>
         {children}
       </div>
     ) 
@@ -28,7 +28,7 @@ import { ArrowRight } from '../assets'
           </span>
 
           <BtnBasic id={activeIds.prevId} btnClass={"btn_left absolute left-0 rotate-180 bg-white   "} clickEv={clickEv}>
-            <ArrowRight className={"arrow-left w-[60%]  aspect-square stroke-orange-400 child:fill-orange-400 "} size={undefined}/>
+            <ArrowRight className={"arrow-left w-[100%]  aspect-square stroke-orange-400 child:fill-orange-400 "} size={undefined}/>
           </BtnBasic>
           <BtnBasic id={activeIds.nextId} btnClass={"btn_right absolute right-0 bg-white  "} clickEv={clickEv}>
             <ArrowRight className={"arrow-right w-[100%] aspect-square stroke-orange-400 child:fill-orange-400  "} size={undefined}  />
@@ -71,7 +71,8 @@ import { ArrowRight } from '../assets'
             activePageIdx: get.newActiveId//splitId(e.currentTarget.id).at(-1)
           }))
       }
-      const imgSrc = (i)=>"http://localhost:5555/images/banner/Banner_"+i+".png"
+      const host = {xpz:"192.168.1.66", local:"localhost"}
+      const imgSrc = (i)=>"http://"+host.xpz+":3143/images/banner/Banner_"+i+".png"
       return(
         <>
           <span className="scroll-gallery relative block">
@@ -88,7 +89,7 @@ import { ArrowRight } from '../assets'
       )
     }
     return(
-      <div id="Hero-Banner" className={" relative inline-block min-w-[400px] w-full h-full max-h-[213px] text-white "}>
+      <div id="Hero-Banner" className={" relative inline-block min-w-[250px] w-full h-max max-h-[213px] text-white "}>
         <ScrollableGallery/>
         
       </div>

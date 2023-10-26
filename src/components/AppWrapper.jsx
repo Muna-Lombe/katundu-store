@@ -4,6 +4,8 @@ import { AvatarIco, CartIco, HomeIco } from '../assets'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import NoItems from './NoItems'
+import ProductMinified from './ProductMinified'
+import BackBtn from './BackBtn'
 
 const AppWrapper = ({children}) => {
   
@@ -41,8 +43,12 @@ const AppWrapper = ({children}) => {
     </Suspense>
   )
   const MainbarNav =() =>(
-    <div id="mainbar_nav" className="sticky top-0 w-full min-h-[10%] h-max flex items-center bg-white z-10">
-      <Navbar />
+    <div id="mainbar_nav" className="sticky top-0 w-full min-h-[10%] h-max flex flex-col items-center bg-white z-10">
+      <Navbar>
+        <ProductMinified>
+          <BackBtn location={location}/>
+        </ProductMinified>
+      </Navbar>
     </div>
   )
   return (

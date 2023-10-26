@@ -113,8 +113,8 @@ const ShowProduct = ()=>{
     )
   }
 
-  const BackBtn = () =>{
-    const path = (location.state?.from?.includes("signin") ? "/" : -1)
+  const BackBtn = ({location}) =>{
+    const path = (location?.state?.from?.includes("signin") ? "/" : -1)
     return(
       <Link to={path} className="back-btn">
         <ArrowLeft size={22}/>
@@ -155,7 +155,7 @@ const ShowProduct = ()=>{
 
     return (
     
-      <div id= "product-minified" className ="product-minified-wrapper invisible sticky top-[150px] greater-than-xs:top-[129px] greater-than-sm:top-[113px] greater-than-md:top-[70px] right-0 flex justify-between items-center  bg-white border border-y-orange-400 z-50">
+      <div id= "product-minified" className ="product-minified-wrapper invisible sticky top-[18%] right-0 flex justify-between items-center  bg-white border border-y-orange-400 z-50">
               <div className="minified-nav-back">
                 {children}
               </div>
@@ -205,13 +205,13 @@ const ShowProduct = ()=>{
     <>
       <Suspense fallback={<NoItems />} >
           <NavBack/>
-            {
+            {/* {
               productItem
               ? <ProductMinified productMini={productItem}>
-                  <BackBtn/>
+                  <BackBtn location={location}/>
                 </ProductMinified>
               : ""
-            }
+            } */}
           <div className="show-product-page relative">
             
               <MiddleSection>
