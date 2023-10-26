@@ -36,4 +36,5 @@ export { default as EmbeddedProducts } from './EmbeddedProducts';
 export { default as NameTag } from './NameTag';
 export { default as Login } from './Login';
 export { default as ToggleableField } from './ToggleableField';
+export { default as HeroBanner } from './HeroBanner';
 // export { default as SearchResults } from './SearchResults';

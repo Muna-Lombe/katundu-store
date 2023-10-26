@@ -15,7 +15,7 @@ Store.dispatch(asyncThunk())
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter basename='katundu-store/'>
+    <BrowserRouter basename='katundu-store'>
       {/* <HashRouter> */}
         <Provider store={Store}>
           <App />

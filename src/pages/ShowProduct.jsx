@@ -121,7 +121,7 @@ const ShowProduct = ()=>{
       </Link>
     )
   }
-  const ProductMinified = ({productMini})=> {
+  const ProductMinified = ({children, productMini})=> {
     
     const textStyle = {
       maxWidth: '100%',
@@ -155,21 +155,27 @@ const ShowProduct = ()=>{
 
     return (
     
-      <div id="product-minified" className="product-minified invisible sticky top-[150px] greater-than-xs:top-[129px] greater-than-sm:top-[113px] greater-than-md:top-[70px] right-0 px-2 flex flex-row justify-end items-center gap-2 bg-white border border-y-orange-400 z-50 ">
-              <div className="product-minified-img">
-                <img src={imagepath(productMini?.images[0].image_url) || no_img_path} alt="" className="w-[60px] aspect-square object-cover" />
+      <div id= "product-minified" className ="product-minified-wrapper invisible sticky top-[150px] greater-than-xs:top-[129px] greater-than-sm:top-[113px] greater-than-md:top-[70px] right-0 flex justify-between items-center  bg-white border border-y-orange-400 z-50">
+              <div className="minified-nav-back">
+                {children}
               </div>
-              <div className="product-minified-product-name overflow-clip less-than-xs:text-xs text-base text-ellipsis">
-                <span style={textStyle}>{productMini?.name}</span>
+              < div className ="product-minified px-2 flex flex-row justify-end items-center gap-2">
+                <div className="product-minified-img">
+                  <img src={imagepath(productMini?.images[0].image_url) || no_img_path} alt="" className="w-[60px] aspect-square object-cover" />
+                </div>
+                <div className="product-minified-product-name overflow-clip less-than-xs:text-xs text-base text-ellipsis">
+                  <span style={textStyle}>{productMini?.name}</span>
+                </div>
+                <div className="product-minified-product-price child:m-0 less-than-xs:text-xs  text-[16px]">
+                    <PriceTag tagFor={"product-variations"} original={productMini?.priceRange.sort((a, b) => b - a).at(-1)} discount={productMini?.isDiscounted[0] ? productMini?.isDiscounted[1] : false} onlyPrice={true} />
+                </div>
+                <div className="product-minified-buy-btn child:p-2 h-[180%]  border rounded-md child:appearance-none child:w-max child:h-max child:text-sm child:font-semibold">
+                  <BuyBtns id={productMini?.id} onlyBtn>
+                    <BasketIco />
+                  </BuyBtns>
+                </div>
               </div>
-            <div className="product-minified-product-price child:m-0 less-than-xs:text-xs  text-[16px]">
-                <PriceTag tagFor={"product-variations"} original={productMini?.priceRange.sort((a, b) => b - a).at(-1)} discount={productMini?.isDiscounted[0] ? productMini?.isDiscounted[1] : false} onlyPrice={true} />
-              </div>
-              <div className="product-minified-buy-btn child:p-2 h-[180%]  border rounded-md child:appearance-none child:w-max child:h-max child:text-sm child:font-semibold">
-                <BuyBtns id={productMini?.id} onlyBtn>
-                  <BasketIco />
-                </BuyBtns>
-              </div>
+              
             </div>
     )
   }
@@ -186,19 +192,24 @@ const ShowProduct = ()=>{
       </div>
     )
   }
+  const NavBack = () => (
+    <div className="top w-full flex border hide-sidebar gap-2 ">
+      <BackBtn/>
+      <BreadCrumbs/>
+      {/* <p>
+        {navigate.pathname}
+      </p> */}
+    </div>
+  )
   return(
     <>
       <Suspense fallback={<NoItems />} >
-          <div className="top w-full flex border hide-sidebar gap-2 ">
-            <BackBtn/>
-            <BreadCrumbs/>
-            {/* <p>
-              {navigate.pathname}
-            </p> */}
-          </div>
+          <NavBack/>
             {
               productItem
-              ? <ProductMinified productMini={productItem} />
+              ? <ProductMinified productMini={productItem}>
+                  <BackBtn/>
+                </ProductMinified>
               : ""
             }
           <div className="show-product-page relative">

@@ -1,13 +1,9 @@
-import React, { Suspense, createElement, useState } from 'react'
+import React, { Suspense } from 'react'
 import { useSelector } from 'react-redux'
-import { Product,CategoryTag, NoItems, Sidebar, HeroBanner } from '../components'
+import { Product,CategoryTag, NoItems, Sidebar } from '../components'
 import { filteredProductsFromModel, categories } from '../orm/selectors';
 import { titleTagTypes as tags } from '../assets';
-
-
-
-const Main = () => {
-
+const Categories = () => {
   let cats = useSelector(categories)
   let products = useSelector(filteredProductsFromModel([]))
 
@@ -48,7 +44,7 @@ const Main = () => {
         {children}
 
       </div>
-      <div id="sidebar_container" className="hidden lg:flex lg:w-auto  xl:flex xl:w-auto max-w-[19rem]  border-l-2 child:mx-2 ">
+      <div id="sidebar_container" className="hidden lg:flex lg:w-auto lg:max-w-[24rem] xl:flex xl:w-auto xl:max-w-[24rem] border-l-2 child:mx-2 ">
         <Sidebar />
       </div>
     </div>
@@ -84,19 +80,18 @@ const Main = () => {
               {
                 new Array(6).fill().map((i, x) => <Product key={x} noPrd={"true"} />)
               }
-              
+              {/* <NoItems /> */}
+
             </>
         }
       </div>
     </div>
   )
   
- 
   return (
     <>
       <Suspense fallback={<NoItems />}>
         <MainContent>
-          <HeroBanner/>
           <ProductContent/>
         </MainContent>
       </Suspense>
@@ -105,4 +100,4 @@ const Main = () => {
   )
 }
 
-export default Main
+export default Categories
