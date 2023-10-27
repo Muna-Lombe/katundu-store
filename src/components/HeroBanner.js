@@ -71,15 +71,20 @@ import { ArrowRight } from '../assets'
             activePageIdx: get.newActiveId//splitId(e.currentTarget.id).at(-1)
           }))
       }
-      const host = {xpz:"192.168.1.66:3143", local:"localhost:3000",global:"https://disk.yandex.ru/d/BGZbx6uGaVCv3w"}
-      const imgSrc = (i)=>"http://"+host.global+"/images/banner/Banner_"+i+".png"
+      const host = {
+        xpz:(i)=>"http://192.168.1.66:3143"+"/images/banner/Banner_"+i+".png", 
+        local:(i)=>"http://localhost:3000"+"/images/banner/Banner_"+i+".png",
+        global:(i)=>"https://storage.yandexcloud.net/katundu.api/images/banner/Banner_"+i+".png",
+          
+      }
+     
       return(
         <>
           <span className="scroll-gallery relative block">
             <span className=" flex   overflow-x-scroll scrollbar pointer-events-none ">
             {
               banners.map((b,x) => 
-                <img id={("banner_page_" + (x+1) )} data-active-banner={x===0}  key={x} className={"banner w-full min-w-full transition data-[active-banner]:ease-in-out delay-100"} src={imgSrc(b)} alt="" />
+                <img id={("banner_page_" + (x+1) )} data-active-banner={x===0}  key={x} className={"banner w-full min-w-full transition data-[active-banner]:ease-in-out delay-100"} src={host.global(b)} alt="" />
                 )
               }
               </span>
