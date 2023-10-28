@@ -202,3 +202,55 @@ body:has(.modal-open)::-webkit-scrollbar {
   -ms-user-select: none;
   user-select: none;
 }
+
+.animateShow{
+ 
+  animation: showAnimate 0s 6s forwards;
+  display: none;
+  }
+
+  @keyframes showAnimate {
+    to {
+      display: flex;
+    }
+  }
+
+
+.animateShow-delayed {
+ 
+    animation: showAnimateDelayed 0s 5s forwards;
+    display: none;
+  }
+
+  @keyframes showAnimateDelayed {
+    to {
+      display: flex;
+    }
+  }
+
+
+.animateHide {
+
+    animation: hideAnimate 0s 5s forwards;
+    display: none;
+  }
+
+  @keyframes hideAnimate {
+    to {
+      display: flex;
+    }
+  }
+
+
+.animateHide-delayed {
+
+    animation: hideAnimateDelayed 0s 6s forwards;
+    display: flex;
+  }
+
+  @keyframes hideAnimateDelayed {
+    to {
+      display: none;
+    }
+  }
+

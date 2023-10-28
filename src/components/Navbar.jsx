@@ -1,4 +1,4 @@
-import React, {  useRef, useState } from 'react';
+import React, {  useEffect, useRef, useState } from 'react';
 import { Link, createSearchParams, useLocation, useNavigate } from "react-router-dom";
 
 // assets
@@ -224,7 +224,7 @@ const Navbar = ({children}) => {
           <PinIco />
         </span>
 
-      < h2 id = 'location-text' className ="less-than-xs:hidden less-than-xs:top-3 less-than-xs:left-6 less-than-xs:text-sm greater-than-xs:p-2  greater-than-xs:relative greater-than-xs:w-auto flex flex-row text-[0.9rem] text-ellipsis ">
+      < h2 id = 'location-text' className ="less-than-sm:hidden less-than-xs:top-3 less-than-xs:left-6 less-than-xs:text-sm greater-than-xs:p-2  greater-than-xs:relative greater-than-xs:w-auto flex flex-row text-[0.9rem] text-ellipsis ">
            
 
           <select name="location" id="location_select" className="outline-none appearance-none  bg-inherit">
@@ -239,18 +239,127 @@ const Navbar = ({children}) => {
       </div>
     )
   }
+  
+  const LogoImg = ()=>{
+    const toggleOnResize = () => {
+      const logoParent = document.getElementById("logo_location")
+      const logoLongPng = document.getElementById("logo_long_png")
+      const logoShortPng = document.getElementById("logo_short_png")
+      const logoGif = document.getElementById("logo_trans_gif")
+      const logoGifRev = document.getElementById("logo_trans_gif_reverse")
+      // logoParent.clientWidth
+      let tm = ""
+      const canBeToggledTrue = (classList, classname)=>{
+        return classList.contains(classname) 
+        ? ""
+        : classList.toggle(classname, true)
+      }
+      const canBeToggledFalse = (classList, classname) => {
+        return classList.contains(classname) 
+        ? classList.toggle(classname, false) 
+        : ""
+          
+      }
+      const toggleForward =() =>{
+        // logoLongPng.classList.toggle("hidden", true)
+        canBeToggledTrue(logoLongPng.classList, "hidden")
+        setTimeout(() => {
+          // logoGif.classList.toggle("hidden", true)
+          // canBeToggledTrue(logoGif.classList, "hidden")
+          // logoShortPng.classList.toggle("hidden", false)
+          canBeToggledFalse(logoShortPng.classList, "hidden")
+        }, 300);
+        // logoGif.classList.toggle("hidden", false)
+        // canBeToggledFalse(logoGif.classList, "hidden")
+      }
 
+      const toggleReverse =()=>{
+        // logoShortPng.classList.toggle("hidden", true)
+        canBeToggledTrue(logoShortPng.classList, "hidden")
+        setTimeout(() => {
+          // logoGifRev.classList.toggle("hidden", false)
+          // canBeToggledFalse(logoGifRev.classList, "hidden")
+
+
+          // logoLongPng.classList.toggle("hidden", false)
+          canBeToggledFalse(logoLongPng.classList, "hidden")
+
+        }, 300);
+        // logoGifRev.classList.toggle("hidden", true)
+        // canBeToggledTrue(logoGifRev.classList, "hidden")
+      }
+
+      const toggleForContentBox =(entries)=>{
+        const box = entries[0]?.contentBoxSize
+        if (Math.floor(box[0]?.inlineSize) <= 350) {
+            console.log(box)
+            toggleForward()
+          }
+        if (Math.floor(box[0]?.inlineSize) > 350) {
+              toggleReverse()
+          }
+        }
+
+                
+        const toggleForContentRect =(entries)=>{
+          const rect = entries[0]?.contentRect
+          if (Math.floor(rect[0]?.width) < 300) {
+              toggleForward()
+            }
+          if (Math.floor(rect[0]?.width) > 300) {
+              toggleReverse()
+
+            }
+          }
+      const resizeObserver =new ResizeObserver((entries) => {
+          if(entries[0]?.contentBoxSize){
+            clearTimeout(tm)
+            tm = setTimeout(() => {
+              toggleForContentBox(entries)
+              // console.log("is box size?:",entries[0]?.contentBoxSize[0].inlineSize === 270)
+
+            }, 100);
+          } else if (entries[0].contentRect){
+            
+            clearTimeout(tm)
+            tm = setTimeout(() => {
+              toggleForContentRect(entries)
+              // console.log("is rect size?:",entries[0]?.contentRect.width === 270)
+
+            },100);
+
+        }
+       
+      })
+      resizeObserver.observe(logoParent)
+      return (() => resizeObserver.unobserve(logoParent))
+  }
+    useEffect(() => {
+      // console.log("jsdhffdalfj")
+      toggleOnResize()
+    },[])
+
+    return(
+      <>
+        <img id="logo_long_png" src={imagepath("/img/placeholders/Katundu.png")} className="max-w-[14rem] hidden" alt="" />
+        <img id="logo_trans_gif" src={imagepath("/img/placeholders/Katundu.gif")} className="max-w-[14rem] hidden " loading='lazy' alt="" />
+        <img id="logo_trans_gif_reverse" src={imagepath("/img/placeholders/Katundu_reverse.gif")} className="max-w-[14rem] hidden" loading='lazy' alt="" />
+        <img id="logo_short_png" src={imagepath("/img/placeholders/Katundu_short.png")} className="max-w-[2.8rem] hidden  object-scale-down object-center" loading='lazy' alt="" />
+      </>
+    )
+  }
   return (
     //  md:items-center
     <>
-      <nav className=" p-5 pb-1 relative w-full h-full flex justify-center gap-2 items-start  lg:items-center xl:items-center ">
+      <nav id="nav_container" className=" p-5 pb-1 relative w-full h-full flex justify-center gap-2 items-start  lg:items-center xl:items-center ">
         <div id="navbar_left__wrapper" className=" w-full block  gap-4 lg:flex lg:flex-row xl:flex xl:flex-row justify-start items-center transition-all">
-          <div id="logo_location" className=" w-full lg:w-auto xl:auto flex less-than-xs:flex-wrap less-than-xs:gap-4 justify-start gap-4 transition-all ease-in-out delay-700">
+          {/* lg:w-auto xl:auto flex  less-than-xs:gap-4 */}
+          <div id="logo_location" className="container m-1 align-start  w-full flex less-than-xs:flex-wrap justify-start gap-4 transition-all ease-in-out delay-700 first:h-[44px]">
               {/* <Logo clickEv={()=>""} logo={tags.footer.storename} size={{ h: 40, w: 40, x:10, y: 32, font: 38 }}/> */}
               <Logo>
-                <Link to={''} className='cursor-pointer '>
+                <Link to={''} className='cursor-pointer  '>
               {/* <img src={ imagepath("/img/placeholders/Katundu.png") } alt = "" /> */}
-                  <img src={ imagepath("/img/placeholders/Katundu.png")} className="max-w-[14rem]" alt="" />
+                <LogoImg/>
                 </Link>
               </Logo>
            

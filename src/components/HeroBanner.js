@@ -10,12 +10,12 @@ import { ArrowRight } from '../assets'
     ) 
     const Pagination = ({className, clickEv, activeIds})=>{
       const Dot = ()=>(
-         <svg className="w-4 h-4 fill-white ease-in-out delay-500" viewBox="0 0 12 11" xmlns="http://www.w3.org/2000/svg">
+         <svg className="w-[80%] h-[100%] max-w-[1rem] max-h-[1rem] fill-white ease-in-out delay-500" viewBox="0 0 12 11" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.18414 5.16257L6.18414 5.16257" stroke="white" strokeWidth="10" strokeLinecap="round" />
         </svg>
       )
       const Dash = () => (
-        <svg className="fill-orange-500 ease-in-out delay-500" width="24" height="14" viewBox="0 0 24 11" xmlns="http://www.w3.org/2000/svg">
+        <svg className="w-[90%] h-[100%] max-w-[24px] max-h-[14px] fill-orange-500 ease-in-out delay-500" viewBox="0 0 24 11" xmlns="http://www.w3.org/2000/svg">
           <rect x="0.5" y="0.5" width="23" height="10" rx="5" stroke="#9B4A00" />
         </svg>
       )
@@ -40,7 +40,14 @@ import { ArrowRight } from '../assets'
     const ScrollableGallery = ({})=>{
       const [activeIds, setActiveIds] = useState({activePageIdx:1, nextId:2, prevId:5})
       // console.log("state", activeIds)
-      const banners = [1,2,3,4,5]
+      const banners = [
+        "https://sun9-78.vkuserphoto.ru/impg/HIVn9BafRjfPBbkIJVBtSXy03ZaXY9rLXxmVLQ/fOzyRac-4IU.jpg?size=940x270&quality=95&sign=c0a7942fa7b189b6809ee466ad081b2d&type=album",
+        "https://sun9-9.vkuserphoto.ru/impg/SKWBgfK9CunhNJYkITc-HFEcdmXX2vOObhg1cQ/ZMJgaSZl1A4.jpg?size=943x271&quality=95&sign=a45f863df71009a59790af07240f99b1&type=album",
+        "https://sun9-67.vkuserphoto.ru/impg/-s-n_WnhCUnVn_YQjQNFehJycEjuGieD7fh9xw/f1KuAmrxADM.jpg?size=942x273&quality=95&sign=fd898cd170b6033c4202ac4573ccd169&type=album",
+        "https://sun9-44.vkuserphoto.ru/impg/YA-ZXGa790SrEmeS5RfFE8JEIte4gI-pJxX3Zg/Ckea6R-VmZA.jpg?size=943x272&quality=95&sign=763568ffd3d219978dae1a08577204f2&type=album",
+        "https://sun9-80.vkuserphoto.ru/impg/65XER12ySwgb5MtROa95rQFVs6shEKE00tDFKQ/4oQRLK3hkbE.jpg?size=939x270&quality=95&sign=f9e938c5c19ffc5ee6dd753776ad97fb&type=album",
+
+      ]
       const splitId = (s)=> s.toString().split("_")
       const handleScroll = (e) => {
         e.preventDefault();
@@ -80,11 +87,11 @@ import { ArrowRight } from '../assets'
      
       return(
         <>
-          <span className="scroll-gallery relative block">
+          <span className="scroll-gallery relative ">
             <span className=" flex   overflow-x-scroll scrollbar pointer-events-none ">
             {
               banners.map((b,x) => 
-                <img id={("banner_page_" + (x+1) )} data-active-banner={x===0}  key={x} className={"banner w-full min-w-full transition data-[active-banner]:ease-in-out delay-100"} src={host.global(b)} alt="" />
+                <img id={("banner_page_" + (x+1) )} data-active-banner={x===0}  key={x} className={"banner w-full min-w-[100%] max-h-fit"} src={b} alt="" />
                 )
               }
               </span>
@@ -94,7 +101,7 @@ import { ArrowRight } from '../assets'
       )
     }
     return(
-      <div id="Hero-Banner" className={" relative inline-block min-w-[250px] w-full h-max max-h-[213px] text-white "}>
+      <div id="Hero-Banner" className={" relative inline-block min-w-[250px] w-full max-h-[333px] text-white overflow-hidden "}>
         <ScrollableGallery/>
         
       </div>

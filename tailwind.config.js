@@ -24,7 +24,7 @@ module.exports = {
         addVariant('greater-than-lg', '@media (min-width: 1280px),@media (min-width: 1400px)');
         addVariant('greater-than-xl', '@media (min-width: 1400px)');
         addVariant('less-than-xs', '@media (max-width: 475px)');
-        
+        addVariant('less-than-logo-min', '@media (max-width: 388px)');
         addVariant('less-than-sm', '@media (max-width: 768px)');
         addVariant('less-than-md', '@media (max-width: 1024px)');
         addVariant('less-than-lg', '@media (max-width: 1280px)');

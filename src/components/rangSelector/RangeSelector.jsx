@@ -49,7 +49,7 @@ const RangeSelector = ({ min, max, stateUpdaters, onChange, form="" }) => {
   }, [stateUpdaters.min.val, stateUpdaters.max.val, onChange]);
 
   return (
-    <div className="container">
+    <div className="range_container">
       <input
         type="range"
         min={min}

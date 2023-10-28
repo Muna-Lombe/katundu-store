@@ -8,8 +8,7 @@ import { titleTagTypes as tags } from '../assets';
 
 const Main = () => {
 
-  let cats = useSelector(categories)
-  let products = useSelector(filteredProductsFromModel([]))
+  
 
 
   const scrollFn = function (event) {
@@ -53,16 +52,17 @@ const Main = () => {
       </div>
     </div>
   )
-  const ProductContent = ()=>(
-    <div id="products_list" className="w-full flex flex-col gap-6">
-      <div className="product-category-tags">
+  const ProductCategoryTags=()=>{
+    let cats = useSelector(categories)
+    return(
+    <div className="product-category-tags w-[95%]">
         <div id="products_list__header" className="m-3 w-auto flex  flex-col md:flex-row lg:flex-row xl:flex-row justify-start gap-2  items-baseline ">
           <h3 className=" text-2xl text-black  font-raleway lining-nums tabular-nums  font-[700]">{tags.home.categoriesText}</h3>
         </div>
-        <div id="product_tags" className=" w-auto  flex flex-row flex-nowrap overflow-x-hidden" >
+        <div id="product_tags" className=" w-full  flex flex-row flex-nowrap overflow-x-hidden" >
           <CategoryTag borderId={'type_clear'} text={'clear'} />
           
-          <div  id="scrollable_product_tags" onMouseEnter={handleSetScroll} onMouseLeave={handleSetScroll}  className="scrollable_product_tags mr-2  w-max  flex flex-row overflow-x-scroll overflow-y-hidden  shadow-slate-600  tag">
+          <div  id="scrollable_product_tags" onMouseEnter={handleSetScroll} onMouseLeave={handleSetScroll}  className="scrollable_product_tags mr-2  w-full max-w-fit  flex flex-row overflow-x-scroll overflow-y-hidden  shadow-slate-600  tag">
             {
 
               cats.map((tag, idx) => {
@@ -74,22 +74,34 @@ const Main = () => {
 
         </div>
       </div>
-      
-      {/* grid-cols-[repeat(auto-fit,minmax(auto,7rem))] */}
-      <div id="mainbar__content" className={"w-auto h-[rem] p-2 grid grid-flow-row-dense less-than-xs:grid-cols-2 greater-than-xs:grid-cols-[repeat(auto-fit,minmax(auto,9rem))] greater-than-sm:grid-cols-[repeat(4,minmax(auto,12rem))] overflow-x-scroll scroll-smooth justify-center  transition-all  tag gap-3 greater-than-xs:gap-6"}>
+  )}
+  const ProductContentProducts=({products})=>{
+    // {/* grid-cols-[repeat(auto-fit,minmax(auto,7rem))] */ }
+    return(
+      < div id = "mainbar__content" className = { "w-full h-[rem] p-2 grid grid-flow-row-dense less-than-xs:grid-cols-2 greater-than-xs:grid-cols-[repeat(auto-fit,minmax(auto,11rem))] greater-than-sm:grid-cols-[repeat(4,minmax(auto,14rem))] overflow-x-scroll scroll-smooth justify-center  transition-all  tag gap-3 greater-than-xs:gap-6"} >
         {
           products.length
-            ? products.map((i) => (<Product key={i.id} product={i} isSearchOrMain={true} />))
-            : <>
-              {
-                new Array(6).fill().map((i, x) => <Product key={x} noPrd={"true"} />)
-              }
-              
-            </>
-        }
-      </div>
+            ? products.map((i) => (<Product key= { i.id } product = { i } isSearchOrMain = { true} />))
+                : <>
+                    {
+                      new Array(6).fill().map((i, x) => <Product key={ x } noPrd = { "true"} />)
+                    }
+
+                  </>
+            }
     </div>
-  )
+    )
+  }
+  const ProductContent = ()=>{
+    let products = useSelector(filteredProductsFromModel([]))
+    return(
+    <div id="products_list" className="w-full flex flex-col items-center gap-6">
+      
+      <ProductCategoryTags/>
+      <ProductContentProducts products={products}/>
+      <input type="button" value="Load More"   onClick={()=>console.log("continuing load products from idx: ", products.at(-1))} className="p-1 w-min text-base font-semibold underline underline-offset-1 text-red-500 active:text-red-600 active:animate-pulse border border-red-500 rounded-lg"/>
+    </div>
+  )}
   
  
   return (
