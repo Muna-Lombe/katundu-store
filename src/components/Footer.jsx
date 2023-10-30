@@ -1,11 +1,118 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FbIco, InstaIco, VkIco, titleTagTypes as tags } from '../assets'
 import Google_Play_Link from '../assets/tests/jsonServer/img/placeholders/Google_Play_Lnk.png'
 import Apple_Store_Link from '../assets/tests/jsonServer/img/placeholders/App_Store_Lnk.png'
 import Logo from './Logo'
 import { Link } from 'react-router-dom'
+import { imagepath } from '../assets/images'
 
 const Footer = ({}) => {
+  const LogoImg = () => {
+    const toggleOnResize = () => {
+      const logoParent = document.getElementById("footer_top")
+      const logoLongPng = document.getElementById("logo_long_png")
+      const logoShortPng = document.getElementById("logo_short_png")
+      const logoGif = document.getElementById("logo_trans_gif")
+      const logoGifRev = document.getElementById("logo_trans_gif_reverse")
+      // logoParent.clientWidth
+      let tm = ""
+      const canBeToggledTrue = (classList, classname) => {
+        return classList.contains(classname)
+          ? ""
+          : classList.toggle(classname, true)
+      }
+      const canBeToggledFalse = (classList, classname) => {
+        return classList.contains(classname)
+          ? classList.toggle(classname, false)
+          : ""
+
+      }
+      const toggleForward = () => {
+        // logoLongPng.classList.toggle("hidden", true)
+        canBeToggledTrue(logoLongPng.classList, "hidden")
+        setTimeout(() => {
+          // logoGif.classList.toggle("hidden", true)
+          // canBeToggledTrue(logoGif.classList, "hidden")
+          // logoShortPng.classList.toggle("hidden", false)
+          canBeToggledFalse(logoShortPng.classList, "hidden")
+        }, 300);
+        // logoGif.classList.toggle("hidden", false)
+        // canBeToggledFalse(logoGif.classList, "hidden")
+      }
+
+      const toggleReverse = () => {
+        // logoShortPng.classList.toggle("hidden", true)
+        canBeToggledTrue(logoShortPng.classList, "hidden")
+        setTimeout(() => {
+          // logoGifRev.classList.toggle("hidden", false)
+          // canBeToggledFalse(logoGifRev.classList, "hidden")
+
+
+          // logoLongPng.classList.toggle("hidden", false)
+          canBeToggledFalse(logoLongPng.classList, "hidden")
+
+        }, 300);
+        // logoGifRev.classList.toggle("hidden", true)
+        // canBeToggledTrue(logoGifRev.classList, "hidden")
+      }
+
+      const toggleForContentBox = (entries) => {
+        const box = entries[0]?.contentBoxSize
+        if (Math.floor(box[0]?.inlineSize) <= 350) {
+          toggleForward()
+        }
+        if (Math.floor(box[0]?.inlineSize) > 350) {
+          toggleReverse()
+        }
+      }
+
+
+      const toggleForContentRect = (entries) => {
+        const rect = entries[0]?.contentRect
+        if (Math.floor(rect[0]?.width) < 350) {
+          toggleForward()
+        }
+        if (Math.floor(rect[0]?.width) > 350) {
+          toggleReverse()
+
+        }
+      }
+      const resizeObserver = new ResizeObserver((entries) => {
+        // console.log(entries)
+        if (entries[0]?.contentBoxSize) {
+          clearTimeout(tm)
+          tm = setTimeout(() => {
+            toggleForContentBox(entries)
+            // console.log("is box size?:",entries[0]?.contentBoxSize[0].inlineSize === 270)
+
+          }, 100);
+        } else if (entries[0].contentRect) {
+
+          clearTimeout(tm)
+          tm = setTimeout(() => {
+            toggleForContentRect(entries)
+            // console.log("is rect size?:",entries[0]?.contentRect.width === 270)
+
+          }, 100);
+
+        }
+
+      })
+      resizeObserver.observe(logoParent)
+      return (() => resizeObserver.unobserve(logoParent))
+    }
+    useEffect(() => {
+      // console.log("jsdhffdalfj")
+      // toggleOnResize()
+    }, [])
+
+    return (
+      <>
+        <img id="logo_long_png" src={imagepath("/img/placeholders/Katundu.png")} className="max-w-[14rem] " alt="" />
+        <img id="logo_short_png" src={imagepath("/img/placeholders/Katundu_short.png")} className="max-w-[2.8rem] hidden  object-scale-down object-center" loading='lazy' alt="" />
+      </>
+    )
+  }
   return (
     <div id="footer_wrapper" className="w-full h-full flex flex-col justify-around">
       <div id="footer_top" className="w-auto flex flex-wrap justify-between items-center">
@@ -13,9 +120,12 @@ const Footer = ({}) => {
           {/* <h3 className=" text-3xl md:text-5xl lg:text-5xl xl:text-5xl  font-bold font-raleway lining-nums tabular-nums ">
             {tags.footer.storename}
           </h3> */}
-          <Link to="" >
-            <Logo logo={tags.footer.storename} size={{ h: 40, w: 40, x: 10, y: 32, font: 38 }} />
-          </Link> 
+          <Logo>
+            <Link to="" >
+              <LogoImg/>
+              {/* <Logo logo={tags.footer.storename} size={{ h: 40, w: 40, x: 10, y: 32, font: 38 }} /> */}
+            </Link> 
+          </Logo>
         </div>
         {/* <div id="footer_links" className="w-auto max-w-[400px] mx-4 flex flex-wrap gap-2"> */}
           <div id="footer_socials" className="w-max flex flex-wrap flex-col gap-2 text-xs  md:text-base lg:text-base xl:text-base text-slate-600 font-raleway lining-nums tabular-nums  font-semibold ">

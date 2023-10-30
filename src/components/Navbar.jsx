@@ -126,30 +126,33 @@ const Navbar = ({children}) => {
     })
   };
   const Menu= ({children})=>{
-    const handleClick =(e)=>{
-      e.preventDefault()
+      const handleClick =(e)=>{
+        e.preventDefault()
 
-      const child = document.getElementById("open-menu-icon")
-      const nearChild = document.getElementById("closed-menu-icon")
-      // const nearChild = findNear(child)
-      child.parentElement.toggleAttribute("open")//classList.toggle("open")
-      child.classList.toggle("active")
-      child.classList.toggle("flex")
-      child.classList.toggle("hidden")
-      nearChild.classList.toggle("active")
-      nearChild.classList.toggle("hidden")
-      child.classList.toggle( "flex")
-      
-    }
+        const child = document.getElementById("open-menu-icon")
+        const nearChild = document.getElementById("closed-menu-icon")
+        // const nearChild = findNear(child)
+        child.parentElement.toggleAttribute("open")//classList.toggle("open")
+        child.classList.toggle("active")
+        child.classList.toggle("flex")
+        child.classList.toggle("hidden")
+        child.classList.toggle("absolute")
+
+        nearChild.classList.toggle("active")
+        nearChild.classList.toggle("hidden")
+        nearChild.classList.toggle("absolute")
+        child.classList.toggle( "flex")
+        
+      }
       return(
-        <div id="navbar_right__wrapper" className="menu flex flex-col  absolute top-6  right-2 ">
-          <menu  className='burger-menu peer less-than-xs:flex hidden cursor-pointer'>
-            <svg onClick={handleClick} id="closed-menu-icon" className="w-[1.6rem] aspect-square active flex  transition-transform" fill="currentColor"  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path fillRule="evenodd" clipRule="evenodd" d="M4 7C4 6.44772 4.44772 6 5 6H19C19.5523 6 20 6.44772 20 7C20 7.55228 19.5523 8 19 8H5C4.44772 8 4 7.55228 4 7ZM4 12C4 11.4477 4.44772 11 5 11H19C19.5523 11 20 11.4477 20 12C20 12.5523 19.5523 13 19 13H5C4.44772 13 4 12.5523 4 12ZM4 17C4 16.4477 4.44772 16 5 16H19C19.5523 16 20 16.4477 20 17C20 17.5523 19.5523 18 19 18H5C4.44772 18 4 17.5523 4 17Z" />
+        <div id="navbar_menu__wrapper" className="menu max-h-[40px] flex flex-col items-end z-10  top-9 overflow-visible  right-2 ">
+          <menu  className='burger-menu -top relative peer w-[20px] less-than-xs:flex  hidden cursor-pointer'>
+            <svg onClick={handleClick} id="closed-menu-icon" className="top-1/2 left-1/2  w-[1.6rem] aspect-square active flex  transition-transform" fill="currentColor"  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path fillRule="evenodd" clipRule="evenodd" d="M4 7C4 6.44772 4.44772 6 5 6H19C19.5523 6 20 6.44772 20 7C20 7.55228 19.5523 8 19 8H5C4.44772 8 4 7.55228 4 7ZM4 12C4 11.4477 4.44772 11 5 11H19C19.5523 11 20 11.4477 20 12C20 12.5523 19.5523 13 19 13H5C4.44772 13 4 12.5523 4 12ZM4 17C4 16.4477 4.44772 16 5 16H19C19.5523 16 20 16.4477 20 17C20 17.5523 19.5523 18 19 18H5C4.44772 18 4 17.5523 4 17Z" />
             </svg>
-            <svg onClick={handleClick} id="open-menu-icon" className="w-[1.6rem] aspect-square hidden  transition-transform" fill="currentColor"  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path fillRule="evenodd" clipRule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z" /> 
+            <svg onClick={handleClick} id="open-menu-icon" className=" top-[-12px] right-[-4px]  w-[0.8rem] aspect-square hidden  transition-transform" fill="currentColor"  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path fillRule="evenodd" clipRule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z" /> 
             </svg>
           </menu>
-          <div className=" hidden peer-open:flex flex-col greater-than-xs:flex greater-than-xs:flex-row max-w-[8rem]  h-max md:items-end md:justify-end greater-than-lg:items-center greater-than-lg:justify-center greater-than-lg:m-0 greater-than-lg:p-0 less-than-sm:gap-1 gap-4" >
+          <div className=" hidden peer-open:flex flex-row greater-than-xs:flex greater-than-xs:flex-row max-w-[8rem]  h-max md:items-end md:justify-end greater-than-lg:items-center greater-than-lg:justify-center greater-than-lg:m-0 greater-than-lg:p-0 less-than-sm:gap-1 gap-4 " >
             {children}
           </div>
         </div>
@@ -157,14 +160,14 @@ const Navbar = ({children}) => {
   }
   const GoToCartIco = ({isBurgerMenu=true,size="2.5rem"}) => (
    
-    <Link id='cart' to="cart/" className='  aspect-square flex'> 
+      <Link id='cart' to="cart/" className=' w-[2rem] aspect-square flex justify-center '> 
         <CartIco size={size} isBurgerMenu={isBurgerMenu} isCartBtn={true} /> 
       </Link> 
   )
   
   const GoToAvatarIco = ({size})=> (
 
-    <div className="avtr">
+    <div className="avtr min-w-[40px] flex justify-center items-center">
       <Link to="history/" className='peer  flex'> 
         <AvatarIco  size={size}  />
       </Link> 
@@ -192,7 +195,7 @@ const Navbar = ({children}) => {
       
       <div id="search_field" tabIndex={0} className="relative min-w-[12rem]  greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem] less-than-xs:h-[2rem] h-[2.8rem] max-h-[3.2rem] flex justify-between border-[1px] rounded-3xl">
         {/* <div className="search-input relative w-full max-w-[22rem]  flex   justify-between p-[1px]"> */}
-          <input type="text" ref={ref}  name="search" defaultValue={curtext} placeholder={searchProductText||""} onKeyUp={(e) => {handleChange(e); setCurtext(e.target.value)}} className=" search autofill:selection bg-white w-full rounded-bl-3xl rounded-tl-3xl bg-transparent px-2  text-black focus:outline-none" />
+          <input type="text" ref={ref}  name="search" defaultValue={curtext} placeholder={searchProductText||""} onKeyUp={(e) => {handleChange(e); setCurtext(e.target.value)}} className=" search autofill:selection bg-white w-full rounded-bl-3xl rounded-tl-3xl bg-transparent px-2  text-black text-[1rem] focus:outline-none" />
     
           <Link to={"search?" + setParams()} onClick={() => handleBlur()} className=" top-0 right-0 w-1/5 h-full rounded-3xl m-[0.00rem] px-2 bg-[#F0F4FB] flex justify-center items-center">
             <SearchIco />
@@ -241,73 +244,82 @@ const Navbar = ({children}) => {
   }
   
   const LogoImg = ()=>{
+    const [activeLogo, setActiveLogo] = useState("long")
+
     const toggleOnResize = () => {
       const logoParent = document.getElementById("logo_location")
       const logoLongPng = document.getElementById("logo_long_png")
       const logoShortPng = document.getElementById("logo_short_png")
-      const logoGif = document.getElementById("logo_trans_gif")
-      const logoGifRev = document.getElementById("logo_trans_gif_reverse")
-      // logoParent.clientWidth
+      const logoTransToLong = document.getElementById("logo_gif_trans_to_long")
+      const logoTransToShort = document.getElementById("logo_gif_trans_to_short")
+      
       let tm = ""
       const canBeToggledTrue = (classList, classname)=>{
         return classList.contains(classname) 
-        ? ""
-        : classList.toggle(classname, true)
+        ? undefined
+        : {toggle: () =>classList.toggle(classname, true)}
       }
       const canBeToggledFalse = (classList, classname) => {
         return classList.contains(classname) 
-        ? classList.toggle(classname, false) 
-        : ""
+        ? {toggle: () =>classList.toggle(classname, false)} 
+        : undefined
           
       }
-      const toggleForward =() =>{
-        // logoLongPng.classList.toggle("hidden", true)
-        canBeToggledTrue(logoLongPng.classList, "hidden")
-        setTimeout(() => {
-          // logoGif.classList.toggle("hidden", true)
-          // canBeToggledTrue(logoGif.classList, "hidden")
-          // logoShortPng.classList.toggle("hidden", false)
-          canBeToggledFalse(logoShortPng.classList, "hidden")
-        }, 300);
-        // logoGif.classList.toggle("hidden", false)
-        // canBeToggledFalse(logoGif.classList, "hidden")
+      const delay=(x,time)=>{
+        const t_o = setTimeout(() => {
+          x()
+        }, time);
+        return t_o
+      }
+      const toggleShortLogo =() =>{
+        
+          canBeToggledTrue(logoLongPng.classList, "hidden")?.toggle()
+            
+          delay(() => {
+              canBeToggledTrue(logoTransToShort.classList, "hidden")?.toggle()
+              canBeToggledFalse(logoShortPng.classList, "hidden")?.toggle()
+              // console.log("shrunk")
+
+            }, 2340)
+
+          canBeToggledFalse(logoTransToShort.classList, "hidden")?.toggle()
+          
       }
 
-      const toggleReverse =()=>{
-        // logoShortPng.classList.toggle("hidden", true)
-        canBeToggledTrue(logoShortPng.classList, "hidden")
-        setTimeout(() => {
-          // logoGifRev.classList.toggle("hidden", false)
-          // canBeToggledFalse(logoGifRev.classList, "hidden")
+      const toggleLongLogo =()=>{
+        canBeToggledTrue(logoShortPng.classList, "hidden")?.toggle()
+         
+        delay(() => {
+            canBeToggledTrue(logoTransToLong.classList, "hidden")?.toggle()
+            canBeToggledFalse(logoLongPng.classList, "hidden")?.toggle()
+            // console.log("expanded")
 
+          }, 2340)
 
-          // logoLongPng.classList.toggle("hidden", false)
-          canBeToggledFalse(logoLongPng.classList, "hidden")
-
-        }, 300);
-        // logoGifRev.classList.toggle("hidden", true)
-        // canBeToggledTrue(logoGifRev.classList, "hidden")
+        canBeToggledFalse(logoTransToLong.classList, "hidden")?.toggle()
       }
 
       const toggleForContentBox =(entries)=>{
         const box = entries[0]?.contentBoxSize
-        if (Math.floor(box[0]?.inlineSize) <= 350) {
-            console.log(box)
-            toggleForward()
-          }
-        if (Math.floor(box[0]?.inlineSize) > 350) {
-              toggleReverse()
+        if (Math.floor(box[0]?.inlineSize) <= 350 && canBeToggledFalse(logoShortPng.classList, "hidden") ) {
+          toggleShortLogo()
+          console.log("<-- toShort trigger count")
+          
+        }
+        if (Math.floor(box[0]?.inlineSize) > 350 && canBeToggledFalse(logoLongPng.classList, "hidden")) {
+          toggleLongLogo()
+          console.log("<-- toLong trigger count")
           }
         }
 
                 
         const toggleForContentRect =(entries)=>{
           const rect = entries[0]?.contentRect
-          if (Math.floor(rect[0]?.width) < 300) {
-              toggleForward()
-            }
-          if (Math.floor(rect[0]?.width) > 300) {
-              toggleReverse()
+          if (Math.floor(rect[0]?.width) <= 350 && canBeToggledFalse(logoShortPng.classList, "hidden")) {
+            toggleShortLogo()
+          }
+          if (Math.floor(rect[0]?.width) > 350 && canBeToggledFalse(logoLongPng.classList, "hidden")) {
+              toggleLongLogo()
 
             }
           }
@@ -316,9 +328,9 @@ const Navbar = ({children}) => {
             clearTimeout(tm)
             tm = setTimeout(() => {
               toggleForContentBox(entries)
-              // console.log("is box size?:",entries[0]?.contentBoxSize[0].inlineSize === 270)
+              // console.log("is box size?:")
 
-            }, 100);
+            }, 0);
           } else if (entries[0].contentRect){
             
             clearTimeout(tm)
@@ -326,7 +338,7 @@ const Navbar = ({children}) => {
               toggleForContentRect(entries)
               // console.log("is rect size?:",entries[0]?.contentRect.width === 270)
 
-            },100);
+            },0);
 
         }
        
@@ -341,9 +353,9 @@ const Navbar = ({children}) => {
 
     return(
       <>
-        <img id="logo_long_png" src={imagepath("/img/placeholders/Katundu.png")} className="max-w-[14rem] hidden" alt="" />
-        <img id="logo_trans_gif" src={imagepath("/img/placeholders/Katundu.gif")} className="max-w-[14rem] hidden " loading='lazy' alt="" />
-        <img id="logo_trans_gif_reverse" src={imagepath("/img/placeholders/Katundu_reverse.gif")} className="max-w-[14rem] hidden" loading='lazy' alt="" />
+        <img id="logo_long_png" src={imagepath("/img/placeholders/Katundu.png")} className="max-w-[14rem]" alt="" />
+        <img id="logo_gif_trans_to_short" src={imagepath("/img/placeholders/Katundu.gif")} className="max-w-[14rem] hidden absolute top-0 left-0 z-10 " loading='eager' alt="" />
+        <img id="logo_gif_trans_to_long" src={imagepath("/img/placeholders/Katundu_reverse.gif")} className="max-w-[14rem] hidden absolute top-0 left-0 z-10 " loading='eager' alt="" />
         <img id="logo_short_png" src={imagepath("/img/placeholders/Katundu_short.png")} className="max-w-[2.8rem] hidden  object-scale-down object-center" loading='lazy' alt="" />
       </>
     )
@@ -352,9 +364,11 @@ const Navbar = ({children}) => {
     //  md:items-center
     <>
       <nav id="nav_container" className=" p-5 pb-1 relative w-full h-full flex justify-center gap-2 items-start  lg:items-center xl:items-center ">
-        <div id="navbar_left__wrapper" className=" w-full block  gap-4 lg:flex lg:flex-row xl:flex xl:flex-row justify-start items-center transition-all">
+        {/* " w-full flex  gap-4 lg:flex lg:flex-row xl:flex xl:flex-row justify-start items-center transition-all" */}
+        <div id="navbar_left__wrapper" className="w-full flex less-than-sm:flex-wrap items-center justify-between gap-2 less-than-logo-min:gap-3 ">
           {/* lg:w-auto xl:auto flex  less-than-xs:gap-4 */}
-          <div id="logo_location" className="container m-1 align-start  w-full flex less-than-xs:flex-wrap justify-start gap-4 transition-all ease-in-out delay-700 first:h-[44px]">
+          {/* m-1 align-start  w-full flex less-than-xs:flex-wrap justify-start gap-4 transition-all ease-in-out delay-700 */}
+          <div id="logo_location" className="order-1  relative flex justify-center insert-previous-classes-here first:h-[44px]">
               {/* <Logo clickEv={()=>""} logo={tags.footer.storename} size={{ h: 40, w: 40, x:10, y: 32, font: 38 }}/> */}
               <Logo>
                 <Link to={''} className='cursor-pointer  '>
@@ -368,7 +382,8 @@ const Navbar = ({children}) => {
           {
             isNotAllowed()
             ? ""
-            :<div id="search_field_wrapper"  className="w-full less-than-sm:mt-4 greater-than-md:w-max max-h-14 lg:min-w-[2rem] xl:min-w-[2rem] py-2 flex flex-col justify-start items-start transition-all">
+            // less-than-sm:mt-4 greater-than-md:w-max max-h-14 lg:min-w-[2rem] xl:min-w-[2rem] py-2 flex flex-col justify-start items-start
+            :<div id="search_field_wrapper"  className="w-full order-2 less-than-sm:order-3 less-than-logo-min:w-full less-than-logo-min:block  insert-previous-classes-here transition-all">
               <div id="search_field_box" className='w-full flex flex-col items-center' onBlur ={(e) => handleBlur(e, "blur")}>
                 <SearchField/>
                 <optgroup name="search-suggestions" tabIndex={1} id="search-suggestions" className="min-w-[12rem] greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem]  p-2 overflow-ellipsis border bg-black opacity-70 rounded-b-3xl text-white cursor-pointer hidden">
@@ -378,12 +393,13 @@ const Navbar = ({children}) => {
             </div>
           
           }
+          <div className="navbar_right__wrapper order-3 less-than-sm:order-2">
+            <Menu>
+              <GoToCartIco size={'1.5rem'}/>
+              <GoToAvatarIco size={'1.5rem'}/>
+            </Menu>
+          </div>
         </div>
-       
-        <Menu>
-          <GoToCartIco size={'1.5rem'}/>
-          <GoToAvatarIco size={'1.5rem'}/>
-        </Menu>
       
       </nav>
         {isShowProductPath()?

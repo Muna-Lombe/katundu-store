@@ -3,6 +3,9 @@ import { useSelector } from 'react-redux'
 import { Product,CategoryTag, NoItems, Sidebar, HeroBanner } from '../components'
 import { filteredProductsFromModel, categories } from '../orm/selectors';
 import { titleTagTypes as tags } from '../assets';
+import { useDispatch } from 'react-redux';
+import { addedProduct } from '../orm/models/ProductModel';
+import { load } from '../orm/utilities/StateLoader';
 
 
 
@@ -94,12 +97,28 @@ const Main = () => {
   }
   const ProductContent = ()=>{
     let products = useSelector(filteredProductsFromModel([]))
+    
+    const dispatch  = useDispatch()
+    const handleLoadMore = ()=>{
+      console.log("continuing load products from idx: ", products.at(-1));
+
+      (async function(){
+        const res = await load({ model: { modelName: "Product", dataName: "Products", range:10 }, loadmore:{fromIdx: products.at(-1).id }})
+        const data = await res
+        dispatch(addedProduct(
+          Array.from(
+            Object.entries(data).values()
+            ).map((e,x)=> e[1])
+            // data
+        ))
+      })()
+    }
     return(
     <div id="products_list" className="w-full flex flex-col items-center gap-6">
       
       <ProductCategoryTags/>
       <ProductContentProducts products={products}/>
-      <input type="button" value="Load More"   onClick={()=>console.log("continuing load products from idx: ", products.at(-1))} className="p-1 w-min text-base font-semibold underline underline-offset-1 text-red-500 active:text-red-600 active:animate-pulse border border-red-500 rounded-lg"/>
+      <input type="button" value="Load More"   onClick={()=>handleLoadMore()} className="p-1 w-min text-base font-semibold underline underline-offset-1 text-red-500 active:text-red-600 active:animate-pulse border border-red-500 rounded-lg"/>
     </div>
   )}
   

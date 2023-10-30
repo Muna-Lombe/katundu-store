@@ -26,6 +26,7 @@ export const filteredCustomModelSelector = (model, ex) =>{
   )
 } 
 
+
 export const authenticatedUsers = createSelector(
   ormSelector(session.schema),
   state => {
@@ -37,6 +38,7 @@ export const authenticatedUsers = createSelector(
 
   }
 )
+
 export const isAuthedUser = (id) => createSelector(
   ormSelector(session.schema),
   authenticatedUsers,
@@ -78,6 +80,7 @@ export const filteredListingsFromModel = (ex)=> createSelector(
     
   }
 )
+
 export const filteredProductsFromModel = (ex)=> createSelector(
   ormSelector(session.schema),
     state => {

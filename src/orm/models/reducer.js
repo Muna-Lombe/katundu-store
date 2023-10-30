@@ -54,18 +54,30 @@ export default function customReducer({session, model,action }) {
     case ( isTargetModel() && verb() + '_' + model.modelName) === (types.CREATE+'_'+model.modelName):
       batchDo({modelAction:model, data:payload})
       break;
+
     case ( isTargetModel() && verb() + '_' + model.modelName) === (types.ADD_TO+'_'+model.modelName):
       model.withId(payload.id)[payload.target].add(payload.target.data);
       // session.reduce();
       break;
+
     case (isTargetModel() && verb() + '_' + model.modelName) === (types.ADD + '_' + model.modelName):
+      console.log(payload)
+      const isIterable=(t)=>{
+        return t.map ? true : false
+      }
+      if(isIterable(payload)){
+        payload.forEach(load=> model.upsert(load))
+        break;
+      }
       model.upsert(payload);
       // session.reduce();
       break;
+
     case ( isTargetModel() && verb() + '_' + model.modelName) === (types.ASSIGN+'_'+model.modelName):
       model.withId(payload.productId).categoryId = payload.categoryId;
       // session.reduce();
       break;
+
     case ( isTargetModel() && verb() + '_' + model.modelName) === (types.UPDATE+'_'+model.modelName):
       // console.log("update", payload, model.modelName, model.withId(payload.id))
       if("scope"){
@@ -87,6 +99,7 @@ export default function customReducer({session, model,action }) {
       // session.reduce();
       break;
     case (isTargetModel() && verb() + '_' + model.modelName) === (types.REMOVE + '_' + model.modelName):
+      // console.log("rems")
       // model.withId(payload.id).delete();
       if("scope"){
         let { id, ...otherProps } = payload

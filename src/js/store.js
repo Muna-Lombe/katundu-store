@@ -2,6 +2,8 @@ import { configureStore } from '@reduxjs/toolkit'
 import { ormRootReducer as orm } from '../orm/reducers/rootOrmReducer';
 
 
+
+
 const Store = configureStore({
     reducer: {
         // searches: searchesReducer,
@@ -12,7 +14,8 @@ const Store = configureStore({
 
         
     },
-    // middleware: [...ormMiddlewares]
+    
+    // middleware: (gDM) =>gDM().concat(...ormMiddlewares)
 
     //middleware: [fetchProducts]//,asyncThunk]
 })
