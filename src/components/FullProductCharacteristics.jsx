@@ -2,7 +2,7 @@ import ProductDescriptor from "./ProductDescriptor";
 
 const FullProductCharacteristics = ({ children }) => {
   return (
-    <div className="characteristics my-2 p-3  w-full flex flex-wrap gap-4">
+    <div className="characteristics my-2 p-2  w-full flex flex-wrap gap-4">
       <p className="title py-2 text-2xl font-[arial font-bold ">{"Characteristics"}</p>
       <div className="main-characteristics w-full flex flex-col gap-4">
         <div className="title text-lg font-raleway lining-nums tabular-nums  font-semibold">

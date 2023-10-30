@@ -1,6 +1,6 @@
 const FullProductDescription = ({ description, children }) => {
   return (
-    <div className="full-description my-2 p-3 ">
+    <div className="full-description my-2 p-2 ">
       <div className="description-1 my-2">
         <div className=" title pb-6 text-2xl font-[arial font-bold">{"Description"}</div>
         <p className="description-text max-w-5xl  text-base font-raleway lining-nums tabular-nums  font-medium">

@@ -39,8 +39,8 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
       pos = getCursorPos(e);
       x = pos.x;
       y = pos.y;
-      whOffsetBal =50
-      bgPosOffset = 0.89
+      whOffsetBal = 50
+      bgPosOffset = 0.9
 
       if (x > img.width - (w / zoom)) { x = img.width - (w/zoom); }
       if (x < w / zoom) { x = w / zoom; }
@@ -104,7 +104,7 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
         <div 
           // onTouchMove={(e) => magnify("activeImage", 3)} 
           
-        className={"mesh-mask modal absolute flex  w-full h-full bg-black opacity-30 border-[1px] rounded-md"}>
+        className={"mesh-mask modal absolute flex  w-full h-full bg-black opacity-30 border-[10px] border-red-500 rounded-md"}>
             {/* <VerticalLine count={Number.parseInt(((sqrDim / (sqrDim / 10) * 5)).toString())} />
             <HorizontalLine count={Number.parseInt(((sqrDim / (sqrDim / 10) * 5)).toString())} /> */}
 

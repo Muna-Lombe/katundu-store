@@ -26,31 +26,31 @@ const QAs = ({ qas}) => {
     const optgrp =()=> document.querySelector(".sort-options")
 
     const handleRotateIco =(e)=>{
-      const elem = e.target || e
+      const elem = e?.target || e
       // console.log(elem)
-      if(e.type==="click") e.preventDefault()
-      if(e.type === "click") e.stopPropagation()
-      const clickedSvg = () => elem.tagName === "svg"
-      const clickedP = () => elem.tagName === "p"
+      if(e?.type==="click") e.preventDefault()
+      if(e?.type === "click") e.stopPropagation()
+      const clickedSvg = () => elem?.tagName === "svg"
+      const clickedP = () => elem?.tagName === "p"
       let child;
       if(clickedSvg()) child = elem
-      if(clickedP()) child = elem.firstChild
+      if(clickedP()) child = elem?.firstChild
 
-      if(child.classList.contains("-rotate-90")){
-        child.classList.replace("-rotate-90", "rotate-90")
-        optgrp().classList.replace("hidden", "visible")
+      if(child?.classList?.contains("-rotate-90")){
+        child?.classList?.replace("-rotate-90", "rotate-90")
+        optgrp()?.classList?.replace("hidden", "visible")
       }else{
-        child.classList.replace("rotate-90", "-rotate-90")
-        optgrp().classList.replace("visible", "hidden")
+        child?.classList?.replace("rotate-90", "-rotate-90")
+        optgrp()?.classList?.replace("visible", "hidden")
 
       }
       
     }
 
     const handleBlur=(e)=>{
-      // console.log("triggered blur")
+      // console.log("triggered blur",e)
       return optgrp().classList.contains("visible") 
-        ? handleRotateIco(document.querySelector(".arrow-down"))//optgrp().classList.replace("visible", "hidden")
+        ? handleRotateIco(document.querySelector(".arrow-up"))//optgrp().classList.replace("visible", "hidden")
         : "" 
     }
 
@@ -60,7 +60,7 @@ const QAs = ({ qas}) => {
     }
     return(
       <div className="sorter-wrapper  py-1 w-full h-14">
-        <div onClick={()=>handleBlur()} className="answer-sorter  max-w-min flex flex-col justify-between gap-1  border-2 border-slate-400 rounded-lg">
+        <div onClick={(e)=>handleBlur(e)} className="answer-sorter  max-w-min flex flex-col justify-between gap-1  border-2 border-slate-400 rounded-lg">
           <div className=" sorter-input relative my-1 px-1 flex less-than-xs:gap-1 gap-10">
             <input disabled type="text" name="sort-selector" id="sort-selector" value={answersList[0]} className="w-min flex flex-row bg-white" />
             <p  className="less-than-xs:absolute top-0 right-0 p-1 flex items-center cursor-pointer opacity-50 bg-transparent z-[5] ">
