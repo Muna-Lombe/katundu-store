@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CancelIco, colorTags } from '../assets'
 import {updatedAllCatActive, updatedCatActive } from '../orm/models/ProductCategoryModel'
 import { categories } from '../orm/selectors'
-const CategoryTag = ({borderId=1,id,text='tag'})=>{
+const CategoryTag = ({borderId=0,id,text='tag'})=>{
 
  let cat = useSelector(categories).find(c=> c.id === id)
 
@@ -45,7 +45,7 @@ const CategoryTag = ({borderId=1,id,text='tag'})=>{
     return(
       <div 
         id={`tag tag-${text}`} 
-        className={`w-max h-[1.6rem] whitespace-nowrap flex justify-center items-center rounded-2xl py-[0.2rem] mx-1 px-4 border-2 border-gray-200 text-red-600 text-[0.9rem] font-sans font-semibold cursor-pointer`}
+        className={`w-max h-[1.6rem] whitespace-nowrap flex justify-center items-center rounded-2xl py-[0.2rem] mx-1 px-4 border-2 border-gray-200 text-red-600 text-[0.9rem]  font-sans font-semibold cursor-pointer`}
         onMouseDown={(e)=>handleScroll(e)}
         
       >

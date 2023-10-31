@@ -209,7 +209,7 @@ const Navbar = ({children}) => {
     const handleToggleLocation =(e)=>{
       e.preventDefault()
 
-      const autoTog = () => document.getElementById("location-text").classList.toggle("less-than-xs:hidden")
+      const autoTog = () => document.getElementById("location-text").classList.toggle("less-than-sm:hidden")
 
       const t_o = setTimeout(() => {
         console.log(1)
@@ -227,10 +227,10 @@ const Navbar = ({children}) => {
           <PinIco />
         </span>
 
-      < h2 id = 'location-text' className ="less-than-sm:hidden less-than-xs:top-3 less-than-xs:left-6 less-than-xs:text-sm greater-than-xs:p-2  greater-than-xs:relative greater-than-xs:w-auto flex flex-row text-[0.9rem] text-ellipsis ">
+      < h2 id = 'location-text' className ="less-than-xs:flex less-than-sm:hidden  less-than-xs:top-3 less-than-xs:left-6 greater-than-sm:text-[0.9] less-than-xs:text-[10px] leading-[16px] greater-than-xs:p-2  greater-than-xs:relative greater-than-xs:w-auto flex flex-row  truncate ">
            
 
-          <select name="location" id="location_select" className="outline-none appearance-none  bg-inherit">
+          <select name="location" id="location_select" className="w-full min-w-[80px] outline-none appearance-none  bg-inherit less-than-xs:text-sm less-than-xs:text-[10px] leading-[16px] truncate">
 
             {
               locations.map((loc,x)=>
@@ -363,12 +363,12 @@ const Navbar = ({children}) => {
   return (
     //  md:items-center
     <>
-      <nav id="nav_container" className=" p-5 pb-1 relative w-full h-full flex justify-center gap-2 items-start  lg:items-center xl:items-center ">
+      <nav id="nav_container" className=" px-3 pt-2 pb-1 relative w-full h-full flex justify-center gap-2 items-start  lg:items-center xl:items-center ">
         {/* " w-full flex  gap-4 lg:flex lg:flex-row xl:flex xl:flex-row justify-start items-center transition-all" */}
         <div id="navbar_left__wrapper" className="w-full flex less-than-sm:flex-wrap items-center justify-between gap-2 less-than-logo-min:gap-3 ">
           {/* lg:w-auto xl:auto flex  less-than-xs:gap-4 */}
           {/* m-1 align-start  w-full flex less-than-xs:flex-wrap justify-start gap-4 transition-all ease-in-out delay-700 */}
-          <div id="logo_location" className="order-1  relative flex justify-center insert-previous-classes-here first:h-[44px]">
+          <div id="logo_location" className="order-1 w-min  relative flex justify-center insert-previous-classes-here first:h-[44px]">
               {/* <Logo clickEv={()=>""} logo={tags.footer.storename} size={{ h: 40, w: 40, x:10, y: 32, font: 38 }}/> */}
               <Logo>
                 <Link to={''} className='cursor-pointer  '>

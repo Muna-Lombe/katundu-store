@@ -1,12 +1,12 @@
-const ProductTags = ({children, tags=["Some tag here","Some tag there where yes","Some tag somewhere","Some tag everywhere","Some tag some place","Some tag which is a tag","Some tag here nowhere","Some tag here why"] }) => {
+const ProductTags = ({children, category='Some Category', tags=["Some tag here","Some tag there where yes","Some tag somewhere","Some tag everywhere","Some tag some place","Some tag which is a tag","Some tag here nowhere","Some tag here why"] }) => {
   return (
-    <div className="tags-array p-3 w-full max-w-5xl flex flex-col gap-3">
+    <div className="tags-array p-3 w-full less-than-xs:max-w-[270px] flex flex-col gap-3">
       <p className="title flex flex-wrap text-xl font-raleway lining-nums tabular-nums  font-bold">
-        {"Selections of products in category 'Some Category'"}
+        {`Selections of products in category '${category}'`}
       </p>
-      <div className="array flex flex-wrap gap-2 child:cursor-pointer child-hover:text-blue-700 child-hover:bg-slate-300 child:w-max child:px-2 child:py-1  child:bg-slate-200 child:rounded-xl child:text-base child:font-raleway lining-nums tabular-nums  child:font-light">
+      <div className="array w-full overflow-clip flex flex-wrap gap-2 child:cursor-pointer child-hover:text-blue-700 child-hover:bg-slate-300 child:w-max child:px-2 child:py-1  child:bg-slate-200 child:rounded-xl child:text-base child:font-raleway lining-nums tabular-nums  child:font-light">
         {
-          tags.map((t,x)=><p key={x} className="tag w-min overflow-clip">{t}</p> 
+          tags.map((t,x)=><p key={x} className="tag max-w-[270px] truncate ">{t}</p> 
           )
         }
       </div>

@@ -51,25 +51,25 @@ const Categories = () => {
   )
   const ProductSection = ({sectionId, children})=>{
     return(
-      <div id={"product-section-"+sectionId} className="product-section">
+      <div id={"product-section-"+sectionId} className="category_product_section w-full h-full max-h-min">
         {children}
       </div>
     )
   }
   const ProductContent = ()=>(
-    <div id="products_list" className="relative w-full flex less-than-logo-min:flex-col flex-row gap-6">
-      <div className="product-category-tags ">
+    <div id="products_list" className="relative w-full flex less-than-xs:flex-col flex-row gap-6 ">
+      <div className="product-category-tags sticky">
         <div id="products_list__header" className="m-3 w-auto flex  flex-col md:flex-row lg:flex-row xl:flex-row justify-start gap-2  items-baseline ">
           <h3 className=" text-2xl text-black  font-raleway lining-nums tabular-nums  font-[700]">{tags.home.categoriesText}</h3>
         </div>
-        <div id="product_tags" className=" w-auto  flex less-than-logo-min:flex-row flex-col flex-nowrap overflow-x-hidden" >
+        <div id="product_tags" className=" w-auto  flex less-than-sm:flex-row flex-col flex-nowrap overflow-x-hidden" >
           {/* <CategoryTag borderId={'type_clear'} text={'clear'} /> */}
           
-          <div  id="scrollable_product_tags"  className="scrollable_product_tags mr-2  w-max  flex less-than-logo-min:flex-row flex-col overflow-x-scroll overflow-y-hidden  shadow-slate-600 gap-2  tag">
+          <div  id="scrollable_product_tags"  className="scrollable_product_tags mr-2  w-max  flex less-than-xs:flex-row greater-than-xs:max-w-[215px]  flex-col less-than-xs:overflow-x-scroll less-than-xs:overflow-y-hidden  shadow-slate-600 gap-2  tag">
             {
 
               cats.map((tag, idx) => {
-                return <CategoryTag key={idx} borderId={tag.id % 6 || 3} id={tag.id} text={tag.name} />
+                return <CategoryTag key={idx} borderId={0} id={tag.id} text={tag.name} />
               })
 
             }
@@ -77,28 +77,29 @@ const Categories = () => {
 
         </div>
       </div>
-      
-      {/* grid-cols-[repeat(auto-fit,minmax(auto,7rem))] */}
-      <div id="mainbar__content" className={"w-full h-[rem] p-2 grid grid-flow-row-dense less-than-xs:grid-cols-2 greater-than-xs:grid-cols-[repeat(auto-fit,minmax(auto,11rem))] greater-than-sm:grid-cols-[repeat(4,minmax(auto,14rem))] overflow-x-scroll scroll-smooth justify-center  transition-all  tag gap-3 greater-than-xs:gap-6"}>
+      <div className="sectioned_products w-full flex flex-col max-h-screen overflow-y-scroll scroll-smooth  ">
+
         {
           cats.map((tag, idx) => {
             return (
               <ProductSection sectionId={tag.id}>
-                {
-                  
-                  products.length
-                    ? products.filter((pr) => pr.categoryIds.includes(tag.id)).map((i) => (
-                        <Product key={i.id} product={i} isSearchOrMain={true} />
-                      ))
-                    : <>
-                      {
-                        new Array(6).fill().map((i, x) => <Product key={x} noPrd={"true"} />)
-                      }
-                      {/* <NoItems /> */}
+                <div  className={"section_products w-full  p-2 grid grid-flow-row-dense less-than-xs:grid-cols-2 less-than-sm:grid-cols-[repeat(auto-fit,minmax(auto,8rem))] greater-than-md:grid-cols-[repeat(4,minmax(auto-fill,13rem))] justify-center  transition-all  tag gap-3 greater-than-xs:gap-6"}>
+                          {
+                            
+                            products.length
+                              ? products.filter((pr) => pr.categoryIds.includes(tag.id)).map((i) => (
+                                  <Product key={i.id} product={i} isSearchOrMain={true} />
+                                ))
+                              : <>
+                                {
+                                  new Array(6).fill().map((i, x) => <Product key={x} noPrd={"true"} />)
+                                }
+                                {/* <NoItems /> */}
 
-                    </>
+                              </>
 
-                }
+                          }
+                </div>
               </ProductSection>
 
             )

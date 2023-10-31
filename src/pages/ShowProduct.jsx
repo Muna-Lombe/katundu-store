@@ -1,5 +1,5 @@
 import { Suspense, useEffect, } from "react";
-import { ArrowLeft,  BasketIco,  CartIco,  PinIco } from "../assets";
+import { ArrowLeft,  BasketIco,  CartIco,  PinIco, popularTags } from "../assets";
 import { categories, filteredProductsFromModel } from "../orm/selectors";
 import { useSelector } from "react-redux";
 import { Link,useParams, useLocation, createSearchParams, } from "react-router-dom";
@@ -18,7 +18,7 @@ const ShowProduct = ()=>{
   // console.log("names", cat)
   // createSearchParams({ query: JSON.stringify([curtext]) })
 
-  const crumbs = [{path:"/",text:"products/"}, {path:("/?category="+cat?.id),text:(cat?.name.toString().slice(0,10)+".../")}||{path:"/", text:"category/"}, (productItem?.name.slice(0, 10)+"...")]
+  const crumbs = [{path:"/",text:"products/"}, {path:("/categories/?category="+cat?.id),text:(cat?.name.toString().slice(0,10)+".../")}||{path:"/", text:"category/"}, (productItem?.name.slice(0, 10)+"...")]
   // console.log("show", product)
   // const navigate = useLocation()
   const location = useLocation()
@@ -104,7 +104,7 @@ const ShowProduct = ()=>{
       <span className="crumbs">
         {
           crumbs?.map((cr,x)=> 
-          <Link to={cr.path || "/"}  key={x} className={"text-lg text-center leading-4 font-semibold " + (x === crumbs.length - 1 ? "  pointer-events-none text-slate-500" : " text-orange-500 ")}>
+          <Link to={cr.path || "/"}  key={x} className={"text-[100%] text-center leading-4 font-semibold " + (x === crumbs.length - 1 ? "  pointer-events-none text-slate-500" : " text-orange-500 ")}>
             {cr.text}
           </Link>)
 
@@ -215,7 +215,7 @@ const ShowProduct = ()=>{
                 <section id="product-description ">
                   <FullProductDescription description={{text: descriptiveText, tags: [descTag1, descTag2] }}/>
                   <FullProductCharacteristics/>
-                  <ProductTags/>
+                  <ProductTags tags={popularTags}/>
                 </section>
                 <section id="product-reviews">
                   <ReviewsAndQuestions handleClassToggle={handleClassToggle}/>

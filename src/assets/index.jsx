@@ -118,6 +118,7 @@ export const titleTagTypes={
 }
 
 export const colorTags = {
+  0: 'border-1 border-inherit text-orange-600',
   1: 'border-2 border-black text-red-500',
   2: 'border-2 border-black text-red-500',
   3: 'border-2 border-black text-red-500',
@@ -125,6 +126,7 @@ export const colorTags = {
   5: 'border-2 border-black text-red-500',
   6: 'border-2 border-black text-red-500'
 }
+
 const tags = [
   [6, 'День Рождения Гриши'],
   [5, 'Подарок коллегам'],
@@ -134,15 +136,18 @@ const tags = [
   [2, 'Игрушка'],
   [1, 'валентинки'],
 ]
+
 const productStores = [
   { id: 1, name: "Davies\' Store" },
   { id: 2, name: "Clear fawn" },
   { id: 3, name: "About face" },
   { id: 4, name: "Avita" }
 ]
+
 export const calcDisc = (price, discPerc) => {
   return (price - (price * (discPerc / 100))).toFixed(0)
 }
+
 const sampleData = [
   [1, "some nice product 10% super CHEAP!", [tags[3], tags[4], tags[1]], productStores[0], 3000, [true, 5,]],
   [3, "Great product 5% DISCOUNT", [tags[1], tags[2], tags[3]], productStores[1], 12000, [true, 5]],
@@ -152,6 +157,8 @@ const sampleData = [
   [4, "FOR YOUR FACE GREAT NICE EVERYTHING NICE!", [tags[1], tags[3], tags[5]], productStores[1], 16000, [true, 5]],
   [6, "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquam quidem ipsa fugit quod i", [tags[4], tags[3], tags[2]], productStores[3], 3500, [false]]
 ]
+export const popularTags = sampleData.map(d=> d[1])
+
 export const addToProductData = (product, id) => {
 
   // if (id > sampleData.length) {id = 0}

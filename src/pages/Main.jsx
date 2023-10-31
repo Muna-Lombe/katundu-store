@@ -24,21 +24,18 @@ const Main = () => {
 
     return false;
   }
-  // function (event, delta) {
-  //   // document.scrollLeft += isNaN(parseInt(event.wheelDelta * 30)) ? parseInt(event.wheelDelta * 30) : 0;
-  //   console.log("delter", event.wheelDelta, document.body.doScroll)
-  // }
+
   const handleSetScroll =(e)=> {
     const mainbar = document.getElementById("mainbar_container_wrapper")
     e.preventDefault()
     console.log(e.type)
     if(e.type === "mouseenter"){
-      // mainbar.classList.replace("overflow-y-auto", "overflow-visible")
+     
       document.addEventListener("mousewheel", scrollFn)
       
     }
     if (e.type === "mouseleave") {
-      // mainbar.classList.replace("overflow-visible", "overflow-y-auto")
+     
       document.removeEventListener("mousewheel", scrollFn)
     }
   }
@@ -55,21 +52,20 @@ const Main = () => {
       </div>
     </div>
   )
-  const ProductCategoryTags=()=>{
+  const PopularProdcuts=()=>{
     let cats = useSelector(categories)
     return(
     <div className="product-category-tags w-[95%]">
         <div id="products_list__header" className="m-3 w-auto flex  flex-col md:flex-row lg:flex-row xl:flex-row justify-start gap-2  items-baseline ">
-          <h3 className=" text-2xl text-black  font-raleway lining-nums tabular-nums  font-[700]">{tags.home.categoriesText}</h3>
+          {/* <h3 className=" text-2xl text-black  font-raleway lining-nums tabular-nums  font-[700]">{tags.home.categoriesText}</h3> */}
         </div>
-        <div id="product_tags" className=" w-full  flex flex-row flex-nowrap overflow-x-hidden" >
-          <CategoryTag borderId={'type_clear'} text={'clear'} />
+        <div id="product_tags" className=" w-full mb-3  flex flex-row flex-nowrap justify-center indent-3 overflow-x-hidden" >
           
-          <div  id="scrollable_product_tags" onMouseEnter={handleSetScroll} onMouseLeave={handleSetScroll}  className="scrollable_product_tags mr-2  w-full max-w-fit  flex flex-row overflow-x-scroll overflow-y-hidden  shadow-slate-600  tag">
+          <div  id="scrollable_product_tags"  className="scrollable_product_tags  w-full max-w-fit  flex flex-row flex-wrap justify-start less-than-xs:grid grid-flow-col grid-rows-2 overflow-scroll shadow-slate-600  tag child:m-0 child:px-0 child:less-than-xs:text-xs">
             {
 
               cats.map((tag, idx) => {
-                return <CategoryTag key={idx} borderId={tag.id % 6 || 3} id={tag.id} text={tag.name} />
+                return <CategoryTag key={idx} borderId={0} id={tag.id} text={tag.name} />
               })
 
             }
@@ -116,17 +112,17 @@ const Main = () => {
     return(
     <div id="products_list" className="w-full flex flex-col items-center gap-6">
       
-      <ProductCategoryTags/>
       <ProductContentProducts products={products}/>
       <input type="button" value="Load More"   onClick={()=>handleLoadMore()} className="p-1 w-min text-base font-semibold underline underline-offset-1 text-red-500 active:text-red-600 active:animate-pulse border border-red-500 rounded-lg"/>
     </div>
   )}
   
- 
+  
   return (
     <>
       <Suspense fallback={<NoItems />}>
         <MainContent>
+          <PopularProdcuts/>
           <HeroBanner/>
           <ProductContent/>
         </MainContent>

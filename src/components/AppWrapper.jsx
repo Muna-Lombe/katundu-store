@@ -21,23 +21,14 @@ const AppWrapper = ({children}) => {
             
       <div id="footer_nav" className=" sticky bottom-2 left-[90%] right-1 min-h-[10%]  w-[60px] h-min z-10 flex xs:hidden sm:hidden  md:hidden lg:hidden xl:hidden bg-white border border-gray-300 rounded-tl-lg rounded-bl-lg no_highlights">
         <div id="bottom_nav_bar" className="w-full  p-2 flex flex-col justify-between gap-2">
-          {/* <div id="home_ico">
-            <Link to="/">
-              <HomeIco />
-            </Link>
-
-          </div> */}
+          
 
           <div id="user_profile_ico">
             <Link to="/history">
               <AvatarIco size={"2.5rem"} />
             </Link>
           </div>
-          {/* <div id="cart_ico">
-            <Link to="/cart">
-              <CartIco isCartBtn={true} />
-            </Link>
-          </div> */}
+          
         </div>
       </div>
     </Suspense>
