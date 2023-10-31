@@ -4,9 +4,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CancelIco, colorTags } from '../assets'
 import {updatedAllCatActive, updatedCatActive } from '../orm/models/ProductCategoryModel'
 import { categories } from '../orm/selectors'
-const CategoryTag = ({borderId=0,id,text='tag'})=>{
+const CategoryTag = ({children, borderId=0,id,text='tag', customFn=false})=>{
 
- let cat = useSelector(categories).find(c=> c.id === id)
+ let cat = useSelector(categories).find(c=> c.id === id) || undefined
 
   const dispatch = useDispatch()
   
@@ -70,26 +70,34 @@ const CategoryTag = ({borderId=0,id,text='tag'})=>{
     )
   }
   return(
-    <div 
-      id={`tag tag-${text}`} 
-      onMouseDown={(e)=>handleScroll(e)}
-      className={`mx-1 py-[0.2rem] px-4 w-max h-[1.6rem] flex justify-center items-center gap-2 whitespace-nowrap rounded-2xl  text-[0.9rem] font-sans font-semibold cursor-pointer ${colorTags[borderId]}`}
-    >
-      <h2 className="px-1 h-full flex flex-row whitespace-nowrap flex-nowrap items-center" onClick={()=> handleFilter(id||borderId, "add")}>
-      {text}
-      </h2>
-      <span>
-      {
-        cat.active
-        ?  <span onClick={() => handleFilter(id||borderId,"remove" )}>
-            <CancelIco/>
-          </span>
-         
-        : ''
-      }
+      <div 
+        id={`tag tag-${text}`} 
+        onMouseDown={(e)=>handleScroll(e)}
+        className={`mx-1 py-[0.2rem] px-4 w-max h-[1.6rem] flex justify-center items-center gap-2 whitespace-nowrap rounded-2xl  text-[0.9rem] font-sans font-semibold cursor-pointer ${colorTags[borderId]}`}
+      >
+        {
+          children  ? 
+          children
+          : <>
+              <h2 className="px-1 h-full flex flex-row whitespace-nowrap flex-nowrap items-center" onClick={()=> customFn||handleFilter(id||borderId, "add")}>
+              {text}
+              </h2>
+              <span>
+              {
+                cat?.active
+                ?  <span onClick={() => customFn||handleFilter(id||borderId,"remove" )}>
+                    <CancelIco/>
+                  </span>
+                
+                : ''
+              }
 
-      </span>
+              </span>
+            </>
+        }
     </div>
+    
+    
   )
   }
 

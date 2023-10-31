@@ -2,10 +2,11 @@ import React, { Suspense, createElement, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { Product,CategoryTag, NoItems, Sidebar, HeroBanner } from '../components'
 import { filteredProductsFromModel, categories } from '../orm/selectors';
-import { titleTagTypes as tags } from '../assets';
+import { popularTags, titleTagTypes as tags } from '../assets';
 import { useDispatch } from 'react-redux';
 import { addedProduct } from '../orm/models/ProductModel';
 import { load } from '../orm/utilities/StateLoader';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 
@@ -53,7 +54,8 @@ const Main = () => {
     </div>
   )
   const PopularProdcuts=()=>{
-    let cats = useSelector(categories)
+    const cats = useSelector(categories)
+    const goto = useNavigate()
     return(
     <div className="product-category-tags w-[95%]">
         <div id="products_list__header" className="m-3 w-auto flex  flex-col md:flex-row lg:flex-row xl:flex-row justify-start gap-2  items-baseline ">
@@ -63,9 +65,14 @@ const Main = () => {
           
           <div  id="scrollable_product_tags"  className="scrollable_product_tags  w-full max-w-fit  flex flex-row flex-wrap justify-start less-than-xs:grid grid-flow-col grid-rows-2 overflow-scroll shadow-slate-600  tag child:m-0 child:px-0 child:less-than-xs:text-xs">
             {
-
-              cats.map((tag, idx) => {
-                return <CategoryTag key={idx} borderId={0} id={tag.id} text={tag.name} />
+              popularTags.map((tag, idx) => {
+                return (
+                  <CategoryTag key={idx} borderId={0} id={tag.id} text={tag.text} customFn={()=>""}>
+                    <Link to={"/product/" + tag.productId} className="appearance-none  w-full max-w-[200px] max-h-[46px] border-1 border-inherit text-orange-600 truncate">
+                      <span className="popular_tag">{tag.text}</span>
+                    </Link>
+                  </CategoryTag>
+                )
               })
 
             }

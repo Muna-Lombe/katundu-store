@@ -157,7 +157,8 @@ const sampleData = [
   [4, "FOR YOUR FACE GREAT NICE EVERYTHING NICE!", [tags[1], tags[3], tags[5]], productStores[1], 16000, [true, 5]],
   [6, "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Aliquam quidem ipsa fugit quod i", [tags[4], tags[3], tags[2]], productStores[3], 3500, [false]]
 ]
-export const popularTags = sampleData.map(d=> d[1])
+export const popularTags = sampleData.map((d, x) => ({
+  productId: [2004,2005,2006,2007,2008,2009,2010][x] ,text:d[1]}))
 
 export const addToProductData = (product, id) => {
 

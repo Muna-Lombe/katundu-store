@@ -185,7 +185,21 @@ const Navbar = ({children}) => {
       </Link>  */}
     </div>
   )
+  
+  const GotoCategories = ({LabelText = "Categories"})=>{
+    const CategoriesIcon =()=>(
+       <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="18" height="18" class="bi bi-columns-gap" viewBox="0 0 16 16"> <path d="M6 1v3H1V1h5zM1 0a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1H1zm14 12v3h-5v-3h5zm-5-1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-5zM6 8v7H1V8h5zM1 7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H1zm14-6v7h-5V1h5zm-5-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1h-5z" /> </svg>
+    )
+    return (
+      <Link to={"categories"} className=" p-2 w-max max-w-[150px] h-full bg-slate-200 rounded-xl m-0 flex justify-center items-center gap-x-1">
+        <span className=' less-than-sm:hidden text-base text-orange-600 font-raleway font-semibold'>
+          {LabelText}
+        </span>
+        <CategoriesIcon />
+      </Link>
+    )
 
+  }
   const SearchField =({children})=>{
     const [curtext, setCurtext] =useState("")
     const setParams = () =>{
@@ -193,8 +207,9 @@ const Navbar = ({children}) => {
     }
     return(
       
-      <div id="search_field" tabIndex={0} className="relative min-w-[12rem]  greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem] less-than-xs:h-[2rem] h-[2.8rem] max-h-[3.2rem] flex justify-between border-[1px] rounded-3xl">
+      <div id="search_field" tabIndex={0} className="relative min-w-[14rem]  greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem] less-than-xs:h-[2rem] h-[2.8rem] max-h-[3.2rem] flex justify-between border-[1px] rounded-3xl">
         {/* <div className="search-input relative w-full max-w-[22rem]  flex   justify-between p-[1px]"> */}
+          
           <input type="text" ref={ref}  name="search" defaultValue={curtext} placeholder={searchProductText||""} onKeyUp={(e) => {handleChange(e); setCurtext(e.target.value)}} className=" search autofill:selection bg-white w-full rounded-bl-3xl rounded-tl-3xl bg-transparent px-2  text-black text-[1rem] focus:outline-none" />
     
           <Link to={"search?" + setParams()} onClick={() => handleBlur()} className=" top-0 right-0 w-1/5 h-full rounded-3xl m-[0.00rem] px-2 bg-[#F0F4FB] flex justify-center items-center">
@@ -245,13 +260,17 @@ const Navbar = ({children}) => {
   
   const LogoImg = ()=>{
     const [activeLogo, setActiveLogo] = useState("long")
-
+    const sess = sessionStorage
+    if (!sess.getItem("canRerender")){
+      sess.setItem("canRerender", true)
+    }
     const toggleOnResize = () => {
       const logoParent = document.getElementById("logo_location")
       const logoLongPng = document.getElementById("logo_long_png")
       const logoShortPng = document.getElementById("logo_short_png")
       const logoTransToLong = document.getElementById("logo_gif_trans_to_long")
       const logoTransToShort = document.getElementById("logo_gif_trans_to_short")
+
       
       let tm = ""
       const canBeToggledTrue = (classList, classname)=>{
@@ -275,28 +294,41 @@ const Navbar = ({children}) => {
         
           canBeToggledTrue(logoLongPng.classList, "hidden")?.toggle()
             
-          delay(() => {
-              canBeToggledTrue(logoTransToShort.classList, "hidden")?.toggle()
-              canBeToggledFalse(logoShortPng.classList, "hidden")?.toggle()
-              // console.log("shrunk")
+          if(sess.getItem("canRerender") === true){
+            delay(() => {
+                canBeToggledTrue(logoTransToShort.classList, "hidden")?.toggle()
 
-            }, 2340)
-
-          canBeToggledFalse(logoTransToShort.classList, "hidden")?.toggle()
+                canBeToggledFalse(logoShortPng.classList, "hidden")?.toggle()
+                // console.log("shrunk")
+                
+              }, 2340)
+            
+              canBeToggledFalse(logoTransToShort.classList, "hidden")?.toggle()
+              
+          }else{
+            canBeToggledFalse(logoShortPng.classList, "hidden")?.toggle()
+          }
           
       }
 
       const toggleLongLogo =()=>{
         canBeToggledTrue(logoShortPng.classList, "hidden")?.toggle()
          
-        delay(() => {
-            canBeToggledTrue(logoTransToLong.classList, "hidden")?.toggle()
-            canBeToggledFalse(logoLongPng.classList, "hidden")?.toggle()
-            // console.log("expanded")
+        if(sess.getItem("canRerender") === true){
+          delay(() => {
+              canBeToggledTrue(logoTransToLong.classList, "hidden")?.toggle()
+              canBeToggledFalse(logoLongPng.classList, "hidden")?.toggle()
+              // console.log("expanded")
+              
+            }, 2340)
 
-          }, 2340)
+            canBeToggledFalse(logoTransToLong.classList, "hidden")?.toggle()
+          
+        }else{
+          canBeToggledFalse(logoLongPng.classList, "hidden")?.toggle()
 
-        canBeToggledFalse(logoTransToLong.classList, "hidden")?.toggle()
+        }
+        
       }
 
       const toggleForContentBox =(entries)=>{
@@ -328,14 +360,16 @@ const Navbar = ({children}) => {
             clearTimeout(tm)
             tm = setTimeout(() => {
               toggleForContentBox(entries)
+              sess.setItem("canRerender", false)
               // console.log("is box size?:")
-
+              
             }, 0);
           } else if (entries[0].contentRect){
             
             clearTimeout(tm)
             tm = setTimeout(() => {
               toggleForContentRect(entries)
+              sess.setItem("canRerender", false)
               // console.log("is rect size?:",entries[0]?.contentRect.width === 270)
 
             },0);
@@ -383,11 +417,17 @@ const Navbar = ({children}) => {
             isNotAllowed()
             ? ""
             // less-than-sm:mt-4 greater-than-md:w-max max-h-14 lg:min-w-[2rem] xl:min-w-[2rem] py-2 flex flex-col justify-start items-start
-            :<div id="search_field_wrapper"  className="w-full order-2 less-than-sm:order-3 less-than-logo-min:w-full less-than-logo-min:block  insert-previous-classes-here transition-all">
-              <div id="search_field_box" className='w-full flex flex-col items-center' onBlur ={(e) => handleBlur(e, "blur")}>
-                <SearchField/>
-                <optgroup name="search-suggestions" tabIndex={1} id="search-suggestions" className="min-w-[12rem] greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem]  p-2 overflow-ellipsis border bg-black opacity-70 rounded-b-3xl text-white cursor-pointer hidden">
-                </optgroup>
+            :<div id="search_field_wrapper"  className="w-full flex items-center justify-center order-2 less-than-sm:order-3 less-than-logo-min:w-full less-than-logo-min:block  insert-previous-classes-here transition-all">
+                
+                
+              <div className='w-full flex justify-center items-center gap-2'>
+                <GotoCategories />
+
+                <div id="search_field_box" className='w-full max-w-[512px] flex flex-col  items-center' onBlur ={(e) => handleBlur(e, "blur")}>
+                  <SearchField/>
+                  <optgroup name="search-suggestions" tabIndex={1} id="search-suggestions" className="min-w-[12rem] greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem]  p-2 overflow-ellipsis border bg-black opacity-70 rounded-b-3xl text-white cursor-pointer hidden">
+                  </optgroup>
+                </div>
               </div>
               
             </div>
