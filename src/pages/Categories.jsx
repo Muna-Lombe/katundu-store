@@ -77,6 +77,7 @@ const Categories = () => {
 
         </div>
       </div>
+      
       <div className="sectioned_products w-full h-full flex flex-col max-h-screen overflow-y-scroll scroll-smooth scrollbar ">
 
         {
