@@ -34,7 +34,7 @@ const AppWrapper = ({children}) => {
     </Suspense>
   )
   const MainbarNav =() =>(
-    <div id="mainbar_nav" className="sticky top-0 w-full min-h-[10%] h-max flex flex-col items-center bg-white z-10">
+    <div id="mainbar_nav" className="sticky top-0 w-full min-h-[10%] p-2 h-max flex flex-col items-center bg-white z-10 border border-b-slate-200">
       <Navbar>
         {/* <ProductMinified> */}
           {/* <BackBtn location={location}/> */}
@@ -45,7 +45,7 @@ const AppWrapper = ({children}) => {
   return (
     <Suspense fallback={<NoItems />}>
 
-      <div id="App" className="dark relative p-2 min-w-[200px] w-auto max-w-[2528px]  min-h-screen flex flex-col justify-start gap-4 2n-child:self-start">
+      <div id="App" className="dark relative min-w-[200px] w-auto max-w-[2528px]  min-h-screen flex flex-col justify-start gap-4 2n-child:self-start child:p-2">
 
         {
           !isAuthPath()

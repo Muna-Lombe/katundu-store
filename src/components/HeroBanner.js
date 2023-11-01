@@ -91,7 +91,7 @@ import { ArrowRight } from '../assets'
             <span className=" flex   overflow-x-scroll scrollbar pointer-events-none ">
             {
               banners.map((b,x) => 
-                <img id={("banner_page_" + (x+1) )} data-active-banner={x===0}  key={x} className={"banner w-full min-w-[100%] max-h-fit"} src={b} alt="" />
+                <img id={("banner_page_" + (x+1) )} data-active-banner={x===0}  key={x} className={"banner w-full min-w-[100%] max-h-fit"} src={b} loading='eager' placeholder='some' alt="" />
                 )
               }
               </span>

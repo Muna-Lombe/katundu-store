@@ -242,7 +242,7 @@ const Navbar = ({children}) => {
           <PinIco />
         </span>
 
-      < h2 id = 'location-text' className ="less-than-xs:flex less-than-sm:hidden  less-than-xs:top-3 less-than-xs:left-6 greater-than-sm:text-[0.9] less-than-xs:text-[10px] leading-[16px] greater-than-xs:p-2  greater-than-xs:relative greater-than-xs:w-auto flex flex-row  truncate ">
+      < h2 id = 'location-text' className ="less-than-xs:hidden   less-than-xs:top-3 less-than-xs:left-6 greater-than-sm:text-[0.9] less-than-xs:text-[10px] leading-[16px] greater-than-xs:p-2  greater-than-xs:relative greater-than-xs:w-auto flex flex-row  truncate ">
            
 
           <select name="location" id="location_select" className="w-full min-w-[80px] outline-none appearance-none  bg-inherit less-than-xs:text-sm less-than-xs:text-[10px] leading-[16px] truncate">
