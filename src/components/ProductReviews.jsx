@@ -47,7 +47,7 @@ const ProductReviews=({prs})=>{
   }
   const ReviewImages =({imageArray})=>(
     <div className="review-images-wrapper w-auto max-w-[570px] overflow-clip">
-      <div className="review-images w-full max-w-max flex flex-row gap-2 border-b-2 overflow-x-scroll scrollbar">
+      <div className="review-images w-full max-w-min flex flex-row gap-2 border-b-2 overflow-x-scroll scrollbar">
         {
           imageArray?.map((i,x)=>{
             return (
@@ -239,7 +239,7 @@ const ProductReviews=({prs})=>{
   }
   return(
 
-    <div className="reviews-container py-1 px-2 w-full  flex flex-row justify-between gap-3">
+    <div className="reviews-container py-1 px-0 w-full  flex flex-row justify-between gap-3">
       <div className="reviews-wrapper w-full flex flex-col">
         <ReviewImages imageArray={prs.reviewsSummary.reviewsImages} />
         <div className="rating-hidden-at-big-screen greater-than-md:hidden">
