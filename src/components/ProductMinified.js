@@ -24,13 +24,19 @@ const ProductMinified = ({children, productItem})=> {
     }
 
     const changeOnScroll =()=>{
-      const showProdPage = document.getElementById("product-minified")
+      const minProd = document.getElementById("product-minified")
+      const mainBarNav = document.getElementById("mainbar_nav")
+      const showProdNav = document.getElementById("showProd_nav")
       const toggleProductMini = (e) => {
         e.preventDefault()
         const scrollTop = e.target.scrollingElement.scrollTop
-        showProdPage.classList.replace("flex","hidden")
+        // crumbs.classList.replace("hidden","flex")
+        minProd.classList.replace("flex","hidden")
+        showProdNav.insertAdjacentElement("beforeend", minProd)
         if(scrollTop > 0){
-          showProdPage.classList.replace("hidden", "flex")
+          // crumbs.classList.replace("flex","hidden")
+          minProd.classList.replace("hidden", "flex")
+          mainBarNav.insertAdjacentElement("beforeend",minProd)
         }
         
         // document.querySelector(".product-minified").classList.toggle("hidden")
