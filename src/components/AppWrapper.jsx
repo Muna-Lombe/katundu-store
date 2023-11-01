@@ -36,9 +36,9 @@ const AppWrapper = ({children}) => {
   const MainbarNav =() =>(
     <div id="mainbar_nav" className="sticky top-0 w-full min-h-[10%] h-max flex flex-col items-center bg-white z-10">
       <Navbar>
-        <ProductMinified>
-          <BackBtn location={location}/>
-        </ProductMinified>
+        {/* <ProductMinified> */}
+          {/* <BackBtn location={location}/> */}
+        {/* </ProductMinified> */}
       </Navbar>
     </div>
   )

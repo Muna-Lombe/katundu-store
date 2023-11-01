@@ -3,25 +3,19 @@ import { ArrowLeft,  BasketIco,  CartIco,  PinIco, popularTags } from "../assets
 import { categories, filteredProductsFromModel } from "../orm/selectors";
 import { useSelector } from "react-redux";
 import { Link,useParams, useLocation, createSearchParams, } from "react-router-dom";
-import { BuyBtns, ContentDescription, ContentDetails, ContentPayment, ContentSpecification, ContentViewer, Courier, DiscountInfo, EmbeddedProducts, Faqs, FullProductCharacteristics, FullProductDescription, Logo, NoItems, OrderInfo,  PaymentType, PickupPoints, PinLocation, PriceTag, ProductDescriptor, ProductImageViewer, ProductSpecificationDetail, ProductTags,  ReviewsAndQuestions } from "../components";
-import { imagepath, no_img_path } from "../assets/images";
-import { createImmutableStateInvariantMiddleware } from "@reduxjs/toolkit";
+import { BuyBtns, ContentDescription, ContentDetails, ContentPayment, ContentSpecification, ContentViewer, Courier, DiscountInfo, EmbeddedProducts, Faqs, FullProductCharacteristics, FullProductDescription, Logo, NoItems, OrderInfo,  PaymentType, PickupPoints, PinLocation, PriceTag, ProductDescriptor, ProductImageViewer, ProductMinified, ProductSpecificationDetail, ProductTags,  ReviewsAndQuestions } from "../components";
+
 
 
 const ShowProduct = ()=>{
 
-  
-
   const  id = useParams().id || 2001
   const productItem = useSelector(filteredProductsFromModel([])).find(i=> i.id.toString() === id.toString())
   const cat = useSelector(categories).find(cat => cat.id === productItem?.categoryIds[0])
-  // console.log("names", cat)
-  // createSearchParams({ query: JSON.stringify([curtext]) })
+  const location = useLocation()
 
   const crumbs = [{path:"/",text:"products/"}, {path:("/categories/?category="+cat?.id),text:(cat?.name.toString().slice(0,10)+".../")}||{path:"/", text:"category/"}, (productItem?.name.slice(0, 10)+"...")]
-  // console.log("show", product)
-  // const navigate = useLocation()
-  const location = useLocation()
+
 
   const handleClassToggle=(e, setActive)=>{
     e.preventDefault()
@@ -70,6 +64,14 @@ const ShowProduct = ()=>{
   }
 
   // console.log("prod", productItem)
+  const textStyle = {
+    maxWidth: '100%',
+    display: '-webkit-box',
+    WebkitBoxOrient: 'vertical',
+    WebkitLineClamp: 2,
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+  }
 
   const descriptiveText = `Instant coffee Egoiste Platinum 100g is a premium product, which is produced using patented Swiss technology. For its preparation, only elite varieties of Arabica are used: Kenyan and Colombian. Selected grains are subjected to gentle roasting, and then turned into original instant crystals. The finished drink has a strong rich taste with light shades of fruit (this is a feature of Kenyan Arabica), invigorating aroma and delicate aftertaste with chocolate notes. Packed in a stylish glass jar with a "crystal" lid.`
 
@@ -148,16 +150,19 @@ const ShowProduct = ()=>{
     <>
       <Suspense fallback={<NoItems />} >
           <NavBack/>
-            {/* {
+            {
               productItem
-              ? <ProductMinified productMini={productItem}>
+              ? <ProductMinified productItem={productItem}>
                   <BackBtn location={location}/>
                 </ProductMinified>
               : ""
-            } */}
+            }
           <div className="show-product-page relative">
             
               <MiddleSection>
+                <div className="product-product-name overflow-clip  text-xl text-ellipsis">
+                  <span style={textStyle}>{productItem?.name}</span>
+                </div>
                 <ContentViewer>
                   {/* <section id="product-details"> */}
                     <ProductImageViewer images={productItem?.images}/>
@@ -186,9 +191,17 @@ const ShowProduct = ()=>{
                   {/* </section> */}
                   {/* <section id="produc-price-details"> */}
                     <ContentPayment >
-                      <PriceTag tagFor={"product-variations"} original={productItem?.priceRange.sort((a, b) => b - a).at(-1)} discount={productItem?.isDiscounted[0] ? productItem?.isDiscounted[1] : false} />
+                      <PriceTag 
+                        tagFor={"product-variations"} 
+                        original={productItem?.priceRange.sort((a, b) => b - a).at(-1)} discount={productItem?.isDiscounted[0] ? productItem?.isDiscounted[1] : false} 
+                        prodVars={productItem?.variations.map(v => ({ id: v.id, stock: v.stock }))}
+                      />
                       <DiscountInfo/>
-                      <BuyBtns deliveryInfo={productItem?.deliveryOptions} id={productItem?.id}/>
+                      <BuyBtns 
+                        deliveryInfo={productItem?.deliveryOptions} id={productItem?.id}
+                        prodVars={productItem?.variations.map(v=>({id:v.id, stock:v.stock}))}
+                        
+                      />
                     </ContentPayment>
                     <PaymentType >
                       <Faqs />

@@ -3,13 +3,13 @@ import Logo from "./Logo"
 const ContentDetails = ({showLogo, contentType, variations = [{ id: 1, name: "yellow bag" }], children }) => {
   // const [activeTab, setActiveTab] = useState("PRs")
   const handleActiveToggle = (e, set) => {
-    const curAct = e.target.parentNode.querySelector("."+contentType+"-active")
+    const curAct = e.target.parentNode.querySelector("."+contentType+"-variation-active")
     const nextContDesc = document.getElementById(`content_desc_${e.target.id.split('_')[1]}`)
     const curContDesc = document.getElementById(`content_desc_${curAct.id.split('_')[1]}`)
     const batchToggleClass = (elemArr, classArr)=>{
       elemArr.forEach(el=> classArr.forEach(cl=> el.classList.toggle(cl)))
     }
-    batchToggleClass([curAct, e.target], [(contentType + "-active"), 'text-blue-500', 'border-blue-500']) 
+    batchToggleClass([curAct, e.target], [(contentType + "-variation-active"), 'text-blue-500', 'border-blue-500']) 
 
     curContDesc.classList.replace("flex", "hidden")
     nextContDesc.classList.replace("hidden", "flex")
@@ -22,7 +22,7 @@ const ContentDetails = ({showLogo, contentType, variations = [{ id: 1, name: "ye
 
         {
           variations?.sort((a,b)=> a.text-b.text).map((i, x) => (
-            <div id={'var_' + i.id} key={x} onClick={(e) => handleActiveToggle(e)} className={"variation-image " + (x === 0 ? contentType + "-active text-blue-500 border-blue-500" : "") + " py-1 px-2 w-max  flex items-baseline border-b-2 border-spacing-2 leading-[8px]  "}>
+            <div id={'var_' + i.id} key={x} onClick={(e) => handleActiveToggle(e)} className={"variation-image " + (x === 0 ? contentType + "-variation-active text-blue-500 border-blue-500" : "") + " py-1 px-2 w-max  flex items-baseline border-b-2 border-spacing-2 leading-[8px]  "}>
               {i.text}
             </div>
           ))

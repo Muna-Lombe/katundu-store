@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { imagepath } from '../assets/images'
 import no_img_path from '../assets/tests/jsonServer/img/placeholders/no_product_img.png'
 
 const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
-  const [activeImage, setActiveImage] = useState(false)
-   
+  // const [activeImage, setActiveImage] = useState(false)
+   const activeImage = useRef(false)
   useEffect(()=>{
     return images?.length
-    ? setActiveImage(images[0])
+    ? activeImage.current = images[0]//setActiveImage(images[0])
     : ""
   }, [images])
   function magnify(imgId, zoom) {
@@ -72,23 +72,43 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
   }
 
   const handleSetActive = (id) => { 
-      // console.log("active id", e)
-      if(activeImage.id !== id) setActiveImage(images.find((i) => i.id === id ))
+    if (activeImage.id !== id){ 
+      // console.log("active id", activeImage)
+      activeImage.current = images.find((i) => i.id === id)
+      //setActiveImage(images.find((i) => i.id === id ))
+      document.getElementById("activeImage").src = imagepath(activeImage?.current?.image_url || images[0]?.image_url) || no_img_path;
+     
+      const active = document.querySelector(".small_image_active_image")
+      active.classList.toggle("small_image_active_image");
+      const toActive = document.getElementById("small_img_" + id)
+
+      toActive.classList.toggle("small_image_active_image");
+      const borderClasses = [
+        "p-[0.8px]", "border-[3px]", "border-[#00000037]", "rounded-md"] 
+      const unborderClasses = [, "object-cover", "object-center", "block", "cursor-pointer"]
+      const batchToggle = (elem, toggleArr, untoggleArr)=>{
+        toggleArr.forEach(cl => elem.classList.toggle(cl, true))
+        untoggleArr.forEach(cl => elem.classList.toggle(cl, false))
+      }
+      batchToggle(active, unborderClasses, borderClasses)
+      batchToggle(toActive, borderClasses, unborderClasses)
+      
+    } 
   }
 
   const SmallSizeImageArray = ({imgArr=[1,2,3,4]}) => (
-      <div className={"  max-w-full flex justify-center "}>
+      <div className={"  max-w-full flex justify-center gap-2 "}>
         {
           
           imgArr?.map((i,idx)=>
             <img 
               key={idx}
-              id={(activeImage?.id === i.id) ? "active " : i.id||idx} 
+              id={ "small_img_"+(i.id||idx)} 
               alt="gallery"
               onClick={handleClick} 
-              onPointerEnter={(e) => (activeImage?.id !== i.id ? handleSetActive(Number.parseInt(e.target.id)) : ("")  )} 
-              // onTouchStart={((e) => (activeImage?.id !== i.id ? handleSetActive(Number.parseInt(e.target.id)) : ("")))}
-              className={"w-full less-than-xs:max-w-[3rem] max-w-[6rem]  aspect-square" + ((activeImage?.id === i.id) ? " p-[0.8px] border-[3px] border-[#00000037] rounded-md" : " p-2") +" object-cover object-center block cursor-pointer"} 
+              onPointerEnter={(e) => (activeImage?.current?.id !== i.id ? handleSetActive(Number.parseInt(e.currentTarget.id.split("_").at(-1))) : ("")  )} 
+              // onTouchStart={((e) => (activeImage?.current?.id !== i.id ? handleSetActive(Number.parseInt(e.target.id)) : ("")))}
+              className={((idx === 0) ? "small_image_active_image " : " ") + " w-full mt-2 p-4 less-than-xs:max-w-[3rem] max-w-[6rem]  aspect-square " + ((idx === 0) ? " p-4 border-[3px] border-[#00000037]" :" p-[1px]")+ " rounded-md object-cover object-center block cursor-pointer" } 
               src={imagepath(i?.image_url)||no_img_path}
                
             />
@@ -104,14 +124,14 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
         <div 
           // onTouchMove={(e) => magnify("activeImage", 3)} 
           
-        className={"mesh-mask modal absolute flex  w-full h-full bg-black opacity-30 border-[10px] border-red-500 rounded-md"}>
+        className={"mesh-mask modal absolute flex  w-full h-full bg-black opacity-30 border-[10px]  rounded-md"}>
             {/* <VerticalLine count={Number.parseInt(((sqrDim / (sqrDim / 10) * 5)).toString())} />
             <HorizontalLine count={Number.parseInt(((sqrDim / (sqrDim / 10) * 5)).toString())} /> */}
 
         </div>
             {
               // images?.length ?
-              <img id="activeImage" alt="gallery" className={"w-full min-w-[200px] max-w-[400px]  aspect-square object-cover object-center block bg-white border-[1px] rounded-md"} src={imagepath(activeImage?.image_url || images[0]?.image_url) || no_img_path} />
+        <img id="activeImage" alt="gallery" className={" min-w-[200px] w-[400px] max-w-[400px]  aspect-square object-cover object-center block bg-white border-[1px] rounded-md"} src={imagepath(activeImage?.current?.image_url || images[0]?.image_url) || no_img_path} />
                 // : ""
             }
         <div className={"peer img-magnifier-glass absolute bottom-0 right-0 w-1/4 aspect-square hover:bg-white border-[3px] border-slate-600  rounded-md cursor-none"}></div>

@@ -53,7 +53,8 @@ export const titleTagTypes={
     miniMainText:"To cart", 
     subText :"Delivery Tomorrow", 
     tooltip: "Item already in cart",
-    miniTooltip:"In cart"
+    miniTooltip:"In cart",
+    noStockStatus:"Out of Stock"
 
   },
   collectionCard:{
@@ -211,3 +212,4 @@ export { default as CancelIco } from './CancelIco';
 export { default as ToggleIco } from './ToggleIco';
 export { default as FilterIco } from './FilterIco';
 export { default as CouponIco } from './CouponIco';
+export { default as NoStockIco } from './NoStockIco';

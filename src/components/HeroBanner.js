@@ -101,7 +101,7 @@ import { ArrowRight } from '../assets'
       )
     }
     return(
-      <div id="Hero-Banner" className={" relative inline-block min-w-[250px] w-full max-h-[333px] text-white overflow-hidden "}>
+      <div id="Hero-Banner" className={" relative inline-block min-w-[250px] w-full max-h-[360px] text-white overflow-hidden "}>
         <ScrollableGallery/>
         
       </div>

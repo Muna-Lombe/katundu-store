@@ -63,12 +63,12 @@ const Main = () => {
         </div>
         <div id="product_tags" className=" w-full mb-3  flex flex-row flex-nowrap justify-center indent-3 overflow-x-hidden" >
           
-          <div  id="scrollable_product_tags"  className="scrollable_product_tags  w-full max-w-fit  flex flex-row flex-wrap justify-start less-than-xs:grid grid-flow-col grid-rows-2 overflow-scroll shadow-slate-600  tag child:m-0 child:px-0 child:less-than-xs:text-xs">
+          <div  id="scrollable_product_tags"  className="scrollable_product_tags  w-full max-w-fit  flex flex-row flex-wrap justify-start less-than-xs:grid gap-2 grid-flow-col grid-rows-2 overflow-scroll shadow-slate-600  tag child:m-0 child:px-0 child:less-than-xs:text-xs">
             {
               popularTags.map((tag, idx) => {
                 return (
                   <CategoryTag key={idx} borderId={0} id={tag.id} text={tag.text} customFn={()=>""}>
-                    <Link to={"/product/" + tag.productId} className="appearance-none  w-full max-w-[200px] max-h-[46px] border-1 border-inherit text-orange-600 truncate">
+                    <Link to={"/product/" + tag.productId} className="appearance-none  w-full max-w-[200px] max-h-[46px] bg-slate-100 border-1 border-inherit rounded-xl text-orange-600 truncate">
                       <span className="popular_tag">{tag.text}</span>
                     </Link>
                   </CategoryTag>
