@@ -1,9 +1,9 @@
 {
   "files": {
-    "main.css": "/katundu-store/static/css/main.7d67d334.css",
-    "main.js": "/katundu-store/static/js/main.f09e29ba.js",
+    "main.css": "/katundu-store/static/css/main.b1739e83.css",
+    "main.js": "/katundu-store/static/js/main.a0e48f3f.js",
     "static/js/565.11c2359d.chunk.js": "/katundu-store/static/js/565.11c2359d.chunk.js",
-    "static/js/279.5c1fb8bc.chunk.js": "/katundu-store/static/js/279.5c1fb8bc.chunk.js",
+    "static/js/279.4699f10b.chunk.js": "/katundu-store/static/js/279.4699f10b.chunk.js",
     "static/js/787.7af71dae.chunk.js": "/katundu-store/static/js/787.7af71dae.chunk.js",
     "static/media/601a7316507cf.jpg": "/katundu-store/static/media/601a7316507cf.234517002bfc9d07d123.jpg",
     "static/media/image13_6.png": "/katundu-store/static/media/image13_6.234517002bfc9d07d123.png",
@@ -84,14 +84,14 @@
     "static/media/601a731656eaf.jpg": "/katundu-store/static/media/601a731656eaf.1817ce75ac650274fac2.jpg",
     "static/media/601a731659703.jpg": "/katundu-store/static/media/601a731659703.1817ce75ac650274fac2.jpg",
     "index.html": "/katundu-store/index.html",
-    "main.7d67d334.css.map": "/katundu-store/static/css/main.7d67d334.css.map",
-    "main.f09e29ba.js.map": "/katundu-store/static/js/main.f09e29ba.js.map",
+    "main.b1739e83.css.map": "/katundu-store/static/css/main.b1739e83.css.map",
+    "main.a0e48f3f.js.map": "/katundu-store/static/js/main.a0e48f3f.js.map",
     "565.11c2359d.chunk.js.map": "/katundu-store/static/js/565.11c2359d.chunk.js.map",
-    "279.5c1fb8bc.chunk.js.map": "/katundu-store/static/js/279.5c1fb8bc.chunk.js.map",
+    "279.4699f10b.chunk.js.map": "/katundu-store/static/js/279.4699f10b.chunk.js.map",
     "787.7af71dae.chunk.js.map": "/katundu-store/static/js/787.7af71dae.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.7d67d334.css",
-    "static/js/main.f09e29ba.js"
+    "static/css/main.b1739e83.css",
+    "static/js/main.a0e48f3f.js"
   ]
 }
