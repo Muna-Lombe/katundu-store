@@ -116,7 +116,7 @@ const Navbar = ({children}) => {
     };
     suggestions(e.target.value)?.forEach((prod, i) =>{
       const optElem = document.createElement('option')
-      optElem.className = "w-[15.5rem] greater-than-sm:w-full whover:text-black hover:bg-slate-200 text-ellipsis overflow-x-clip";
+      optElem.className = "w-full hover:text-black hover:bg-slate-200 truncate overflow-x-clip";
       optElem.style = textStyle
       optElem.value = prod.name
       optElem.innerText = prod.name //prod.name.length > 36 ? prod.name.slice(0, 36) + "..." : prod.name
@@ -125,6 +125,7 @@ const Navbar = ({children}) => {
       optgrp.insertAdjacentElement("beforeend", optElem)  
     })
   };
+
   const Menu= ({children})=>{
       const handleClick =(e)=>{
         e.preventDefault()
@@ -188,10 +189,10 @@ const Navbar = ({children}) => {
   
   const GotoCategories = ({LabelText = "Categories"})=>{
     const CategoriesIcon =()=>(
-       <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="18" height="18" class="bi bi-columns-gap" viewBox="0 0 16 16"> <path d="M6 1v3H1V1h5zM1 0a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1H1zm14 12v3h-5v-3h5zm-5-1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-5zM6 8v7H1V8h5zM1 7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H1zm14-6v7h-5V1h5zm-5-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1h-5z" /> </svg>
+       <svg fill="currentColor" className="w-[18px] h-[18px] less-than-xs:w-[16px]  " viewBox="0 0 16 16"> <path d="M6 1v3H1V1h5zM1 0a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1H1zm14 12v3h-5v-3h5zm-5-1a1 1 0 0 0-1 1v3a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1v-3a1 1 0 0 0-1-1h-5zM6 8v7H1V8h5zM1 7a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H1zm14-6v7h-5V1h5zm-5-1a1 1 0 0 0-1 1v7a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1h-5z" /> </svg>
     )
     return (
-      <Link to={"categories"} className=" p-2 w-max max-w-[150px] h-full bg-slate-200 rounded-xl m-0 flex justify-center items-center gap-x-1">
+      <Link to={"categories"} className=" p-2 w-max max-w-[150px] less-than-xs:max-w-[40px] h-full less-than-xs:h-[30px] bg-slate-200 rounded-xl m-0 flex justify-center items-center gap-x-1">
         <span className=' less-than-sm:hidden text-base text-orange-600 font-raleway font-semibold'>
           {LabelText}
         </span>
@@ -423,9 +424,9 @@ const Navbar = ({children}) => {
               <div className='w-full flex justify-center items-center gap-2'>
                 <GotoCategories />
 
-                <div id="search_field_box" className='w-full max-w-[512px] flex flex-col  items-center' onBlur ={(e) => handleBlur(e, "blur")}>
+                <div id="search_field_box" className='relative w-full max-w-[512px] flex flex-col  items-center' onBlur ={(e) => handleBlur(e, "blur")}>
                   <SearchField/>
-                  <optgroup name="search-suggestions" tabIndex={1} id="search-suggestions" className="min-w-[12rem] greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem]  p-2 overflow-ellipsis border bg-black opacity-70 rounded-b-3xl text-white cursor-pointer hidden">
+                  <optgroup name="search-suggestions" tabIndex={1} id="search-suggestions" className="absolute top-full min-w-[12rem] greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem]  p-2 truncate border bg-black opacity-70 rounded-b-3xl text-white cursor-pointer hidden">
                   </optgroup>
                 </div>
               </div>

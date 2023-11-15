@@ -22,36 +22,40 @@ class Get {
   ]
   static productObj= {}
   fn=function(){};
-  rootpath= "https://test2.sionic.ru"
+  rootpath= "http://localhost:5000/api/v1"
   Products = async ()=>{
-    
+  // setHeaders = () =>new Headers(
+  //   {
+
+  //   }
+  // )
   
-    const baseUrl = encodeURI(this.rootpath+"/api/products");
+    const baseUrl = encodeURI(this.rootpath+"/products");
 
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
   SortedProductCategories = async() => {
-    const baseUrl = encodeURI(this.rootpath+"/api/Categories?sort=[\"name\",\"ASC\"]&range=[0,24]");
+    const baseUrl = encodeURI(this.rootpath+"/product_categories/catalog?sort=[\"name\",\"ASC\"]&range=[0,24]");
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
   ProductCategories = async(range, prevRange) => {
-    const baseUrl = encodeURI(this.rootpath+"/api/Categories/range=["+ (prevRange||0) +","+ (range||10) +"]");
+    const baseUrl = encodeURI(this.rootpath+"/product_categories/catalog?range=["+ (prevRange||0) +","+ (range||10) +"]");
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
   SortedProducts = async() => {
-    const baseUrl = encodeURI(this.rootpath+"/api/Products?sort=[\"name\",\"ASC\"]&range=[0,10]&filter={}");
+    const baseUrl = encodeURI(this.rootpath+"/products?sort=[\"name\",\"ASC\"]&range=[0,10]&filter={}");
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
   ProductsByMaxRange = async(range, prevRange) => {
-    const baseUrl = encodeURI(this.rootpath+"/api/Products?sort=[\"name\",\"ASC\"]&range=["+prevRange||0+","+range||10+"]&filter={\" category_id\":20}");
+    const baseUrl = encodeURI(this.rootpath+"/products?sort=[\"name\",\"ASC\"]&range=["+prevRange||0+","+range||10+"]&filter={\" category_id\":20}");
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
@@ -88,71 +92,71 @@ class Get {
   }
 
   OneProduct = async() => {
-    const baseUrl = encodeURI(this.rootpath+'/api/Products/2001');
+    const baseUrl = encodeURI(this.rootpath+'/products/2001');
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
 
   ProductImages = async(range, prevRange) => {
-    const baseUrl = encodeURI(this.rootpath+"/api/ProductImages?sort=[\"image_name\",\"ASC\"]&range=["+prevRange||0+","+range||10+"]&filter={\" product_id\":1001}");
+    const baseUrl = encodeURI(this.rootpath+"/products/1/product_images?sort=[\"image_name\",\"ASC\"]&range=["+prevRange||0+","+range||10+"]&filter={\" product_id\":1001}");
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     
     return productData;
   }
   
   OneProductImage = async(productid) => {
-    const baseUrl = encodeURI(`${this.rootpath}/api/ProductImages/${productid}`);
+    const baseUrl = encodeURI(`${this.rootpath}/ProductImages/${productid}`);
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
   ProductVariations = async() => {
-    const baseUrl = encodeURI(this.rootpath+'/api/ProductVariations');
+    const baseUrl = encodeURI(this.rootpath+'/ProductVariations');
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
 
   OneProductVariation = async() => {
-    const baseUrl = encodeURI(this.rootpath+'/api/ProductVariations/1');
+    const baseUrl = encodeURI(this.rootpath+'/ProductVariations/1');
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
   ProductVariationProperties = async() => {
-    const baseUrl = encodeURI(this.rootpath+'/api/ProductVariationProperties');
+    const baseUrl = encodeURI(this.rootpath+'/ProductVariationProperties');
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
   OneProductVariationProperties = async() => {
-    const baseUrl = encodeURI(this.rootpath+'/api/ProductVariationProperties/1');
+    const baseUrl = encodeURI(this.rootpath+'/ProductVariationProperties/1');
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
   //tags
   ProductVariationPropertyListValues = async() => {
-    const baseUrl = encodeURI(this.rootpath+'/api/ProductVariationPropertyListValues');
+    const baseUrl = encodeURI(this.rootpath+'/ProductVariationPropertyListValues');
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
   OneProductVariationPropertyListValues = async() => {
-    const baseUrl = encodeURI(this.rootpath+'/api/ProductVariationPropertyListValues/1');
+    const baseUrl = encodeURI(this.rootpath+'/ProductVariationPropertyListValues/1');
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
   ProductVariationPropertyValues = async() => {
-    const baseUrl = encodeURI(this.rootpath+'/api/ProductVariationPropertyValues');
+    const baseUrl = encodeURI(this.rootpath+'/ProductVariationPropertyValues');
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;
   }
   OneProductVariationPropertyValues = async() => {
-    const baseUrl = encodeURI(this.rootpath+'/api/ProductVariationPropertyValues/1');
+    const baseUrl = encodeURI(this.rootpath+'/ProductVariationPropertyValues/1');
     const {data: productData} = await axios.get(baseUrl)//await fetch(`${baseUrl}/`);
     // const productData = await data.json();
     return productData;

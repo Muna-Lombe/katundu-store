@@ -84,7 +84,7 @@ const Categories = () => {
           cats.map((tag, idx) => {
             return (
               <ProductSection sectionId={tag.id}>
-                <div  className={"section_products w-full h-full  p-2 grid grid-flow-row-dense less-than-xs:grid-cols-2 less-than-sm:grid-cols-[repeat(auto-fit,minmax(auto,8rem))] greater-than-md:grid-cols-[repeat(4,minmax(auto-fill,13rem))] justify-center  transition-all  tag gap-3 greater-than-xs:gap-6"}>
+                <div  className={"section_products w-full h-full  p-2 grid grid-flow-row-dense grid-cols-[repeat(auto-fit,minmax(auto,8rem))] greater-than-md:grid-cols-[repeat(auto-fit,minmax(auto,11rem))] justify-center  transition-all  tag gap-3 greater-than-xs:gap-6"}>
                           {
                             
                             products.length

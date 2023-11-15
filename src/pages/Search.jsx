@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react'
-import { EmbeddedProducts, FilterSearchResults, NoItems, Product } from '../components'
+import { EmbeddedProducts, FilterSearchResults, NoItems, ProductCard } from '../components'
 import { Link, Outlet, useParams, useSearchParams } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import { filteredProductsFromModel, productsMatchingSearch } from '../orm/selectors'
@@ -11,17 +11,17 @@ const Search = () => {
     const searchTextArr = JSON.parse(useSearchParams()[0].get('query'))
     // console.log("prods matching", searchTextArr )
     const products = useSelector(productsMatchingSearch(searchTextArr)) || []
-    const bigScreens = "grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-8"
-    const smallScreens = "grid-cols-[repeat(auto-fit,minmax(10rem,12rem))] gap-2"
+    const bigScreens = "grid-rows-[repeat(auto-fit,minmax(14rem,1fr))] gap-8"
+    const smallScreens = "grid-rows-[repeat(auto-fit,minmax(auto-fill,12rem))] gap-2"
     return (
         <div className="search-filter-wrapper relative w-full h-max flex flex-col md:flex-row">
               {
                 products.length 
                   ? <>
                       <FilterSearchResults/>
-                      <div id="search__content" className={"p-2 w-full  grid grid-flow-row-dense " + smallScreens + " greater-than-md:" + bigScreens +" overflow-x-clip scroll-smooth gap-[38px] justify-center  transition-all  tag"}>
+                      <div id="search__content" className={"p-2 w-full flex flex-col overflow-x-clip scroll-smooth gap-[38px] justify-center  transition-all  tag"}>
                           {products.map((i) => 
-                            <Product key={i.id}  product={i} isSearchOrMain/>
+                            <ProductCard key={i.id}  product={i} isSearchOrMain/>
                           )}
                       </div>
                     

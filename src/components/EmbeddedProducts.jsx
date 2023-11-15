@@ -1,5 +1,5 @@
 import React from 'react'
-import Product from './Product'
+import Product from './ProductCardVertical'
 import { ArrowLeft, ArrowRight } from '../assets'
 import { useSelector } from "react-redux"
 import { filteredProductsFromModel } from "../orm/selectors"

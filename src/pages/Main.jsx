@@ -129,8 +129,8 @@ const Main = () => {
     <>
       <Suspense fallback={<NoItems />}>
         <MainContent>
-          <PopularProdcuts/>
           <HeroBanner/>
+          <PopularProdcuts/>
           <ProductContent/>
         </MainContent>
       </Suspense>

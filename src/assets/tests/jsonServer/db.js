@@ -1,3 +1,4 @@
+import Get from "../Get";
 import 
 {
   Products,
@@ -39,14 +40,16 @@ import
   }
 };
 
+const get = new Get()
 
 /**
  * 
  * @param {string} query the data to be queried from the database
  * @return {}
  */
+
 const db = {
-  // return {
+  
     lastRequest: new Date(2000, 0, 1),
 
     /**@param request (type String) - the dataname of the model to be fetched */
@@ -60,8 +63,8 @@ const db = {
         await new Promise((resolve) => setTimeout(resolve,300-timeSinceLast));
       }
       return getFrom.DB(request,filters);
+      // return getFromDB()
     },
-  // };
-  // return requester
+  
 }
 export default db;

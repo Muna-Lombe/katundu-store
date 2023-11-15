@@ -1,6 +1,7 @@
 
 import { useState } from 'react'
 import { ArrowRight } from '../assets'
+import { imagepath } from '../assets/images'
 
  const HeroBanner=()=>{
     const BtnBasic = ({btnClass, id, clickEv, children}) => (
@@ -41,7 +42,7 @@ import { ArrowRight } from '../assets'
       const [activeIds, setActiveIds] = useState({activePageIdx:1, nextId:2, prevId:5})
       // console.log("state", activeIds)
       const banners = [
-        "https://sun9-78.vkuserphoto.ru/impg/HIVn9BafRjfPBbkIJVBtSXy03ZaXY9rLXxmVLQ/fOzyRac-4IU.jpg?size=940x270&quality=95&sign=c0a7942fa7b189b6809ee466ad081b2d&type=album",
+        imagepath("/img/placeholders/Banner_1.png"),
         "https://sun9-9.vkuserphoto.ru/impg/SKWBgfK9CunhNJYkITc-HFEcdmXX2vOObhg1cQ/ZMJgaSZl1A4.jpg?size=943x271&quality=95&sign=a45f863df71009a59790af07240f99b1&type=album",
         "https://sun9-67.vkuserphoto.ru/impg/-s-n_WnhCUnVn_YQjQNFehJycEjuGieD7fh9xw/f1KuAmrxADM.jpg?size=942x273&quality=95&sign=fd898cd170b6033c4202ac4573ccd169&type=album",
         "https://sun9-44.vkuserphoto.ru/impg/YA-ZXGa790SrEmeS5RfFE8JEIte4gI-pJxX3Zg/Ckea6R-VmZA.jpg?size=943x272&quality=95&sign=763568ffd3d219978dae1a08577204f2&type=album",
