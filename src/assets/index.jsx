@@ -8,6 +8,7 @@ export const setTextBg = (text, color="initial",  size={h:1, w:1, x:0, y:1, font
 )
 
 export const filterData = {
+   mainTitle: "Filters",
    categories : { mainTitle: "Category", categoryTypes: [1, 2, 3, 4] },
    inputData : [
     {

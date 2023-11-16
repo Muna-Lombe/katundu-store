@@ -45,7 +45,7 @@ const AppWrapper = ({children}) => {
   return (
     <Suspense fallback={<NoItems />}>
 
-      <div id="App" className="dark relative min-w-[200px] w-auto max-w-[2528px]  min-h-screen flex flex-col justify-start gap-4 2n-child:self-start child:p-2">
+      <div id="App" className="dark relative min-w-[200px] w-auto max-w-[2528px]  min-h-full flex flex-col justify-start gap-4 2n-child:self-start child:p-2">
 
         {
           !isAuthPath()

@@ -108,15 +108,15 @@ const Footer = ({}) => {
 
     return (
       <>
-        <img id="logo_long_png" src={imagepath("/img/placeholders/Katundu.png")} className="max-w-[14rem] " alt="" />
-        <img id="logo_short_png" src={imagepath("/img/placeholders/Katundu_short.png")} className="max-w-[2.8rem] hidden  object-scale-down object-center" loading='lazy' alt="" />
+        <img id="logo_long_png" src={imagepath("/img/placeholders/Katundu.png")} className="less-than-xs:max-w-[10rem] max-w-[14rem]  " alt="" />
+        {/* <img id="logo_short_png" src={imagepath("/img/placeholders/Katundu_short.png")} className="max-w-[2.8rem] hidden  object-scale-down object-center" loading='lazy' alt="" /> */}
       </>
     )
   }
   return (
     <div id="footer_wrapper" className="w-full h-full flex flex-col justify-around">
       <div id="footer_top" className="w-auto flex flex-wrap justify-between items-center">
-        <div id='footer_logo' className="">
+        <div id='footer_logo' className="less-than-xs:child:w-[4rem]">
           {/* <h3 className=" text-3xl md:text-5xl lg:text-5xl xl:text-5xl  font-bold font-raleway lining-nums tabular-nums ">
             {tags.footer.storename}
           </h3> */}
@@ -147,9 +147,9 @@ const Footer = ({}) => {
           </div>
           <div id="footer_app_links" className=" flex flex-wrap flex-col gap-2 text-xs md:text-base lg:text-base xl:text-base text-slate-600 font-raleway lining-nums tabular-nums  font-semibold">
             <p>{tags.footer.appInstall+":"}</p>
-            <span className="flex flex-wrap gap-2 contrast-150 child:cursor-pointer">
-              <img src={Google_Play_Link} className=" max-w-[7rem] h-[2rem] " alt="" />
-              <img src={Apple_Store_Link} className=" max-w-[7rem] h-[2rem] " alt="" />
+            <span className="flex flex-wrap flex-shrink gap-2 contrast-150 child:cursor-pointer">
+              <img src={Google_Play_Link} className="less-than-xs:w-[4rem]  max-w-[7rem] aspect-auto " alt="" />
+              <img src={Apple_Store_Link} className="less-than-xs:w-[4rem] max-w-[7rem] aspect-auto " alt="" />
             </span>
             
           </div>
