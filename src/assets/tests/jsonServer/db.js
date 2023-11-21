@@ -1,4 +1,5 @@
-import Get from "../Get";
+import Get from "../Get.js";
+import { api } from "../index.js";
 import 
 {
   Products,
@@ -62,6 +63,9 @@ const db = {
         this.lastRequest = new Date(this.lastRequest.getTime() + (300 - timeSinceLast));
         await new Promise((resolve) => setTimeout(resolve,300-timeSinceLast));
       }
+      // if(request ==="Products"){
+      //   return api.getProducts()
+      // }
       return getFrom.DB(request,filters);
       // return getFromDB()
     },

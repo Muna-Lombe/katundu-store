@@ -11,6 +11,7 @@ import types from '../orm/actions/actionTypes';
 import { authenticatedUsers, isAlreadyOrdered, isAuthedUser, isInCart } from '../orm/selectors';
 import { createdCartItem } from '../orm/models/CartModel';
 import BuyBtns from './BuyBtns';
+import randomizer from '../js/utils/randomizer';
 
 
 const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
@@ -91,7 +92,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
         {
           noPrd
           ? <Image imagepath={no_product_img} />
-          : <Image imagepath={imagepath(product?.images[0]?.image_url) || img[product?.img_path_id] || no_product_img} />
+            : <Image imagepath={"https://placehold.co/600x400/orange/" + randomizer(["black", "white", "gray", "red"]) || no_product_img} />
         }
       </Link>
     </div>

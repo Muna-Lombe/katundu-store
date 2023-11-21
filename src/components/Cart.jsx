@@ -8,6 +8,7 @@ import  { imagepath, no_img_path } from '../assets/images';
 import { checkedOutCartItem, removedCartItem, updatedCartItem } from '../orm/models/CartModel';
 import types from '../orm/actions/actionTypes';
 import { titleTagTypes as tags } from "../assets";
+import randomizer from '../js/utils/randomizer';
 
 
 
@@ -69,7 +70,7 @@ const Cart = ({ unOrd, ord }) => {
                 <Link to={"/product/" + orderItem.product.id} id="product_image"
                 className="w-max max-h-[5rem] px-2 flex justify-center items-center">
 
-                  <img className=" max-w-[5rem] max-h-[5rem] md:w-full md:h-full lg:w-full lg:h-full xl:w-full xl:h-full object-contain" src={imagepath(orderItem.product.images[0]?.image_url )|| no_img_path} alt="IGM" />
+                <img className=" max-w-[5rem] max-h-[5rem] md:w-full md:h-full lg:w-full lg:h-full xl:w-full xl:h-full object-contain" src={"https://placehold.co/600x400/orange/" + randomizer(["black", "white", "gray", "red"])} alt="IGM" />
                 </Link>
               
               

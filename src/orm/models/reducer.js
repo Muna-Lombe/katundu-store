@@ -37,6 +37,7 @@ export default function customReducer({session, model,action }) {
 
       }
       const customDispatch = () => {
+        // console.log("payload",payload)
         for (const [m, d] of mapper(payload).deserialize) {
           // console.log("m & d", m,d)
           if (isTargetModel(m)) {

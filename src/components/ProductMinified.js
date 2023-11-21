@@ -6,6 +6,7 @@ import { BasketIco } from "../assets"
 import { useParams, useLocation } from "react-router-dom"
 import { filteredProductsFromModel } from "../orm/selectors"
 import { useSelector } from "react-redux"
+import randomizer from "../js/utils/randomizer"
 
 const ProductMinified = ({children, productItem})=> {
   const idFromLoc = useLocation().pathname?.split("/")?.at(-1)
@@ -13,7 +14,7 @@ const ProductMinified = ({children, productItem})=> {
   // const productItem = useSelector(filteredProductsFromModel([])).find
   (i=> i.id.toString() === id.toString())
   
-  console.log("navprod", productItem)
+  // console.log("navprod", productItem)
     const textStyle = {
       maxWidth: '100%',
       display: '-webkit-box',
@@ -60,7 +61,7 @@ const ProductMinified = ({children, productItem})=> {
               </div>
               < div className ="product-minified px-2 flex flex-row justify-end items-center gap-2">
                 <div className="product-minified-img">
-                  <img src={imagepath(productItem?.images[0].image_url) || no_img_path} alt="" className="w-[60px] aspect-square object-cover" />
+                  <img src={"https://placehold.co/600x400/orange/"+randomizer(["black","white","gray","red"]) } alt="" className="w-[60px] aspect-square object-cover" />
                 </div>
                 <div className="product-minified-product-name overflow-clip less-than-xs:text-xs text-base text-ellipsis">
                   <span style={textStyle}>{productItem?.name}</span>

@@ -25,7 +25,7 @@ orm.register(Auth,Product,CartItem, Order,ProductCategory,  ProductImage, Produc
 export const ormRootReducer = createReducer(orm, defaultUpdater) //customStateUpdater) 
 
 let emptyState = orm.getEmptyState()
-console.log(orm)
+// console.log(orm)
 // creates session with empty db state
 export const session = orm.session(emptyState);
 

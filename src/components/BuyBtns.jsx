@@ -64,7 +64,7 @@ const BuyBtns = ({ id, deliveryInfo, onlyBtn, children, prodVars }) => {
       !children
       ? <div className={" buy-btns   my-3 flex flex-col items-center gap-2 "}>
           
-              <button onClick={() => userAuthed ? handleAddToCart(id) : handleRedirect()} onSubmit={() => ""} disabled={(isOrdered||!prodInStok.status)} className={((isOrdered||!prodInStok.status) ? "bg-slate-400 " : " bg-orange-500 active:bg-orange-400  ") + "buy-now  h-max py-1 px-2  max-w-xs flex justify-center rounded-2xl text-white " + (onlyBtn ? "" :" w-10/12 font-raleway lining-nums tabular-nums  font-thin ")+" cursor-pointer transition-transform"}>
+              <button onClick={() => userAuthed ? handleAddToCart(id) : handleRedirect()} onSubmit={() => ""} disabled={(isOrdered||!prodInStok.status)} className={((isOrdered||!prodInStok.status) ? "bg-slate-400 " : " bg-orange-500 active:bg-orange-400  ") + "buy-now  h-max py-1 px-2  max-w-xs flex justify-center rounded-xl text-white " + (onlyBtn ? "" :" w-10/12 font-raleway lining-nums tabular-nums  font-thin ")+" cursor-pointer transition-transform"}>
                 <span className={" flex text-center leading-5"}>
                   { onlyBtn
                     ? isOrdered 

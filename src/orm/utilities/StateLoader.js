@@ -9,7 +9,8 @@ import { actions } from "../actions/actionTypes";
 export const load = async ({model, loadmore, thunkFulfilled}) => {
   if (model) {
     let data = await db.makeRequest({request:model.dataName, filters:{range:model.range? {step:10,to: model.range, from:loadmore?.fromIdx} : undefined}})
- 
+    // console.error("faulty:",data)
+
     const props = { data, model }
     const action = { ...data }
     return action
@@ -49,7 +50,7 @@ const payloadCreatorForSingle =(thunktype) =>{
         compiledResponse.push({ [thunktype.modelName]: response })
         // console.log(thunkAPI)//.dispatch(action)
 
-      return compiledResponse
+      return mapper(compiledResponse).serialize
     } catch (error) {
       thunkAPI.dispatch({ type: 'FETCH_ERROR', error });
       return error;

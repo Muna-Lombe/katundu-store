@@ -228,11 +228,11 @@ const Navbar = ({children}) => {
       const autoTog = () => document.getElementById("location-text").classList.toggle("less-than-sm:hidden")
 
       const t_o = setTimeout(() => {
-        console.log(1)
+        // console.log(1)
         autoTog()
         clearTimeout(t_o)
       }, 10000);
-      console.log(2)
+      // console.log(2)
       autoTog()
   
 
@@ -336,12 +336,12 @@ const Navbar = ({children}) => {
         const box = entries[0]?.contentBoxSize
         if (Math.floor(box[0]?.inlineSize) <= 350 && canBeToggledFalse(logoShortPng.classList, "hidden") ) {
           toggleShortLogo()
-          console.log("<-- toShort trigger count")
+          // console.log("<-- toShort trigger count")
           
         }
         if (Math.floor(box[0]?.inlineSize) > 350 && canBeToggledFalse(logoLongPng.classList, "hidden")) {
           toggleLongLogo()
-          console.log("<-- toLong trigger count")
+          // console.log("<-- toLong trigger count")
           }
         }
 
