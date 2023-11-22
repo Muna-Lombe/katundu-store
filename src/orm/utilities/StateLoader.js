@@ -42,12 +42,12 @@ const payloadCreatorForSingle =(thunktype) =>{
   return async (arg, thunkAPI) => {
     
     try {
-      const compiledResponse = Object.create([])
+      const compiledResponse = new Map();//Object.create([])
         const response = await load({model:thunktype});
         // console.log("response", response)
         const action = { type: "orm/" + thunktype.modelName + "/CREATE", payload: response }
         const props = { response, actionType: "/CREATE", modelName: thunktype.modelName }
-        compiledResponse.push({ [thunktype.modelName]: response })
+        compiledResponse.set(thunktype.modelName, response )
         // console.log(thunkAPI)//.dispatch(action)
 
       return mapper(compiledResponse).serialize
@@ -59,7 +59,7 @@ const payloadCreatorForSingle =(thunktype) =>{
 }
 
 
-export const asyncThunk = createAsyncThunk('orm/Models/FETCH_DATA', payloadCreatorForMany);
+export const asyncThunk = createAsyncThunk('orm/Models/FETCH_DATA', payloadCreatorForSingle(ThunkTypes[0]));
 
 // export const ormMiddlewares = ThunkTypes.map((e,i)=> {
 //                                        return e = createAsyncThunk(

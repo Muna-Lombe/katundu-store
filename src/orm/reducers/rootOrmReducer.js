@@ -22,7 +22,7 @@ export const orm = new ORM({
 // getFromDB
 orm.register(Auth,Product,CartItem, Order,ProductCategory,  ProductImage, ProductVariation, ProductVariationProperty,ProductVariationPropertyValue,ProductVariationPropertyListValue);
 
-export const ormRootReducer = createReducer(orm, defaultUpdater) //customStateUpdater) 
+export const ormRootReducer = createReducer(orm)//, defaultUpdater) //customStateUpdater) 
 
 let emptyState = orm.getEmptyState()
 // console.log(orm)

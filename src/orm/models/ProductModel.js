@@ -8,9 +8,9 @@ import customReducer from "./reducer";
 // var ValidModel = getPropTypesMixin(Model)
 
 class Product extends Model {
-    static reducer(action, Product,session ){
-        return customReducer({session, model:Product, action})
-    }
+    // static reducer(action, Product,session ){
+    //     return customReducer({session, model:Product, action})
+    // }
     
 }
 Product.modelName = 'Product';

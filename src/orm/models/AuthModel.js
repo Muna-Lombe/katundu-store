@@ -8,9 +8,9 @@ import customReducer from "./reducer";
 // import moment from "moment";
 
 class Auth extends Model {
-  static reducer(action, Auth, session) {
-    return customReducer({ session, model: Auth, action })
-  }
+  // static reducer(action, Auth, session) {
+  //   return customReducer({ session, model: Auth, action })
+  // }
   //   
 }
 Auth.modelName = 'Auth';

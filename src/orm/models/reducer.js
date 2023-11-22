@@ -3,12 +3,12 @@ import { mapper } from "../utilities";
 import { fromType } from "../utilities/StateLoader";
 
 export default function customReducer({session, model,action }) {
-  // console.log("acrion", session, model.modelName, action)
+  // console.log("acrion", model.modelName, action)
   const verb =()=> fromType(action.type).getActionWord()
   const defaultTarget =() => fromType(action.type).getModelName()
   const isTargetModel = (target=defaultTarget()) => model.modelName === target
   const {type, payload=[], meta={}} = action
-  // console.log("acrion", type, payload, verb(), isTargetModel(), model.modelName)
+  console.log("acrion", type, verb(), isTargetModel(), model.modelName)
   
   function batchDo({customFn,modelAction, data}){
   
@@ -27,6 +27,7 @@ export default function customReducer({session, model,action }) {
       break;
 
     case verb()=== "FETCH_DATA" && meta?.requestStatus?.includes(types.FULFILLED.toLocaleLowerCase()):
+      // console.log("fetcher")
       const doCreate = (d) => {
 
         Object.values(d).forEach(o => {
@@ -39,7 +40,7 @@ export default function customReducer({session, model,action }) {
       const customDispatch = () => {
         // console.log("payload",payload)
         for (const [m, d] of mapper(payload).deserialize) {
-          // console.log("m & d", m,d)
+          console.log("m & d", m,d)
           if (isTargetModel(m)) {
             // console.log("is", m, "target model? : ", isTargetModel(m))
             const result = isTargetModel(m) ? doCreate(d) : ''
