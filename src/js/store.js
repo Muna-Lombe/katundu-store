@@ -1,7 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { ormRootReducer as orm } from '../orm/reducers/rootOrmReducer';
-
-
+import { apiSlice } from './middleware';
 
 
 const Store = configureStore({
@@ -10,12 +9,13 @@ const Store = configureStore({
         // categories: categoriesReducer,
         // cart: cartReducer,
         // orderHistory: ordersReducer,
-        orm//: combineReducers({orm, entitiesReducer})
+        orm,//: combineReducers({orm, entitiesReducer}),
+        [apiSlice.reducerPath]: apiSlice.reducer
 
         
     },
     
-    // middleware: (gDM) =>gDM().concat(...ormMiddlewares)
+    middleware: (gDM) =>gDM().concat(apiSlice.middleware)
 
     //middleware: [fetchProducts]//,asyncThunk]
 })

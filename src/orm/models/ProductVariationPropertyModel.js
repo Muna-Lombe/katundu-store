@@ -6,9 +6,9 @@ import { actions } from "../actions/actionTypes";
 
 
 class ProductVariationProperty extends Model {
-    static reducer(action, ProductVariationProperty, session) {
-        return customReducer({session, model:ProductVariationProperty, action})
-    }
+    // static reducer(action, ProductVariationProperty, session) {
+    //     return customReducer({session, model:ProductVariationProperty, action})
+    // }
 }
 ProductVariationProperty.modelName = 'ProductVariationProperty';
 ProductVariationProperty.fields = {

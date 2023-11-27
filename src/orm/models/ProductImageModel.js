@@ -6,9 +6,9 @@ import { actions } from "../actions/actionTypes";
 
 
 class ProductImage extends Model {
-    static reducer(action, ProductImage, session) {
-        return customReducer({session, model:ProductImage, action})
-    }
+    // static reducer(action, ProductImage, session) {
+    //     return customReducer({session, model:ProductImage, action})
+    // }
 }
 ProductImage.modelName = 'ProductImage';
 ProductImage.fields = {

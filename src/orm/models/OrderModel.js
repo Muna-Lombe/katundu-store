@@ -8,9 +8,9 @@ import customReducer from "./reducer";
 // import moment from "moment";
 
 class Order extends Model {
-    static reducer(action, Order, session) {
-        return customReducer({session, model:Order, action})
-    }
+    // static reducer(action, Order, session) {
+    //     return customReducer({session, model:Order, action})
+    // }
 //   
 }
 Order.modelName = 'Order';

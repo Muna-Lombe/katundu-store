@@ -8,17 +8,18 @@ import customReducer from "./reducer";
 // import moment from "moment";
 
 class CartItem extends Model {
-    static reducer(action, CartItem, session) {
-        return customReducer({session, model:CartItem, action})
-    }
+    // static reducer(action, CartItem, session) {
+    //     return customReducer({session, model:CartItem, action})
+    // }
 //   
 }
 CartItem.modelName = 'CartItem';
 CartItem.fields = {
     id: attr(),
     DateCreated: attr(),
-    product: fk({to:'Product', as:'product', through:"ProductCartItem", relatedName: 'cartItems'}),
-    productVarId: fk({ to: 'ProductVariation', as: 'productVariation', through: "VariationCartItem", relatedName: 'cartItems' }),
+    UserId: attr(),
+    // product: fk({to:'Product', as:'product', through:"ProductCartItem", relatedName: 'cartItems'}),
+    productVariationId: fk({ to: 'ProductVariation', as: 'productVariation', through: "VariationCartItem", relatedName: 'cartItems' }),
     productCount:attr(),
     ItemStatus: attr()
 };

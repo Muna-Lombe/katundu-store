@@ -21,9 +21,9 @@ class ProductCategory extends Model {
                 // session.ProductCategory.options.currCatId = action.payload //set("currCatId",action.payload)
                 console.log("", session)
                 break;
-            default:
-                customReducer({session, model:ProductCategory, action})
-                break;
+            // default:
+            //     customReducer({session, model:ProductCategory, action})
+            //     break;
         }
     }
 }
