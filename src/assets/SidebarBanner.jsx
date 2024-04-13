@@ -7,10 +7,10 @@ const SidebarBanner = ({ onClick, mainText = "Receive orders", subText = "For Fr
   const CTA = () => (
     <g>
       <rect x="110" y="90"  rx="19.5" onClick={onClick} //stroke="#FF2D87"
-        className="w-[55%] h-[26%] fill-[#2967FF] cursor-pointer">
+        className="w-[55%] h-[26%] dark:fill-white fill-orange-500 cursor-pointer">
       </rect>
       <text x='157' y='109' z={50} fontFamily='Raleway' dominantBaseline={"middle"} className="w-auto flex gap-2 "  >
-        <tspan className="w-max h-max border text-base fill-white font-raleway lining-nums tabular-nums  hover:font-semibold font-medium" >
+        <tspan className="w-max h-max border text-base fill-white dark:fill-orange-500 font-raleway lining-nums tabular-nums  hover:font-semibold font-medium  " >
           {ctaText}
         </tspan>
       </text>
@@ -18,21 +18,21 @@ const SidebarBanner = ({ onClick, mainText = "Receive orders", subText = "For Fr
   )
   const MainText = ()=>(
     <text x='110' y='40' fontFamily='Raleway' dominantBaseline={"middle"} className="w-auto flex gap-2"  >
-      <tspan className="text-xl fill-[#2967FF]  font-semibold" >
+      <tspan className="text-xl fill-slate-400  font-semibold" >
         {mainText}
       </tspan> 
-      <tspan x="110" y="68" className="text-xl fill-[#FF2D87] font-semibold uppercase" >
+      <tspan x="110" y="68" className="text-xl fill-orange-500 font-semibold uppercase" >
         {subText}
       </tspan>
     </text>
   )
   return (
-    <div className=" min-w-[16rem] top-4 ">
+    <div className=" w-full max-w-[550px]  top-4 ">
   {/* // className="absolute w-[425px] h-[225px] top-0 -left-[0.5rem] -z-50" */}
       <svg   viewBox="0 0 330 143" fill="none" xmlns="http://www.w3.org/2000/svg"
           className="w-auto flex justify-center items-center"
       >
-        <rect x="11.5" y="0.5" width="310" height="142" rx="19.5" fill="none" stroke="#FF2D87">
+        <rect x="11.5" y="0.5" width="310" height="142" rx="19.5" fill="none"  className='stroke-orange-500'>
 
         </rect>
           <MainText/>

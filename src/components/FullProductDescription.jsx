@@ -7,17 +7,17 @@ const FullProductDescription = ({ description, children }) => {
           {description.text}
         </p>
       </div>
-      <div className="description-2 my-2 py-2">
-        <div className="title text-lg font-[arial font-bold">{"Storage conditions"}</div>
-        <p className="description-tag py-2  text-base font-raleway lining-nums tabular-nums ">
-          {description.tags[0]}
-        </p>
-      </div>
-      <div className="description-3 my-2">
-        <div className="title text-lg font-[arial font-bold">{"Composition"}</div>
-        <p className="description-tag py-2 text-base font-raleway lining-nums tabular-nums ">
-          {description.tags[1]}
-        </p>
+      <div className="description-tags">
+        {
+          description.tags.map((tag, x) => (
+            <div key={x} className={"description-"+(x+1)+" my-2 py-2"}>
+              <div className="title text-lg font-[arial font-bold">{tag.label}</div>
+              <p className="description-tag py-2  text-base font-raleway lining-nums tabular-nums ">
+                {tag.value}
+              </p>
+            </div>
+          ))
+        }
       </div>
     </div>
   )

@@ -1,39 +1,83 @@
 
-import { useState } from 'react'
-import { ArrowRight } from '../assets'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowLeft, ArrowRight } from '../assets'
 import { imagepath } from '../assets/images'
 
  const HeroBanner=()=>{
-    const BtnBasic = ({btnClass, id, clickEv, children}) => (
-      <div id={id} onClick={(e)=> clickEv(e)} className={btnClass + " w-[5%] aspect-[3/4] border flex top-[40%] bottom-[50%] items-center justify-end rounded-l-[30px] cursor-pointer "}>
+    const BtnBasic = ({className, id, clickEv, children}) => (
+      <div id={id} onClick={(e)=> clickEv(e)} className={className + " less-than-sm:w-[5%] w-[4.5%] less-than-sm:aspect-[2/4] aspect-[5/6.5]  cursor-pointer "}>
         {children}
       </div>
     ) 
-    const Pagination = ({className, clickEv, activeIds})=>{
+    const Pagination = ({className, clickEv, activeIds, setActiveIds})=>{
+
       const Dot = ()=>(
          <svg className="w-[80%] h-[100%] max-w-[1rem] max-h-[1rem] fill-white ease-in-out delay-500" viewBox="0 0 12 11" xmlns="http://www.w3.org/2000/svg">
           <path d="M5.18414 5.16257L6.18414 5.16257" stroke="white" strokeWidth="10" strokeLinecap="round" />
         </svg>
       )
+
       const Dash = () => (
         <svg className="w-[90%] h-[100%] max-w-[24px] max-h-[14px] fill-orange-500 ease-in-out delay-500" viewBox="0 0 24 11" xmlns="http://www.w3.org/2000/svg">
           <rect x="0.5" y="0.5" width="23" height="10" rx="5" stroke="#9B4A00" />
         </svg>
       )
+
+      const intervalRef = useRef(null);
+      const bannerRef = useRef(null);
+ 
+      useEffect(() => {
+            bannerRef.current = document.getElementById("Hero-Banner");
+            const observer = new IntersectionObserver((entries) => {
+              const [entry] = entries;
+              if (entry.isIntersecting) {
+                // Start scrolling when component is in view
+                intervalRef.current = setInterval(() => {
+                  const nextId = (activeIds.activePageIdx + 1) > 5 ? 1 : (activeIds.activePageIdx + 1);
+                  const prevId = (activeIds.activePageIdx - 1) < 1 ? 5 : (activeIds.activePageIdx - 1);
+
+                  setActiveIds((prev) => ({
+                    nextId: nextId,
+                    prevId: prevId,
+                    activePageIdx: nextId
+                  }));
+
+                  document.getElementById("banner_page_" + nextId)
+                    .scrollIntoView({
+                      behavior: "smooth",
+                      block: "nearest",
+                      inline: "center"
+                    });
+                }, 5000);
+              } else {
+                // Stop scrolling when component is out of view
+                clearInterval(intervalRef.current);
+              }
+            });
+
+            observer.observe(bannerRef.current);
+
+            return () => {
+              observer.unobserve(bannerRef.current);
+              clearInterval(intervalRef.current);
+            };
+          }, [activeIds]);
+      
       return (
-        <span >
+        <span className='relative w-full h-full' >
+
           <span className={"pagination "+className}>
               {
               new Array(5).fill(<Dot />).map((i, x) => <span id={("page_" + (x+1))} key={x} className={' cursor-pointer transition-all di'} onClick={()=>''}>{("page_"+activeIds.activePageIdx)===("page_"+(x+1))?<Dash/> : i}</span>)
               }
           </span>
-
-          <BtnBasic id={activeIds.prevId} btnClass={"btn_left absolute left-0 rotate-180 bg-white   "} clickEv={clickEv}>
-            <ArrowRight className={"arrow-left w-[100%]  aspect-square stroke-orange-400 child:fill-orange-400 "} size={undefined}/>
+          {/* <BtnBasic id={activeIds.prevId} className={"btn_left absolute left-0 bg-white border flex top-[40%] bottom-[50%] items-center justify-center rounded-r-[30px]  "} clickEv={clickEv}>
+            <ArrowLeft className={"arrow-left   aspect-square stroke-orange-400 child:fill-orange-400  "} size={""}/>
+           
           </BtnBasic>
-          <BtnBasic id={activeIds.nextId} btnClass={"btn_right absolute right-0 bg-white  "} clickEv={clickEv}>
-            <ArrowRight className={"arrow-right w-[100%] aspect-square stroke-orange-400 child:fill-orange-400  "} size={undefined}  />
-          </BtnBasic>
+          <BtnBasic id={activeIds.nextId} className={"btn_right absolute right-0 bg-white border flex top-[40%] bottom-[50%] items-center justify-center rounded-l-[30px] "} clickEv={clickEv}>
+            <ArrowRight className={"arrow-right aspect-square stroke-orange-400 child:fill-orange-400  "} size={""}  />
+          </BtnBasic> */}
         </span>
       )
     }
@@ -50,6 +94,7 @@ import { imagepath } from '../assets/images'
 
       ]
       const splitId = (s)=> s.toString().split("_")
+      
       const handleScroll = (e) => {
         e.preventDefault();
         const get = {
@@ -88,25 +133,30 @@ import { imagepath } from '../assets/images'
      
       return(
         <>
-          <span className="scroll-gallery relative ">
-            <span className=" flex   overflow-x-scroll scrollbar pointer-events-none ">
-            {
-              banners.map((b,x) => 
-                <img id={("banner_page_" + (x+1) )} data-active-banner={x===0}  key={x} className={"banner w-full min-w-[100%] max-h-fit"} src={b} loading='eager' placeholder='some' alt="" />
-                )
+          <span className="scroll-gallery w-full h-full grid grid-cols-1  child:row-start-1 child:col-start-1 gap-0 p-0 child:m-0 overflow overflow-clip bg-transparent less-than-xs:border-[1px] border-[3px] greater-than-sm:border-4  border-spacing-0 border-transparent less-than-sm:rounded-[0.75rem] 
+          rounded-[1rem] greater-than-md:rounded-[1.5rem]">
+            <span className=" flex flex-grow items-baseline bg-transparent w-full overflow-x-scroll scrollbar pointer-events-none ">
+              {
+                banners.map((b,x) => 
+                  <img id={("banner_page_" + (x+1) )} data-active-banner={x===0}  key={x} className={"banner w-full h-full object-fit border border-transparent rounded-xl"} src={b} loading='eager' placeholder='some' alt="" />
+                  )
               }
-              </span>
-            <Pagination clickEv={handleScroll} activeIds={activeIds} className={"absolute  bottom-[9%] inset-x-14 flex gap-1 rounded-xl transition ease-linear delay-500"} />
+            </span>
+            <Pagination clickEv={handleScroll} activeIds={activeIds}
+            setActiveIds={setActiveIds} className={"absolute   bottom-[9%] inset-x-14 flex gap-1 rounded-xl transition ease-linear delay-500 bg-transparent less-than-sm:child:w-[0.7rem]"} />
           </span>
         </>
       )
     }
     return(
-      <div id="Hero-Banner" className={" relative inline-block min-w-[250px] w-full max-h-[360px] text-white overflow-hidden "}>
+      <div id="Hero-Banner" className={" relative inline-block min-w-[250px] w-full greater-than-sm:max-w-[90%] aspect-[6/3] greater-than-xs:aspect-[6/2] text-white dark:text-black  overflow-clip bg-transparent "}>
+        
         <ScrollableGallery/>
         
       </div>
     )
   }
+
+ 
 
 export default HeroBanner

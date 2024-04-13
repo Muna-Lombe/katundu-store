@@ -73,9 +73,9 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
   }
 
   const handleSetActive = (id) => { 
-    if (activeImage.id !== id){ 
+    if (activeImage.uuid !== id){ 
       // console.log("active id", activeImage)
-      activeImage.current = images.find((i) => i.id === id)
+      activeImage.current = images.find((i) => i.uuid === id)
       //setActiveImage(images.find((i) => i.id === id ))
       document.getElementById("activeImage").src = "https://placehold.co/600x400/orange/"+randomizer(["black","white","gray","red"]);
      
@@ -104,10 +104,10 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
           imgArr?.map((i,idx)=>
             <img 
               key={idx}
-              id={ "small_img_"+(i.id||idx)} 
+              id={ "small_img_"+(i.uuid||idx)} 
               alt="gallery"
               onClick={handleClick} 
-              onPointerEnter={(e) => ((activeImage?.current?.id !== i.id || activeImage?.current?.id !== idx) ? handleSetActive(Number.parseInt(e.currentTarget.id.split("_").at(-1))) : ("")  )} 
+              onPointerEnter={(e) => ((activeImage?.current?.id !== i.uuid || activeImage?.current?.id !== idx) ? handleSetActive(Number.parseInt(e.currentTarget.id.split("_").at(-1))) : ("")  )} 
               // onTouchStart={((e) => (activeImage?.current?.id !== i.id ? handleSetActive(Number.parseInt(e.target.id)) : ("")))}
               className={((idx === 0) ? "small_image_active_image " : " ") + " w-full mt-2 p-4 min-w-[40px] less-than-xs:max-w-[3rem] max-w-[6rem]  aspect-square " + ((idx === 0) ? " p-4 border-[3px] border-[#00000037]" :" p-[1px]")+ " rounded-md object-cover object-center block cursor-pointer" } 
               src={"https://placehold.co/600x400/orange/" + randomizer(["black", "white", "gray", "red"])}

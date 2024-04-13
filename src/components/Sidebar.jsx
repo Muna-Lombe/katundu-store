@@ -6,14 +6,15 @@ import imgBg2 from '../assets/tests/jsonServer/img/placeholders/newCollection2.p
 
 const Sidebar = () => {
   return (
-    <div id="sidebar" className=" hidden xl:w-full xl:h-full xl:flex xl:flex-col gap-8 justify-start items-center">
-      <div id="sidebar_hero_banner" className="mt-2 p-2 w-full h-max   relative flex flex-col justify-center ">
+    <div id="sidebar" className="sidebar xl:w-full xl:h-full xl:flex xl:flex-col justify-start items-center bg-[#fcfbfb] border-[0.4px] border-[#f0efef] rounded-2xl">
+      <div id="sidebar_hero_banner" className=" w-full    relative flex flex-col justify-center ">
     
         {/* <DiscountIco /> */}
-        <SidebarBanner />
+        {/* <SidebarBanner /> */}
+
 
       </div>
-      <div id="sidebar_content" className="w-full h-[60%] m-0 flex flex-col items-center overflow-y-scroll scroll-m-0 " >
+      <div id="sidebar_content" className="w-full h-[60%] m-0 flex flex-row flex-wrap justify-center items-center overflow-y-scroll scroll-m-0 dark:text-white " >
         <Card imgBg={imgBg1}/>
         <Card imgBg={imgBg2}/>
         <Card imgBg={imgBg1}/>

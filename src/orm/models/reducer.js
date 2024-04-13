@@ -8,15 +8,15 @@ export default function customReducer({session, model,action }) {
   const defaultTarget =() => fromType(action.type).getModelName()
   const isTargetModel = (target=defaultTarget()) => model.modelName === target
   const {type, payload=[], meta={}} = action
-  console.log("acrion", type, verb(), isTargetModel(), model.modelName)
+  // console.log("acrion", type, verb(), isTargetModel(), model.modelName)
   
-  function batchDo({customFn,modelAction, data}){
+  function batchDo({customFn,modelObject, data}){
   
     customFn ? 
       customFn()
       :(function(){
         // console.log("somn",modelAction.modelName,)
-        const res = modelAction.create(data)
+        const res = modelObject.create(data)
         // console.log("res",res)
       })()
   }
@@ -40,7 +40,7 @@ export default function customReducer({session, model,action }) {
       const customDispatch = () => {
         // console.log("payload",payload)
         for (const [m, d] of mapper(payload).deserialize) {
-          console.log("m & d", m,d)
+          // console.log("m & d", m,d)
           if (isTargetModel(m)) {
             // console.log("is", m, "target model? : ", isTargetModel(m))
             const result = isTargetModel(m) ? doCreate(d) : ''
@@ -54,7 +54,8 @@ export default function customReducer({session, model,action }) {
       break;
 
     case ( isTargetModel() && verb() + '_' + model.modelName) === (types.CREATE+'_'+model.modelName):
-      batchDo({modelAction:model, data:payload})
+      // console.log(isTargetModel(), verb(),model.modelName, payload )
+      // batchDo({modelObject:model, data:payload})
       break;
 
     case ( isTargetModel() && verb() + '_' + model.modelName) === (types.ADD_TO+'_'+model.modelName):
@@ -63,7 +64,7 @@ export default function customReducer({session, model,action }) {
       break;
 
     case (isTargetModel() && verb() + '_' + model.modelName) === (types.ADD + '_' + model.modelName):
-      console.log(payload)
+      // console.log(payload)
       const isIterable=(t)=>{
         return t.map ? true : false
       }
@@ -79,7 +80,16 @@ export default function customReducer({session, model,action }) {
       model.withId(payload.productId).categoryId = payload.categoryId;
       // session.reduce();
       break;
-
+    case ( isTargetModel() && verb() + '_' + model.modelName) === (types.UPSERT+'_'+model.modelName):
+      // console.log("update", payload, model.modelName, model.withId(payload.id))
+      if("scope"){
+        const {set, id, ...otherProps} = payload
+  
+        model.withId(id).update(set);
+        if(otherProps?.fn) otherProps.fn()
+      }
+      // session.reduce();
+      break;
     case ( isTargetModel() && verb() + '_' + model.modelName) === (types.UPDATE+'_'+model.modelName):
       // console.log("update", payload, model.modelName, model.withId(payload.id))
       if("scope"){

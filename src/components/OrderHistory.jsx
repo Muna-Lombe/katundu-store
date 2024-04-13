@@ -11,11 +11,11 @@ import NoItems from './NoItems'
 import { Link } from 'react-router-dom'
 import ToggleableField from './ToggleableField'
 import { useDispatch } from 'react-redux'
-import { createdOrder } from '../orm/models/OrderModel'
+import { createdOrderItem } from '../orm/models/OrderModel'
 
 const OrderHistory = ({ itemsOrdered}) => {
   const dispatch = useDispatch()
-
+  // console.log("", itemsOrdered)
 
   const handleLoadTest =()=>{
     const finalOrderData = [{
@@ -30,7 +30,7 @@ const OrderHistory = ({ itemsOrdered}) => {
       "type": "orm/Order/CREATE",
       "payload": { "id": "n3z6tjk7-3", "DateCreated": "2023-2-23,08:31:21 GMT+0300 (Moscow Standard Time)", "productIds": [2010], "OrderProps": { "quantity": [{ "productId": 2010, "price": 104, "quantity": 1 }], "deliveryDate": "2023-03-23", "deliveryTime": "11:33", "deliveryAddress": "Ylitsa Dement'yeva", "receiver": "Tony valeska", "receiverPhone": "+79656229755", "orderCost": 104, "deliveryCost": 200, "totalCost": 304, "storeName": "Avita" }, "status": ["ordered", "complete"] }
     }]
-    finalOrderData.forEach(od=>dispatch(createdOrder(od.payload)))
+    finalOrderData.forEach(od=>dispatch(createdOrderItem(od.payload)))
     
   }
   const handleRotateIco = (e, id) => {
@@ -86,7 +86,7 @@ const OrderHistory = ({ itemsOrdered}) => {
         item?.className.match(/\b(order)[-][0-9]/)?.0 :"null",
         prevActiveElem?.className.match(/\b(order)[-][0-9]/)?.0 : "null"
       ]
-      console.log(shadowDiv, contentWrapper)
+      // console.log(shadowDiv, contentWrapper)
       prevActiveElem?.classList.toggle(openState)
       item.classList.toggle(openState)
       
@@ -146,50 +146,51 @@ const OrderHistory = ({ itemsOrdered}) => {
       toggleActiveState()
     }
     const Item = ({ idx, order})=>{
-      const id = '#'+ order.id
-      let date = order.DateCreated.split(",")[0]
       const [isDrawn, setIsDrawn] = useState(false)
+      const id = '#'+ order.uuid
+      let date = order.deliveryDate
+
       const OrderSummary = () =>(
-        <div id={"order-summary-"+order.id} className="visible  flex flex-row flex-wrap gap-2">
+        <div id={"order-summary-"+order.uuid} className="visible  flex flex-row flex-wrap gap-2">
           <div id="quatity_ordered">
             <p className="text-xs text-[#727280] font-medium">{tags.orderHistory.quantityOrderedText}</p>
-            <p className="text-xs text-black font-semibold">{order?.OrderProps.quantity.map(i => i.quantity).reduce((a, b) => a + b)} шт.</p>
+            <p className="text-xs text-black dark:text-white  font-semibold">{order?.productQuantity} шт.</p>
           </div>
           <div id="order_cost">
             <p className="text-xs text-[#727280] font-medium"> {tags.orderHistory.orderCostText}</p>
-            <p className="text-xs text-black font-semibold"> {tags.currencyType + order?.OrderProps.totalCost}</p>
+            <p className="text-xs text-black dark:text-white  font-semibold"> {tags.currencyType + order?.orderCost}</p>
           </div>
           <div id="delivery_address">
             <p className="text-xs text-[#727280] font-medium"> {tags.orderHistory.deliveryAddressText} </p>
-            <p className="text-xs text-black font-semibold"> ул.{order?.OrderProps.deliveryAddress.length > 41 ? order?.OrderProps.deliveryAddress.slice(0, 41) + "..." + order?.OrderProps.deliveryAddress.slice(-10, -1) : order.OrderProps.deliveryAddress} </p>
+          <p className="text-xs text-black dark:text-white  font-semibold"> {order?.deliveryAddress} </p>
           </div>
         </div>
       )
       
       const OrderList = ()=>{
         const contentType =  "toggle-ordered-items"
-        const contentArray = order?.OrderProps.quantity.map(oi => ({ 
+        const contentArray = order.orderItems?.map(oi => ({ 
             ...oi, 
-            specificId: oi.productId, 
+            specificId: oi.uuid, 
             nameTag: { 
               modelName: "Product", 
-              item: { id: oi.productId, prop: "     x" + oi.quantity }
+              item: { id: oi.uuid, prop: "     x" + oi.productQuantity }
             }, 
-            valuesArray: [tags.currencyType + Number.parseInt(oi.price * oi.quantity)] 
+            valuesArray: [tags.currencyType + Number.parseInt(oi.productPrice * oi.productQuantity)] 
           }))  
-        const variations = order?.OrderProps.quantity?.map((o, x) => ({ id: o.productId, text: o.productId }))
+        const variations = order?.orderItems.map((o, x) => ({ uuid: o.uuid, text: x+1 }))
       
           return (
-            <div id={"order-list-"+order.id} className=" child:m-0 child:p-0 w-max child:gap-1 text-xs transition-transform ">
+            <div id={"order-list-"+order.uuid} className=" child:m-0 child:p-0 w-max child:gap-1 text-xs transition-transform ">
             <ToggleableField contentType={contentType}  contentArray={contentArray} variations={variations}/>
             </div>
         )
       }
       const OrderDetails =()=>{
         const contentType = "toggle-orders-details"
-        const variations = [{ id: order.id+"-list-" + 0, text: "list" }, { id: order.id+"-summary-"+1, text:"summary"}]
+        const variations = [{ uuid: order.uuid+"-list-" + 0, text: "list" }, { uuid: order.uuid+"-summary-"+1, text:"summary"}]
         const contentArray = variations.map((v,x) => ({
-          specificId: v.id,
+          specificId: v.uuid,
           ChildElement: v.text === "list" ? OrderList : OrderSummary 
         }))
         return(
@@ -205,14 +206,14 @@ const OrderHistory = ({ itemsOrdered}) => {
 
 
       return (
-        <div id={"item-" + order.id} className={("order-" + (+idx + 1)) + " max-w-[400px] h-[143.1px]  mx-1 px-2 pt-2 pb-2  border-[1px] border-gray-300 rounded-2xl lining-nums tabular-nums"}>
+        <div id={"item-" + order.uuid} className={("order-" + (+idx + 1)) + " max-w-[400px] h-[143.1px]  mx-1   border-[1px] border-gray-300 rounded-2xl lining-nums tabular-nums"}>
         <div id="item_wrapper" className="p-2 flex flex-col justify-center gap-2">
           <div id="item_header" className=" flex flex-col less-than-xs:flex-wrap justify-between gap-2">
             <div id="item_img" className="w-auto flex flex-row items-center gap-1 border-[1px] border-transparent rounded-2xl">
               {/* <img className="border-[1px] border-transparent rounded-[25px]" src={logo} alt="" /> */}
-                <Logo logo={order?.OrderProps.storeName} size={{ font:30, h:40, w:40, x: 5, y: 30 }} addLogo addText={false}/>
+                <Logo logo={order?.orderItems[0].storeName} size={{ font:30, h:40, w:40, x: 5, y: 30 }} addLogo addText={false}/>
                 <div id="item_name" className="text-base text-slate-600 font-semibold ">
-                  <p>{order?.OrderProps.storeName} </p>
+                  <p>{order?.orderItems[0].storeName} </p>
                 </div>
             
             </div>
@@ -221,23 +222,43 @@ const OrderHistory = ({ itemsOrdered}) => {
                 <div id="order_date" className="flex items-center text-[12px] text-[#727280] font-semibold">
                   <p> {date} </p>
                 </div>
-                  <div id="show_more" onClick={(e) => {handleReadMore(e, ("item-" + order.id)) }} className="flex items-baseline text-[12.2px] text-[#2967FF] font-semibold cursor-pointer">
+                  <div id="show_more" onClick={(e) => {handleReadMore(e, ("item-" + order.uuid)) }} className="flex items-baseline text-[12.2px] text-[#2967FF] font-semibold cursor-pointer">
                   <p className="flex items-end"> {tags.orderHistory.showMoretext} </p>
                 </div>
               </div>
               
             </div>
           </div>
-            <div id="order_header" className="flex flex-row justify-start items-start less-than-xs:gap-4 less-than-sm:gap-3 gap-8">
-              <div id="order_status">
+            <div id="order_header" className=" w-full flex flex-row justify-start items-start less-than-xs:gap-2 less-than-sm:gap-3 ">
+              <div id="order_status" className='w-full'>
                 <p className="text-xs text-[#727280] font-medium">{tags.orderHistory.orderStatusText}</p>
-                <p className="text-xs text-black font-semibold">{order?.status[0] + '/' + order?.status[1]} </p>
+                <p className="text-xs text-black dark:text-white  font-semibold">{order?.orderStatus[0] + '/' + order?.orderStatus[1]} </p>
               </div>
-              <div id="order_number" className="inline-block">
-                <p className="text-xs text-[#727280] whitespace-nowrap font-medium"> {tags.orderHistory.orderNumberText} </p>
-                <p className="flex flex-row  justify-between less-than-sm:gap-[0] gap-2 text-xs text-[#2967FF] font-semibold" > 
-                  {id} 
-                  <CopyIco text={id.toString()} /> </p>
+              <div id="order_number" className="w-full">
+                <p className=" flex text-xs text-[#727280] whitespace-nowrap font-medium gap-1 "> 
+                  <span>
+                    {tags.orderHistory.orderNumberText} 
+
+                  </span>
+                  <span className='hidden less-than-xs:flex'>
+                    <CopyIco text={id.toString()} /> 
+
+                  </span>
+
+                </p>
+                <p className="w-full  flex flex-row less-than-xs:gap-[2px] gap-2 text-xs text-[#2967FF] font-semibold" > 
+                  <span className='w-full overflow-clip'>
+                    {
+                      id.toString().length > 10 
+                        ? id.toString().slice(0, 10) + "..." 
+                        : id.toString()
+                    } 
+                  </span>
+                  <span className='flex less-than-xs:hidden'>
+                    <CopyIco text={id.toString()} />
+
+                  </span> 
+                </p>
               </div>
 
             </div>
@@ -253,13 +274,13 @@ const OrderHistory = ({ itemsOrdered}) => {
 
   return (
     <div id="order_history__container" className="w-full px-2 flex flex-col justify-center gap-2  ">
-      <div id="order_history__header" className="text-xl text-black font-raleway lining-nums tabular-nums  font-semibold">
+      <div id="order_history__header" className="text-xl text-black dark:text-white  font-arial lining-nums tabular-nums  font-semibold">
         <p>
           {tags.orderHistory.mainText}
         </p>
-        <p onClick={handleLoadTest} className="test-order accent-red-600 underline text-sm font-semibold cursor-pointer">load test data</p>
+        {/* <p onClick={handleLoadTest} className="test-order accent-red-600 underline text-sm font-semibold cursor-pointer">load test data</p> */}
       </div>
-      <div id="order_history__content" className="w-full ">
+      <div id="order_history__content" className="w-full py-4">
         <div id='shadow-div' className="shadow-div"></div>
         <div id="content_wrapper" className="w-full grid  grid-flow-cols grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-2">
          {

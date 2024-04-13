@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit'
 import { ormRootReducer as orm } from '../orm/reducers/rootOrmReducer';
-import { apiSlice } from './middleware';
+import { apiSlice } from './middleware/queryHandler';
 
 
 const Store = configureStore({
@@ -21,4 +21,4 @@ const Store = configureStore({
 })
 
 // console.log("store",Store)
-export default Store ;
+export default Store;

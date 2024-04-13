@@ -1,5 +1,5 @@
 import { attr, Model, fk, many } from "redux-orm";
-import { actions } from "../actions/actionTypes";
+import {actionCreator } from "../actions/actionTypes";
 import customReducer from "./reducer";
 
 
@@ -12,7 +12,7 @@ const baseModelCreator = (model) =>{
     "many":(one, as, lots)=> many({to:one, as:as, relatedName: lots})
   }
 
-  const { UPDATE: updated, REMOVE: removed, ADD: added,CREATE: created, ADD_TO: addedTo, REMOVE_FROM: removedFrom} = actions().createDefaultFor(model.modelName)
+  const { UPDATE: updated, REMOVE: removed, ADD: added,CREATE: created, ADD_TO: addedTo, REMOVE_FROM: removedFrom} = actionCreator().createDefaultFor(model.modelName)
   
   // r={
   //   type:`orm/${model.modelName}/+${model.actions["delete"]}`,
@@ -55,7 +55,7 @@ const baseModelCreator = (model) =>{
     // BaseModel.modelName=model.modelName
   
   return {
-      actions:  {updated, removed, added, created, addedTo, removedFrom}, 
+     actionCreator:  {updated, removed, added, created, addedTo, removedFrom}, 
   
       [model.className]:()=>{
 

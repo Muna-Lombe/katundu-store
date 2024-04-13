@@ -1,4 +1,4 @@
-import React,{useEffect, useRef} from 'react'
+import React,{lazy, useEffect, useRef} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 
@@ -11,29 +11,97 @@ import { momentDate, returnOnReload } from '../orm/utilities'
 import types from '../orm/actions/actionTypes'
 import NameTag from './NameTag'
 import { orderedCartItem } from '../orm/models/CartModel'
-import { getNextId } from '../orm/selectors'
+import { checkouts as checkoutSelector, getNextId } from '../orm/selectors'
 import { titleTagTypes as tags } from "../assets";
+import { useBeginItemCheckoutQuery, useCompleteItemCheckoutMutation } from '../js/middleware/queryHandler'
+import { createdToastMessage } from '../orm/models/ToastMessageModel'
+import { createdCheckout, updatedCheckout } from '../orm/models/CheckoutModel'
 
 
-const CheckoutForm = ({ }) => {
+const CheckoutForm = ({ location}) => {
   
-  let navigate = useNavigate()
-  const location = useLocation()
-  const goto  = useNavigate()
+  let goto = useNavigate()
+  
   const dateRef = useRef()
   const timeRef = useRef()
+
   const dispatch = useDispatch()
   // returnOnReload()
-  useEffect(() => {
-    // console.log("path", location)
-    if(location?.state?.from !== "/cart"){
-      goto("/cart")
-    }
-    
-    return () => {
+  const cartId = location.state?.cartItemIds?.[0];
+
+  const checkouts = useSelector(checkoutSelector)
+  const { data, isLoading, isError, error, isSuccess, refetch } = useBeginItemCheckoutQuery({ cartId: cartId })//, { refetchOnMountOrArgChange: true })
+  const [completeCheckout,{isLoading:isCompleteCheckoutLoading, isSuccess:isCompleteCheckoutSuccess, isError:isCompleteCheckoutError, isUninitialized:isCompleteCheckoutUninitialized} ] = useCompleteItemCheckoutMutation()
+  const formRef = useRef(<div></div>)
+  
+  
+  let wrapper = document.getElementById("checkout_wrapper")
+  
+
+
+
+  useEffect(() => { 
+    if ((!(isCompleteCheckoutLoading || isCompleteCheckoutSuccess || isCompleteCheckoutError) && isCompleteCheckoutUninitialized) && (isSuccess && document.readyState === "complete")){
+      
+
+      wrapper ||= document.getElementById("checkout_wrapper")
+      wrapper.firstElementChild.innerHTML = data
+      
+      
+      const form = document.getElementById('checkout_form');
+      const beginCheckoutComponent = document.querySelector("[data-component-name=BeginCheckout]")
+      // console.log("beginCheckoutComponent", beginCheckoutComponent)
+      const {checkoutData} = JSON.parse(beginCheckoutComponent.innerText)
+      
+      
+      
+      if (checkouts?.some((c) => c.uuid === checkoutData.orders[0].cid.split("_")[2].split("-")[1])){
+        dispatch(updatedCheckout({ 
+          uuid: checkoutData.orders[0].cid.split("_")[2].split("-")[1], 
+          status: "CHECKED_OUT_EXPIRED"
+         }))
+        // console.log("refetching")
+        refetch()
+      }else{
+        dispatch(createdCheckout({
+          uuid: checkoutData.orders[0].cid.split("_")[2].split("-")[1], 
+          status:"CHECKED_OUT_PENDING"
+        }))
+
+      }
+      const orderId = checkoutData.orders[0].cid.split("_")[2].split("-")[1]
+      const cartIds = checkoutData.orders.map((oi, x, a) => oi.cid.split("_")[1].split("-")[1]) 
+      // console.log("order_id", orderId, "\ncart_ids" , cartIds)
+      if (form) {
+        // console.log("form loaded", orderId, cartIds)
+        
+        form.addEventListener('submit', (e) => handleSubmit(e, orderId, cartIds));
+      }
+        
       
     }
-  }, [])
+    if(isError){
+      // console.log("err", error)
+      dispatch(createdToastMessage(
+        {text: 
+          {
+            header:"Error",
+            body:"Something happened back-stage. Refresh the page and try again."
+          }, 
+          status: types.TOAST_VALID , 
+          type: types.TOAST_ERROR, 
+          id: "checkout error"
+        })
+      )
+    }
+    return () => {
+      ""
+    }
+  }, [isSuccess, isError, data])
+    
+  
+
+  
   
 
   const total = Number.parseInt(location.state?.total)
@@ -44,32 +112,58 @@ const CheckoutForm = ({ }) => {
   const deliveryPrice = 200
   const nextId = useSelector(getNextId('Order'))
 
-  const handleSubmit=(e)=>{
-    e.preventDefault();
+  async function handleSubmit(event, orderId=1, cartIds=2) {
+    event.preventDefault();
+    
+    // console.log("submit")
+
+    // Your existing handleSubmit logic
+    // return alert(`You searched for '${orderId, cartIds}'`);
     let formData = new FormData(document.forms['checkout_form']);
     let orderData = {}
-    formData.forEach((k,v, idx)=> {
-      const camelize = (str) => str.toString().toLowerCase().split("_").map((el, x) => x !== 0 ? [el.slice(0, 1)[0].toUpperCase(), el.slice(1)].join("") : el).join("")
-      if (["orderCost","deliveryCost","totalCost"].every(i => i!==camelize(k))){
-        orderData[camelize(v)] = k
+    
+    formData.forEach((k, v, idx) => {
+      const camelize = (str) => 
+        str.toString()
+            .toLowerCase()
+            .split("_")
+            .map((el, x) => 
+              x !== 0 ? 
+              [el.slice(0, 1)[0].toUpperCase(), el.slice(1)].join("") 
+              : el)
+            .join("")
+      const deCamelize = (str) => str.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase()
+      if (["orderCost", "deliveryCost", "totalCost"].every(i => i !== deCamelize(k))) {
+        orderData[deCamelize(v)] = k
       }
     })
-    
 
-    
-    let status = types.ORDERED_COMPLETE.toLowerCase().split("_")
-    
-    let finalOrderData = {id:id+"-"+nextId, DateCreated: momentDate().full, productIds: orderedItems.map(oi => oi.productId), OrderProps: { quantity: orderedItems, ...orderData, storeName, orderCost: total, deliveryCost: deliveryPrice, totalCost: deliveryPrice + total }, status, }
-    dispatch(createdOrder(finalOrderData))
-    // console.log("ids", ids)
-    ids.forEach(id=>dispatch(orderedCartItem({id:id, set:{ItemStatus: types.ORDERED_COMPLETE}})))
-    
-    setTimeout(() => {
-      navigate("../history", { replace: true})
-    }, 1000);
-  }
+    const status = "ORDERED_COMPLETE"
+
+    let finalOrderData;
+    finalOrderData= {
+      order : {
+        items:{
+          ...orderData,
+          "order_status": status
+        }
+        
+      }
+    }
+    const base = 'http://127.0.0.1:5000/api/v1'
+    const url = '/checkout/orders/' + orderId + '/complete_checkout'
+    const {data, error} = await completeCheckout({initialOrderItem:finalOrderData, orderId: orderId, cartId: cartIds  })
+    // console.log("d", data, error)
+    const importedNode = document.createElement("div")
+    importedNode.innerHTML = data||error
+    // console.log("importedNode", importedNode)
+    wrapper.firstElementChild.replaceWith(importedNode)
+    // setTimeout(() => {
+    //   goto("/history")  
+    // }, 500);
+  };
  
-
+  
   const CheckoutForm = ({})=> (
     <>
       <div id="date_time" className="py-2 text-lg font-raleway lining-nums tabular-nums " >
@@ -111,7 +205,7 @@ const CheckoutForm = ({ }) => {
     <div className=" mt-14 w-full flex flex-col justify-center gap-6 lg:p-4 lining-nums tabular-nums">
       <div id="order_details" className="w-auto p-2 lg:p-4 flex flex-col justify-start md:justify-center lg:justify-center xl:justify-center items-center gap-4 border-[1px] border-[#F0F4FB] bg-[#F0F4FB] rounded-3xl">
         
-        <div id="order_items" className="w-full flex flex-col items-start text-black text-base">
+        <div id="order_items" className="w-full flex flex-col items-start text-black dark:text-white  text-base">
           <p className="p-2 w-full flex flex-start text-lg text-[#727280]">
             {"Ordered Items:"}
           </p>
@@ -144,18 +238,20 @@ const CheckoutForm = ({ }) => {
           <label className="bg-transparent" htmlFor="total_cost">
             {tags.checkout.sumTotalText+":"}
           </label>
-          <input id="t_cost" className="max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end  bg-transparent text-black font-bold text-end lining-nums tabular-nums" name="total_cost" form="checkout_form" type="text" value={tags.currencyType + (total 
+          <input id="t_cost" className="max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end  bg-transparent text-black dark:text-white  font-bold text-end lining-nums tabular-nums" name="total_cost" form="checkout_form" type="text" value={tags.currencyType + (total 
           + deliveryPrice)} readOnly required />
         </div>
 
       </div>
       
-      <input type="submit" form="checkout_form" id="checkout_btn" value={tags.checkout.checkoutBtnText} className="w-auto p-3 flex justify-center  items-center border-[1px] border-orange-600 bg-orange-600 active:bg-orange-400 rounded-3xl active: text-2xl text-white font-raleway lining-nums tabular-nums  font-normal cursor-pointer" required/>
+      <input type="submit" form="checkout_form" id="checkout_btn" value={tags.checkout.checkoutBtnText} className="w-auto p-3 flex justify-center  items-center border-[1px] border-orange-600 bg-orange-600 active:bg-orange-400 rounded-3xl active: text-2xl text-white dark:text-black  font-raleway lining-nums tabular-nums  font-normal cursor-pointer" required/>
     </div>
   )
   return (
     <div id="checkout_wrapper" className="w-full px-2">
-      <div id="checkout_header" className="text-xl text-black font-raleway lining-nums tabular-nums  font-bold">
+      <div className="hot_swappable"></div>
+      
+      {/* <div id="checkout_header" className="text-xl text-black dark:text-white  font-raleway lining-nums tabular-nums  font-bold">
         <p>
         {tags.checkout.checkoutText}
         </p>
@@ -171,7 +267,7 @@ const CheckoutForm = ({ }) => {
             </div>
           
         </div>
-      </form>
+      </form> */}
 
     </div>
   )

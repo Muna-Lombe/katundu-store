@@ -1,6 +1,6 @@
 import { attr,fk, Model } from "redux-orm";
 import customReducer from "./reducer";
-import { actions } from "../actions/actionTypes";
+import {actionCreator } from "../actions/actionTypes";
 
 
 
@@ -20,6 +20,6 @@ ProductVariationPropertyListValue.fields = {
 ProductVariationPropertyListValue.options = {
     idAttribute: 'id'
 }
-export const { UPDATE: updatedVariationPropertyListValue, REMOVE: removedVariationPropertyListValue, ADD: addedVariationPropertyListValue, CREATE: createdVariationPropertyListValue, ADD_TO: addedVariationPropertyListValueTo, REMOVE_FROM: removedVariationPropertyListValueFrom } = actions().createDefaultFor('ProductVariationPropertyListValue')
+export const { UPDATE: updatedVariationPropertyListValue, REMOVE: removedVariationPropertyListValue, ADD: addedVariationPropertyListValue, CREATE: createdVariationPropertyListValue, ADD_TO: addedVariationPropertyListValueTo, REMOVE_FROM: removedVariationPropertyListValueFrom } = actionCreator().createDefaultFor('ProductVariationPropertyListValue')
 
 export default ProductVariationPropertyListValue;

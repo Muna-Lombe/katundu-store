@@ -1,4 +1,5 @@
 import moment from "moment"
+import { apiSlice } from "../../js/middleware/queryHandler"
 
 
 
@@ -12,11 +13,11 @@ export const momentDate = () => {
     full:year + "-" + month + "-" + date + "," + time,
     shortDate: year + "-" + month + "-" + date,
     time: time,
-    timeSinceInMins: (psT, rcT=new Date())=>{
-      // return moment(rcT).diff(psT, "days")
-      let mrcT = (new Date(rcT).getTime())
-      let mpsT = (new Date(psT).getTime())
-      return ((mrcT - mpsT )/ 60000).toFixed(1)
+    timeSinceInMins: (past, now=new Date())=>{
+      // return moment(now).diff(past, "days")
+      let mnow = (new Date(now).getTime())
+      let mpast = (new Date(past).getTime())
+      return ((mnow - mpast )/ 60000).toFixed(1)
     }
   }
 }
@@ -48,6 +49,40 @@ export const mapper = (obj)=>{
   let p = new Proxy(fn, handler);
   return p
 }
+// export const ping = async (url) => {
+//   let start = Date.now();
+//   let response = await fetch(url);
+  
+//   return Date.now() - start;
+
+
+// }
+export function checkIfServerIsOnline(url) {
+  return new Promise((resolve, reject) => {
+    let img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = url;
+  });
+
+}
+export function setActiveUrl(url1, url2){
+  let url = "";
+  (async function(){
+    let a = await checkIfServerIsOnline(url1);
+    let b = await checkIfServerIsOnline(url2);
+    let aValid = await a ? url1 : false;
+    let bValid = await b ? url1 : false;
+    url =  a ? url1 : b ? url2 : null;
+  }())
+  return url
+
+}
+
+export function isIterable(obj) {
+  return obj && typeof obj[Symbol.iterator] === 'function';
+}
+
 export async function sha256(message) {
   // encode as UTF-8
   const msgBuffer = new TextEncoder('utf-8').encode(message);
@@ -68,6 +103,8 @@ export const returnOnReload =  ()=>{
   let data = window.performance.getEntriesByType("navigation")
   console.log(data)
 }
+export const preloadCartItems = apiSlice.endpoints.getShoppingCart.initiate
+export const preloadOrderHistory = apiSlice.endpoints.getCheckout.initiate
 // window.onbeforeunload = function () {
 //   window.setTimeout(function () {
 //     console.log("loc", window.location)

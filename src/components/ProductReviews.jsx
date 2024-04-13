@@ -1,50 +1,136 @@
-import { CheckIco, StarIco, ThumbIco, titleTagTypes as tags } from "../assets"
+import { CheckIco, CopyIco, DeleteIco, EditIco, StarIco, ThumbIco, titleTagTypes as tags } from "../assets"
 import { image1_1, imagepath } from "../assets/images"
 import no_img_path from '../assets/tests/jsonServer/img/placeholders/no_product_img.png'
 import no_avtr_path from '../assets/tests/jsonServer/img/placeholders/avatar.png'
-import { useSelector } from "react-redux"
-import { authenticatedUsers, isAuthedUser } from "../orm/selectors"
+import { useDispatch, useSelector } from "react-redux"
+import { authenticatedUsers, isAuthedUser, orderedByUser } from "../orm/selectors"
 import types from "../orm/actions/actionTypes"
 import { useLocation, useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react"
+import { useAddReviewMutation, useRemoveReviewMutation, useUpdateReviewMutation } from "../js/middleware/queryHandler"
+import PostCreatorTag from "./PostCreatorTag"
 
-const ProductReviews=({prs})=>{
+const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
   const goto = useNavigate()
   const location = useLocation()
   const authSessions = useSelector(authenticatedUsers)
-  const userAuthed = useSelector(isAuthedUser(authSessions[0]?.id))
+  const userAuthed = useSelector(isAuthedUser(authSessions[0]?.uuid))
+  const hasOrdered =useSelector(orderedByUser(productId))
+  const dispatch = useDispatch()
+  const [addReview] = useAddReviewMutation();
+  const [updateReview, {data:updatedData, isLoading:updateLoading, isError:updateError, isSuccess:updateSuccess}] = useUpdateReviewMutation();
+  const [removeReview, { data: removedData, isLoading: removeLoading, isError: removeError, isSuccess: removeSuccess }] = useRemoveReviewMutation();
+  
+  const AddReview = ({editMode }) => {
+    const isAuthed = () => (authSessions.length || authSessions?.some(as => as.authStatus !== types.AUTH_EXPIRED || userAuthed))
+    
+    console.log("editMode", editMode)
 
+    const handlePost = async (e, edit, updateFn) => {
+      e.preventDefault();
+      if (!isAuthed()) return goto("/signin", { state: { ...location } });
+      
+      if (!hasOrdered) {
+        const tooltip = document.getElementById("tooltip");
+        tooltip.classList.replace("hidden", "flex");
 
+        setTimeout(() => {
+          tooltip.classList.replace("flex", "hidden");
+        }, 3000);
+        return;
+      }
+      const form = document.forms["review_post"];
 
- 
-  const AddReview = ({ }) => {
-    const handlePost = (e) =>{
-      e.preventDefault()
-      document.getElementById("add-review-input").value=""
+      const reviewPost = { "product_review" :{}, type:editMode? editMode.type  :"add_review"}
+      // Get form data
+      const formData = new FormData(form);
+      // reviewPost["product_review_id"] = productReviewId
+      for (let [name, value] of formData) {
+        // console.log(name, value);
+        reviewPost["product_review"] = {
+          review:{
+            comment: value,           
+          }, 
+          poster_uuid: authSessions[0].uuid
+        }
+      }
+
+      // console.log("updateFn", typeof updateFn)
+      // return
+      
+      if(edit){
+        console.log(editMode)
+        updateFn(reviewPost)
+      }else{
+        
+        updateFn({ initialReview: reviewPost, productReviewId, productId })
+      }
+      // console.log("something", reviewPost);
+      document.getElementById("add-review-input").value = "";
+      // createReviewPost({text: "post a review"})
+    };
+   
+    
+    const Tooltip = () =>{
+      
+      return(
+        
+        <div id="auth-tooltip" className="tooltip-wrapper max-w-[75%] max-h-[40px]  justify-center flex-wrap whitespace-normal transition-transform ease-linear delay-700">
+          <div id="tooltip" className="tooltip hidden justify-center text-center ">
+            {tags.noReviews.noOrderText}
+          </div>
+        </div>
+      )
     }
-    const Component  = () => (
-      <div className="add-review p-6  flex flex-col gap-2 bg-slate-200 border rounded-lg">
+    const Componentheader =()=>(
+      <>
         <p className="main-title text-lg font-raleway lining-nums tabular-nums  font-medium">
-          {tags.addReview.mainText}
+          {isAuthed() ? tags.addReview.mainText : "Sign in before you can post a review"}
         </p>
-        <p className="sub-title text-sm font-raleway lining-nums tabular-nums  font-normal">
-          {tags.addReview.subText}
+        <p className="sub-title h-[27px] text-sm font-raleway lining-nums tabular-nums  font-normal">
+          {isAuthed() ? tags.addReview.subText : ""}
         </p>
-        <input id="add-review-input" type="text" name="add-review-input" placeholder='Post a review' className="p-3 max-w-md border-2 border-slate-400 rounded-lg" />
-        <input type="button"  value="Add Review" onClick={handlePost} className="  p-1 w-max bg-orange-500 rounded-lg text-white text-sm font-raleway lining-nums tabular-nums  font-semibold cursor-pointer" />
+      </>
+    )
+    const Componentbody = ()=>(
+      <form id="review_post" name="review_post" action="" onSubmit={()=> ""} className="flex flex-col gap-3">
+        {
+          editMode?.value ?
+            <input form="review_post" id="add-review-input" type="text" name="add-review-input" placeholder='Post a review' defaultValue={editMode?.value || null} className="p-3 max-w-md border-2 border-slate-400 rounded-lg caret-black text-black" />
+            : <textarea form="review_post" name="add-review-input" id="add-review-input" cols="10" rows="3" placeholder="Post a review"  className="p-3 max-w-2xl border-2 border-slate-400 rounded-lg caret-black text-black"></textarea>
+        }
+        
+        <div className="update-btns flex flex-row gap-2">
+          <input form="review_post" type="button" onClick={(e) => handlePost(e, editMode?.value,  (arg) => editMode?.updateFn(arg) || addReview(arg))} value={editMode?.value ?"Save" : isAuthed() ? " Add Review " : "Sign In"} className="  p-1 w-max min-w-[80px] bg-orange-500 rounded-md text-white text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer" />
+          {
+            editMode?.value ?
+              <input form="review_post" type="button" onClick={(e) => {e.preventDefault(); editMode.toggleEditMode(false)}} value={"Cancel"} className="  p-1 w-max min-w-[80px] bg-inherit rounded-md text-slate-300 border border-transparent hover:border-slate-300  text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer" />
+              : <></>
+          }
 
-      </div>
+        </div>
+      </form>
+    )
+    const Component  = () => (
+      editMode?.value ? 
+      <Componentbody/>
+      : <div className="add-review max-w-2xl p-6  flex flex-col gap-2 dark:bg-slate-600 bg-slate-200 border dark:border-slate-500 rounded-lg">
+          <Componentheader/>
+          
+          <Componentbody/>
+        </div>
     )
     return (
       <>
-        {
-          (!authSessions.length || authSessions?.some(as => as.authStatus === types.AUTH_EXPIRED || !userAuthed))
-            ? ""
-            : <Component />
-        }
+        
+          <Tooltip/>
+          <Component />
+        
       </>
       
     )
   }
+
   const ReviewImages =({imageArray})=>(
     <div className="review-images-wrapper w-auto max-w-[570px] overflow-clip">
       <div className="review-images w-full max-w-min flex flex-row gap-2 border-b-2 overflow-x-scroll scrollbar">
@@ -62,17 +148,34 @@ const ProductReviews=({prs})=>{
 
     </div>
   )
-  const Stars = ({ count, max=count }) => (
+  const MoreActions = ({children}) => {
+    const Option = ({children}) => (
+      <div className="more-options-wrapper less-than-sm:absolute  py-1 min-w-max  items-baseline less-than-sm:border rounded-xl shadow-sm text-sm less-than-sm:hidden  less-than-sm:group-hover:flex  less-than-sm:flex-col greater-than-sm:flex greater-than-sm:flex-row less-than-sm:gap-1 gap-2">
+        {children}
+        {/* <span>{"Copy to clipboard"}</span> */}
+      </div>
+    )
+    return (
+      <div className="more-actions relative py-0 flex flex-col items-center text-xl text-slate-400 font-semibold cursor-pointer group " anchor="actions-anchor">
+        <p className="px-2 aspect-square greater-than-sm:hidden less-than-sm:group-hover:hidden  hover:text-blue-500 ">{"..."}</p>
+        <Option >
+          {children}
+        </Option>
+        
+      </div>
+    )
+  }
+  const Stars = ({ count}) => (
     <p className="relative flex flex-row text-yellow-500 ">
       {
-        new Array(max).fill("").map((i, x) => {
-          return <StarIco key={x} value={x+1} count={count} maxCount={max} />
+        new Array(5).fill("").map((i, x) => {
+          return <StarIco key={x} value={parseFloat(x+1)} count={parseFloat(count)} maxCount={5} />
         })
       }
       
     </p>
   )
-  const OverallRating = ({hasGap=false, summary})=> {
+  const OverallRating = ({hasGap=false, summary={}})=> {
     const userNotAuthed = !authSessions.length || authSessions?.some(as => as.authStatus === types.AUTH_EXPIRED || !userAuthed)
     const handleRedirect = (e) => {
       e.preventDefault()
@@ -101,14 +204,14 @@ const ProductReviews=({prs})=>{
     )
 
     const RatingAverage =()=>{
-      const summaryValues = summary.ratings.summary.map(s=> s.value)
-      const avg = (summaryValues.reduce((a, b) => a + b) / summaryValues.sort((a, b) => b-a)[0]).toFixed(1)
-      const total = summaryValues.length
+      const summaryValues = summary?.reviewRatingsSummary?.map(s=> s.value)||[]
+      const avg = summaryValues.length ? (summaryValues?.reduce((a, b) => a + b) / summaryValues?.sort((a, b) => b-a)[0]).toFixed(1) : 0
+      const total = summaryValues.length || 0 
       return (
         <div className="rating-total my-2 px-1 flex flex-row justify-center items-baseline gap-4 border-b-[3px] text-xl">
           <div className="star-count">
             {/* {"⭐⭐⭐⭐⭐"} */}
-            <Stars count={avg} max={total} />
+            <Stars count={avg} />
           </div>
           <div className="number-count font-raleway lining-nums tabular-nums  font-semibold leading-snug">
             {avg+"/"+total}
@@ -120,7 +223,10 @@ const ProductReviews=({prs})=>{
     const RatingsSummary=()=>(
       <div className="varied-rating-grade-totals less-than-md:hidden my-5">
         {
-          summary.ratings.summary.map((s,x)=> <GradeCount key={x} grade={s.grade} maxCount={s.value} total={summary.reviewTotal} />)
+          summary?.reviewRatingsSummary?.length ? 
+
+            summary?.reviewRatingsSummary?.map((s,x)=> <GradeCount key={x} grade={s.grade} maxCount={s.value} total={summary.reviewTotal} />)
+          : Array(5).fill("").map((s,x)=> <GradeCount key={x} grade={x+1} maxCount={0} total={0} />)
         }
         
       </div>
@@ -131,7 +237,7 @@ const ProductReviews=({prs})=>{
     )
     const ReviewBtn=()=>(
       <p onClick={handleRedirect} className="review-btn  ">
-        <input type="button" value="Add Review" className=" less-than-md:hidden p-2 w-full bg-blue-500 rounded-xl text-white text-lg font-raleway lining-nums tabular-nums  font-semibold cursor-pointer" />
+        <input type="button" value="Add Review" className=" less-than-md:hidden p-2 w-full bg-blue-500 rounded-xl text-white dark:text-black  text-lg font-raleway lining-nums tabular-nums  font-semibold cursor-pointer" />
         <button type="button" className={(userNotAuthed ? " ": " hidden ")+"greater-than-md:hidden  w-full  rounded-xl hover:text-orange-600 text-orange-500 text-xl leading-3 font-raleway lining-nums tabular-nums  font-semibold cursor-pointer "} >
       
           <AddIco/>
@@ -143,88 +249,210 @@ const ProductReviews=({prs})=>{
 
         <RatingAverage/>
         <RatingsSummary/>
-        <ReviewBtn/>
+        {/* <ReviewBtn/> */}
       </div>
     )
   }
+  const ReviewComment = ({review}) =>{
+    const [editComment, setEditComment] = useState(false)
+    
+    
+    const handleEdit = (e) => {
+      e.preventDefault()
+      setEditComment(prev => !prev)
+    }
+
+    const handleDelete = (e, reviewId)=>{
+      e.preventDefault()
+      removeReview({ productId, productReviewId, reviewId })
+    }
+    useEffect(() => {
+      
+      const editBtn = document.getElementById("edit-review"+review.uuid)
+      const deleteBtn = document.getElementById("delete-review"+review.uuid)
+
+      deleteBtn?.addEventListener("click", (e)=> handleDelete(e, review.uuid))
+      editBtn?.addEventListener("click", handleEdit)
+
+      return () => {
+        editBtn?.removeEventListener("click", handleEdit)
+        deleteBtn?.removeEventListener("click", (e)=> handleDelete(e, review.uuid))
+      }
+    }, [])
+    const comment = updateSuccess ? 
+      (updatedData.uuid === review.uuid) && (updatedData.comment !== review?.comment) ?
+        updatedData.comment
+        : review?.comment
+      : review?.comment 
+    
+    const editData = { 
+      value: comment,
+      type: "update_review_comment",
+      toggleEditMode: setEditComment, 
+      updateFn: (reviewBody) => updateReview({ 
+        reviewUpdate: reviewBody, 
+        productId, productReviewId, 
+        reviewId: review.uuid 
+      }) 
+    }
+
+    
+    return(
+      <div className="reviewer-comment">
+        <div className=" my-3 flex flex-col gap-1 ">
+          <span className="comment-title text-slate-400 text-lg">{"Comment"}</span>
+          {
+            editComment ?
+              <AddReview editMode={editData}  />
+              : <span className="comment-text whitespace-normal text-base">{comment}</span>
+          }
+
+        </div>
+
+      </div>
+    )
+  }
+  const HelpfulReviewVotes = ({review})=>{
+    
+    const upvotes = updateSuccess ? 
+      (updatedData.uuid === review.uuid) && (updatedData.upvotes !== review?.rating.upvotes) ?
+        updatedData.upvotes
+        : review?.rating.upvotes
+      : review?.rating.upvotes
+    const downvotes = updateSuccess ?
+      (updatedData.uuid === review.uuid) && (updatedData.downvotes !== review?.rating.downvotes) ?
+        updatedData.downvotes
+        : review?.rating.downvotes
+      : review?.rating.downvotes
+
+    const handleUpvote = (e) => {
+      e.preventDefault()
+      updateReview({ reviewUpdate: { type: "update_review_votes", product_review: { review: { upvotes: 1}, reviewer_uuid:authSessions[0].uuid } }, productId, productReviewId, reviewId: review.uuid })
+    }
+    const handleDownvote = (e) => {
+      e.preventDefault()
+      updateReview({ reviewUpdate: { type: "update_review_votes", product_review: { review: { downvotes: 1 }, reviewer_uuid: authSessions[0].uuid } }, productId, productReviewId, reviewId: review.uuid })
+    }
+
+    return (
+    <div className="helpful-review-rank w-max flex flex-col gap-2 ">
+      <p className="title text-slate-400 text-sm ">{"Was this review helpful?"}</p>
+      <div className="votes flex flex-row gap-2">
+        <p className="review-upvotes py-1 px-2 w-max flex flex-row items-baseline bg-slate-300 rounded-3xl text-slate-600 font-raleway lining-nums tabular-nums " role="button" onClick={(e) => userAuthed ? handleUpvote(e) : ""}>
+          <span  className="upvote-thumb text-slate-500">
+            <ThumbIco />
+          </span>
+          <span className="rank-count">
+            {upvotes}
+          </span>
+        </p>
+        <p className="review-downvotes py-1 px-2 w-max flex flex-row items-baseline bg-slate-300 rounded-3xl text-slate-600  font-raleway lining-nums tabular-nums " role="button" onClick={(e) => userAuthed ? handleDownvote(e) : ""}>
+            <span  className="downvote-thumb text-slate-500">
+            <ThumbIco invert />
+          </span>
+          <span className="rank-count">
+            {downvotes}
+          </span>
+        </p>
+      </div>
+    </div>
+  )}
+  const ReviewQuantifiers = ({quantifiers}) => {
+    const quantifier = (q) => {
+      const { quantifier, value } = q
+      return (
+        <div className="quantifier flex flex-row gap-2 items-baseline">
+          <p className="quantifier dark:text-white font-semibold text-base">{quantifier}</p>
+          <p className="value dark:text-white  text-sm">{value}</p>
+        </div>
+      )
+    }
+    return (
+      // <div className="brief-outline">
+      //           <p>{"brief description"}</p>
+      //           {
+      //             review?.quantifiers.map((q, x) =>
+      //               <p key={x} className="flex flex-col xs:flex-col sm:flex-row lg:flex-col gap-1">
+      //                 <span className="quantifier-name text-slate-400 text-base">{q.quantifier}:</span>
+      //                 <span className="quantifier-value text-base">{q.value}</span>
+      //               </p>
+
+      //             )
+      //           }
+
+      //         </div>
+      <div className="review-quantifiers flex flex-col gap-2">
+        {
+          quantifiers?.map((q, x) => quantifier(q))
+        }
+      </div>
+    )
+  }
+
+
   const Review =({review})=>{
     return (
       <div className="review-component w-full p-2 flex gap-2 justify-between">
-        <div className="reviewer flex flex-col gap-3">
-          <div className="reviewer-avtr flex justify-self-start gap-2">
-            <img src={imagepath(review?.i) || review.reviewer.avtr_url || no_avtr_path|| no_img_path} alt="" className="w-[50px] min-w-[50px] h-max aspect-square  border-2 rounded-3xl" />
-            <div className="reviewer-name-date-ranking  sm:w-full sm:max-w-full xs:max-w-xs flex flex-col xs:flex-col sm:flex-row lg:flex-col justify-between ">
-              <p className="name text-lg font-medium ">
-                {review.reviewer.name}
-              </p>
-              <div className="review-date-rating   flex flex-col float-left">
-                <div className="review-date text-slate-400 text-base font-raleway lining-nums tabular-nums ">
-                  {review.datePosted}
-                </div>
+        <div className="reviewer w-full flex flex-col gap-3">
+          <div className="reviewer-name-date-ranking  flex flex-row less-than-sm:flex-col less-than-sm:items-start justify-between items-center gap-1">
+           
+            <PostCreatorTag posterName={review?.reviewer?.name} avtr_url={review?.reviewer?.avtr_url} postTimestamp={review?.datePosted}/>
+            
+            <div className="reviewer-ranking  flex flex-col  ">
+              <div className="review-rating-actions w-max flex flex-col items-end">
+                
                 <div className="review-rating flex flex-row">
-                  {
-                    new Array(review.reviewRanking).fill(1).map((i, x) => <Stars key={x} count={i} max={i} />)
-                  }
+                  <Stars  count={review?.reviewRanking} />
+                
                 </div>
+                  {
+                    (userAuthed && (review?.reviewer?.canUpdate === authSessions[0]?.uuid)) ?
+                    <MoreActions>
+                      <>
+                        <div id={"edit-review" + review?.uuid} className="edit-review flex flex-row items-baseline gap-1 text-slate-400 hover:text-blue-500 text-base">
+                          <EditIco />
+                          <p className="less-than-sm:hidden ">{"Edit"}</p>
+                        </div>
+                        <div id={"delete-review" + review?.uuid} className="delete-review flex flex-row items-baseline gap-1  text-red-600  text-base hover:text-red-500">
+                          <DeleteIco size={16} />
+                          <p className="less-than-sm:hidden">{"Delete"}</p>
+                        </div>
+                      </>
+                    </MoreActions>
+                    : <></>
+                  }
+                  
+                  {/* <div className="copy-review flex flex-row items-baseline gap-1">
+                    <CopyIco size={16} />
+                    <p className="less-than-sm:hidden text-slate-400 hover:text-blue-500 text-base ">{"Copy"}</p>
+
+                  </div> */}
 
               </div>
             </div>
           </div>
-          <div className="review-details my-2 less-than-xs:ml-0 ml-12 px-2 flex flex-col gap-8">
+          <div className="review-details w-auto my-2 less-than-xs:ml-0 ml-12 px-2 flex flex-col gap-8">
             <div className="purchase-platform-brief  flex flex-col gap-2 font-raleway lining-nums tabular-nums  font-medium">
-              <div className="platform w-max px-3 py-1 flex justify-around gap-2 bg-[#F2F5F9] border-1 rounded-xl text-[#5d5d5d] text-sm font-raleway lining-nums tabular-nums  font-semibold">
-                <p className="text-blue-500">
-                  <CheckIco />
+              <div className="platform w-max px-3 py-1 flex justify-around items-center gap-2 bg-[#F2F5F9] border-1 rounded-xl text-[#5d5d5d] text-sm font-raleway lining-nums tabular-nums  font-semibold">
+                <p className="text-green-600">
+                  <CheckIco type="bought"/>
                 </p>
-                <p className="less-than-xs:hidden">{"purchased on Katundu"}</p>
+                <p className="less-than-xs:hidden text-base font-semibold">{"purchased on Katundu"}</p>
               </div>
-              <div className="brief-outline">
-                <p>{"brief description"}</p>
-                {
-                  review.quantifiers.map((q, x) =>
-                    <p key={x} className="flex flex-col xs:flex-col sm:flex-row lg:flex-col gap-1">
-                      <span className="quantifier-name text-slate-400 text-base">{q.quantifier}:</span>
-                      <span className="quantifier-value text-base">{q.value}</span>
-                    </p>
-
-                  )
-                }
-
-              </div>
+              {
+                review?.quantifiers.length?
+                  <ReviewQuantifiers quantifiers={review?.quantifiers}/>
+                  :<></>
+              }
             </div>
             {
-              review.images
+              review?.images
               ? <ReviewImages imageArray={review.images}/>
               :""
             }
-            <div className="reviewer-comment">
-              <p className=" my-3 flex flex-col gap-1 ">
-                <span className="comment-title text-slate-400 text-lg">{"Comment"}</span>
-                <span className="comment-text whitespace-normal text-base">{review.comment}</span>
-              </p>
-
-            </div>
-            <div className="helpful-review-rank w-max flex flex-col gap-2 ">
-              <p className="title text-slate-400 text-sm ">{"Was this review helpful?"}</p>
-              <div className="ranking flex flex-row gap-2">
-                <p className="rank-yes py-1 px-2 w-max flex flex-row items-baseline bg-slate-300 rounded-3xl text-slate-600 font-raleway lining-nums tabular-nums " role="button">
-                  <span className="text-slate-500">
-                    <ThumbIco />
-                  </span>
-                  <span className="rank-count">
-                    {review.rating.upvotes}
-                  </span>
-                </p>
-                <p className="rank-no py-1 px-2 w-max flex flex-row items-baseline bg-slate-300 rounded-3xl text-slate-600  font-raleway lining-nums tabular-nums " role="button">
-                  <span className="text-slate-500">
-                    <ThumbIco invert />
-                  </span>
-                  <span className="rank-count">
-                    {review.rating.downvotes}
-                  </span>
-                </p>
-              </div>
-            </div>
+            <ReviewComment review={review}/>
+            
+            <HelpfulReviewVotes review={review}/>
           </div>
         </div>
 
@@ -234,26 +462,57 @@ const ProductReviews=({prs})=>{
   const Reviews =({reviews, k=1})=>{
     
     return(
-      reviews?.map((r, x) => <Review key={x} review={r} />) 
+      <div className="reviews-component max-w-4xl border-t border-spacing-1">
+        {
+          reviews?.map((r, x) => <Review key={x} review={r} />) 
+
+        }
+
+      </div>
     )
   }
-  return(
+  const ReviewsWrapper = () =>(
+    <>
+        <div className="reviews-wrapper w-full flex flex-col gap-6">
+          <div className="reviews-header flex flex-col gap-1">
+            <ReviewImages imageArray={summary?.reviewsImages || []} />
+            <div className="rating-hidden-at-big-screen greater-than-md:hidden">
+              <OverallRating summary={summary} hasGap={true} />
 
-    <div className="reviews-container py-1 px-0 w-full  flex flex-row justify-between gap-3">
-      <div className="reviews-wrapper w-full flex flex-col">
-        <ReviewImages imageArray={prs.reviewsSummary.reviewsImages} />
-        <div className="rating-hidden-at-big-screen greater-than-md:hidden">
-          <OverallRating summary={prs.reviewsSummary} hasGap={true}/>
-          <AddReview/>
+            </div>
+
+            <AddReview />
+          </div>
+          <Reviews reviews={prs}/>
+        </div>
+        <div className="rating-visible-at-big-screen less-than-md:hidden">
+          <OverallRating summary={summary}/>
 
         </div>
+    </>
+  )
 
-        <Reviews reviews={prs.reviews}/>
-      </div>
-      <div className="rating-visible-at-big-screen less-than-md:hidden">
-        <OverallRating summary={prs.reviewsSummary}/>
+  const NoReviews = () =>(
+    <div className="no-reviews w-full flex flex-col gap-4 justify-center items-center">
+      <p className="text-lg font-medium">
+        {tags.noReviews.mainText}
+      </p>
+      <p className="text-sm font-normal">
+        {tags.noReviews.subText}
+      </p>
+      <AddReview/>
+    </div>
+      
+  )
+  return(
 
-      </div>
+    <div className="reviews-container py-1 px-0 w-full min-h-[351px]  flex flex-row justify-between gap-3">
+      {
+        prs.length?
+          <ReviewsWrapper />
+        : <NoReviews/>
+      }
+      
 
     </div>
   )

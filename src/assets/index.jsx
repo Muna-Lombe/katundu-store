@@ -2,9 +2,8 @@ import { ProductDeliveries as deliveryOpts } from './tests/jsonServer'
 
 
 
-export const setTextBg = (text, color="initial",  size={h:1, w:1, x:0, y:1, font:8})=>(
-  
-  { backgroundImage: 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' version=\'1.1\' height=\'' + size.h + 'px\' width=\'' + size.w + 'px\' style=\'\'><text x=\'' + size.x + '\' y=\'' + size.y + '\' color=\'' + color +'\' fill=\''+color+'\' font-family=\'' + 'Raleway, San-Serif, Segoui, Monospace' +'\' font-size=\'' + size.font+'px'  +'\'>'+text+'</text></svg>")' }
+export const setTextBg = (text, color = "initial", size = { h: 1, w: 1, x: 0, y: 1, font: 8 }) => (
+  { backgroundImage: 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' version=\'1.1\' height=\'' + size.h + 'px\' width=\'' + size.w + 'px\' ><text x=\'' + size.w / 2 + '\' y=\'' + size.h / 2 + '\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'' + color + '\' font-family=\'' + 'Raleway, San-Serif, Segoui, Monospace' + '\' font-size=\'' + size.font + 'px' + '\'>' + text + '</text></svg>") ', width: size.w + 'px', height: size.h + 'px' }
 )
 
 export const filterData = {
@@ -88,6 +87,18 @@ export const titleTagTypes={
   },
   noItem:{
     mainText : "😃 Waiting for products to load 😃", subText :"🙅 looks like no items here 👀"
+  },
+  noReviews:{
+    mainText : "No reviews yet 🤔", 
+    subText :"😀 Be the first to share your opinion 👍📝",
+    noOrderText: "🙅‍♂️ You can leave a post after making an order for this product ☑ 📦."
+  
+  },
+  noQuestions: {
+    mainText: "No questions yet 🤔",
+    subText: "😀 Be the first to share your opinion 👍📝",
+    noOrderText: "🙅‍♂️ You can leave a review after making an order for this product ☑ 📦."
+
   },
   orderHistory:{
     mainText: "History of orders", showMoretext : "Read more", orderStatusText : "Order status", orderNumberText : "Order number", 
@@ -214,3 +225,4 @@ export { default as ToggleIco } from './ToggleIco';
 export { default as FilterIco } from './FilterIco';
 export { default as CouponIco } from './CouponIco';
 export { default as NoStockIco } from './NoStockIco';
+export { default as EditIco } from './EditIco';

@@ -1,6 +1,6 @@
 import { attr,fk, Model } from "redux-orm";
 import customReducer from "./reducer";
-import { actions } from "../actions/actionTypes";
+import {actionCreator } from "../actions/actionTypes";
 
 
 
@@ -23,6 +23,6 @@ ProductImage.options = {
     idAttribute: 'id'
 }
 
-export const { UPDATE: updatedImage, REMOVE: removedImage, ADD: addedImage, CREATE: createdImage, ADD_TO: addedImageTo, REMOVE_FROM: removedImageFrom } = actions().createDefaultFor('ProductImage')
+export const { UPDATE: updatedImage, REMOVE: removedImage, ADD: addedImage, CREATE: createdImage, ADD_TO: addedImageTo, REMOVE_FROM: removedImageFrom } = actionCreator().createDefaultFor('ProductImage')
 
 export default ProductImage;

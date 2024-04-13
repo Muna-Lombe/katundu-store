@@ -116,7 +116,7 @@ const Navbar = ({children}) => {
     };
     suggestions(e.target.value)?.forEach((prod, i) =>{
       const optElem = document.createElement('option')
-      optElem.className = "w-full hover:text-black hover:bg-slate-200 truncate overflow-x-clip";
+      optElem.className = "w-full hover:text-black dark:text-white  hover:bg-slate-200 truncate overflow-x-clip";
       optElem.style = textStyle
       optElem.value = prod.name
       optElem.innerText = prod.name //prod.name.length > 36 ? prod.name.slice(0, 36) + "..." : prod.name
@@ -153,7 +153,7 @@ const Navbar = ({children}) => {
             <svg onClick={handleClick} id="open-menu-icon" className=" top-[-12px] right-[-4px]  w-[0.8rem] aspect-square hidden  transition-transform" fill="currentColor"  viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path fillRule="evenodd" clipRule="evenodd" d="M5.29289 5.29289C5.68342 4.90237 6.31658 4.90237 6.70711 5.29289L12 10.5858L17.2929 5.29289C17.6834 4.90237 18.3166 4.90237 18.7071 5.29289C19.0976 5.68342 19.0976 6.31658 18.7071 6.70711L13.4142 12L18.7071 17.2929C19.0976 17.6834 19.0976 18.3166 18.7071 18.7071C18.3166 19.0976 17.6834 19.0976 17.2929 18.7071L12 13.4142L6.70711 18.7071C6.31658 19.0976 5.68342 19.0976 5.29289 18.7071C4.90237 18.3166 4.90237 17.6834 5.29289 17.2929L10.5858 12L5.29289 6.70711C4.90237 6.31658 4.90237 5.68342 5.29289 5.29289Z" /> 
             </svg>
           </menu>
-          <div className=" hidden peer-open:flex flex-row greater-than-xs:flex greater-than-xs:flex-row max-w-[8rem]  h-max md:items-end md:justify-end greater-than-lg:items-center greater-than-lg:justify-center greater-than-lg:m-0 greater-than-lg:p-0 less-than-sm:gap-1 gap-4 " >
+          <div className=" hidden peer-open:flex flex-row greater-than-xs:flex greater-than-xs:flex-row max-w-[8rem] aspect-square h-max md:items-end md:justify-end greater-than-lg:items-center greater-than-lg:justify-center greater-than-lg:m-0 greater-than-lg:p-0 less-than-sm:gap-1 gap-4" >
             {children}
           </div>
         </div>
@@ -211,7 +211,7 @@ const Navbar = ({children}) => {
       <div id="search_field" tabIndex={0} className="relative min-w-[14rem]  greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem] less-than-xs:h-[2rem] h-[2.8rem] max-h-[3.2rem] flex justify-between border-[1px] rounded-3xl">
         {/* <div className="search-input relative w-full max-w-[22rem]  flex   justify-between p-[1px]"> */}
           
-          <input type="text" ref={ref}  name="search" defaultValue={curtext} placeholder={searchProductText||""} onKeyUp={(e) => {handleChange(e); setCurtext(e.target.value)}} className=" search autofill:selection bg-white w-full rounded-bl-3xl rounded-tl-3xl bg-transparent px-2  text-black text-[1rem] focus:outline-none" />
+          <input type="text" ref={ref}  name="search" defaultValue={curtext} placeholder={searchProductText||""} onKeyUp={(e) => {handleChange(e); setCurtext(e.target.value)}} className=" search autofill:selection bg-white w-full rounded-bl-3xl rounded-tl-3xl bg-transparent px-2  text-black dark:text-white    text-[1rem] focus:outline-none" />
     
           <Link to={"search?" + setParams()} onClick={() => handleBlur()} className=" top-0 right-0 w-1/5 h-full rounded-3xl m-[0.00rem] px-2 bg-[#F0F4FB] flex justify-center items-center">
             <SearchIco />
@@ -398,12 +398,12 @@ const Navbar = ({children}) => {
   return (
     //  md:items-center
     <>
-      <nav id="nav_container" className=" px-3 pt-2 pb-1 relative w-full h-full flex justify-center gap-2 items-start  lg:items-center xl:items-center ">
+      <nav id="nav_container" className=" px-3 pt-2 pb-1 relative w-full h-full flex justify-center gap-2 items-start  lg:items-center xl:items-center dark:text-white ">
         {/* " w-full flex  gap-4 lg:flex lg:flex-row xl:flex xl:flex-row justify-start items-center transition-all" */}
         <div id="navbar_left__wrapper" className="w-full flex less-than-sm:flex-wrap items-center justify-between gap-2 less-than-logo-min:gap-3 ">
           {/* lg:w-auto xl:auto flex  less-than-xs:gap-4 */}
           {/* m-1 align-start  w-full flex less-than-xs:flex-wrap justify-start gap-4 transition-all ease-in-out delay-700 */}
-          <div id="logo_location" className="order-1 w-min  relative flex justify-center insert-previous-classes-here first:h-[44px]">
+          <div id="logo_location" className="order-1 w-min  relative flex justify-cente gap-2 insert-previous-classes-here  first:h-[44px]">
               {/* <Logo clickEv={()=>""} logo={tags.footer.storename} size={{ h: 40, w: 40, x:10, y: 32, font: 38 }}/> */}
               <Logo>
                 <Link to={''} className='cursor-pointer  '>
@@ -426,7 +426,7 @@ const Navbar = ({children}) => {
 
                 <div id="search_field_box" className='relative w-full max-w-[512px] flex flex-col  items-center' onBlur ={(e) => handleBlur(e, "blur")}>
                   <SearchField/>
-                  <optgroup name="search-suggestions" tabIndex={1} id="search-suggestions" className="absolute top-full min-w-[12rem] greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem]  p-2 truncate border bg-black opacity-70 rounded-b-3xl text-white cursor-pointer hidden">
+                  <optgroup name="search-suggestions" tabIndex={1} id="search-suggestions" className="absolute top-full min-w-[12rem] greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem]  p-2 truncate border bg-black opacity-70 rounded-b-3xl text-white dark:text-black  cursor-pointer hidden">
                   </optgroup>
                 </div>
               </div>

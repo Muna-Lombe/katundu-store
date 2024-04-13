@@ -254,3 +254,43 @@ body:has(.modal-open)::-webkit-scrollbar {
     }
   }
 
+@keyframes pulse {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0.25;
+    transform: scale(0.75);
+  }
+}
+
+.pulse-container {
+  width: 120px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pulse-bubble {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgb(249, 115, 22);
+}
+
+.pulse-bubble-1 {
+    animation: pulse .5s ease 0s infinite alternate;
+}
+.pulse-bubble-2 {
+    animation: pulse .5s ease .2s infinite alternate;
+}
+.pulse-bubble-3 {
+    animation: pulse .5s ease .4s infinite alternate;
+}
+.pulse-bubble-4 {
+    animation: pulse .5s ease .5s infinite alternate;
+}
+.pulse-bubble-5 {
+    animation: pulse .5s ease .6s infinite alternate;
+}

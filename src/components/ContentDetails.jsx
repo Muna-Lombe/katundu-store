@@ -15,14 +15,14 @@ const ContentDetails = ({showLogo, contentType, variations = [{ id: 1, name: "ye
     nextContDesc.classList.replace("hidden", "flex")
   }
   return (
-    <div className={"content-details-"+contentType+" p-2 h-max   flex  flex-col gap-2 order-2 "}>
+    <div className={"content-details-"+contentType+" h-max   flex  flex-col gap-2 order-2 "}>
       {showLogo || ""}
 
       <div className={contentType+"-variations w-full  flex flex-row gap-2 overflow-hidden child-hover:border-blue-500 [&>.active]:text-blue-500 child child:cursor-pointer"}>
 
         {
           variations?.sort((a,b)=> a.text-b.text).map((i, x) => (
-            <div id={'var_' + i.id} key={x} onClick={(e) => handleActiveToggle(e)} className={"variation-image " + (x === 0 ? contentType + "-variation-active text-blue-500 border-blue-500" : "") + " py-1 px-2 w-max  flex items-baseline border-b-2 border-spacing-2 leading-[8px]  "}>
+            <div id={'var_' + i.uuid} key={x} onClick={(e) => handleActiveToggle(e)} className={"variation-image " + (x === 0 ? contentType + "-variation-active text-blue-500 border-blue-500" : "") + " py-1 px-2 w-max  flex items-baseline border-b-2 border-spacing-2 leading-[8px]  "}>
               {i.text}
             </div>
           ))

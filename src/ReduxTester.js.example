@@ -1,0 +1,429 @@
+
+import React, { useRef, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { filteredCustomModelSelector } from './orm/selectors';
+import { actions } from './orm/reducers/rootOrmReducer';
+import { json } from 'react-router-dom';
+import { updateLocale } from 'moment';
+import {  useGetProductsQuery, useGetProductQuery, useGetCatalogQuery, useGetCatalogItemQuery, useGetShoppingCartQuery, useGetShoppingCartItemQuery, useGetCheckoutQuery, useGetCheckoutItemQuery, useBeginItemCheckoutQuery, useGetStoresQuery, useGetStoreQuery,useSignupUserMutation, useLoginUserMutation, useAddCartItemMutation,useCompleteItemCheckoutMutation } from './js/middleware/queryHandler';
+import axios from 'axios';
+
+
+// BrowserRouter
+function ReduxTester() {
+  const [model, setModel]=useState("Product")
+  const [update, setUpdate] = useState({ m: null, i: null })
+  const hooks ={
+    "Store" : useGetStoresQuery,
+    "StoreItem" : useGetStoreQuery,
+    "Product" : useGetProductsQuery,
+    "ProductItem" : useGetProductQuery,
+    "Catalog": useGetCatalogQuery, 
+    "CatalogItem": useGetCatalogItemQuery, 
+    "Checkout":useGetCheckoutQuery, 
+    "CheckoutItem":useGetCheckoutItemQuery, 
+    "ShoppingCart":useGetShoppingCartQuery,
+    "ShoppingCartItem":useGetShoppingCartItemQuery
+  }
+  const [signupUser, {isLoading:signupIsLoading}] = useSignupUserMutation()
+
+  const [loginUser, {isLoading:loginIsLoading}] = useLoginUserMutation()
+
+  const [addCartItem, {isLoading:cartItemIsLoading}] = useAddCartItemMutation()
+
+  const [completeItemCheckout, {isLoading:completeCheckoutIsLoading}] = useCompleteItemCheckoutMutation()
+
+  const [beginItemCheckout, {isLoading:beginCheckoutIsLoading}] = useBeginItemCheckoutQuery()
+
+  //useSelector(filteredCustomModelSelector(model))
+  const dispatch =  useDispatch()
+  // const update = useRef(false)
+  const sess = sessionStorage
+  const handleChooseModel = (e)=>{
+    const nextModel = e.target.value
+    setModel(nextModel)
+  }
+  const extractJwt = (headers) =>{
+        console.log("headers", headers)
+        const authorizationHeader = headers["authorization"];
+
+        // Remove the "Bearer " text from the authorization header
+        const jwtToken = authorizationHeader.replace("Bearer ", "");
+
+        // Update the jwt-auth variable in the collection parent with the JWT token
+        sess.setItem("jwt", jwtToken);
+      }
+  const handleAuthDispatch = async(e, id)=>{
+    e.preventDefault()
+    e.stopPropagation()
+    console.log(e)
+    // return
+    let forms = document.forms['data']//new FormData();
+    let data = {}
+    const baseurl = "http://127.0.0.1:5000/api/v1"
+    const signupUsr= async(body) =>(
+      axios.post(
+        `${baseurl}/signup`,
+        body,
+        {
+          // headers: new Headers().append("Authorization", sessionStorage.getItem('jwt')),
+        }
+      )
+    )
+    const loginUsr = async(body) =>(
+      axios.post(
+        `${baseurl}/login`,
+        body,
+        // {
+        //   headers: {"Authorization": `Bearer ${sessionStorage.getItem('jwt')}`}
+        // }
+      )
+    )
+    const logoutUsr = async(body) =>{
+      sess.removeItem('jwt')
+      return (
+        axios.get(
+          `${baseurl}/logout`,
+          body,
+          {
+            headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`}
+          }
+        )
+      )
+    }
+      
+    
+    
+    for (var i = 0; i < forms.elements.length; i++) {
+        var element = forms.elements[i];
+
+        // Check if the element is an input field (you can customize this condition)
+        if (element.type !== "button" && element.type !== "submit") {
+          data[element.id] = element.name === "ids" ? [...element.value] : element.value;
+        }
+      }
+    // console.log("disp", data)
+
+    
+    try {
+      
+      if(sess.getItem('jwt')){
+        if(e.nativeEvent.submitter.id === "logout"){
+          await logoutUsr().then(res => //.unwrap()
+          extractJwt(res.headers))
+        }else{
+          await loginUsr({user:data}).then(res => //.unwrap()
+            extractJwt(res.headers))//unwrap() 
+          // extractJwt(loginRes.headers)
+
+        }
+      }else{
+
+        const signupRes = await signupUsr({user:data}).then(res => //.unwrap()
+          extractJwt(res.headers))
+      }
+    } catch (error) {
+      console.error('Failed to authenticate: ', error)
+    }
+
+    // console.log(availActs["for"+model].ADD(data))
+    
+    // dispatch(actions["for"+model][e.target.dataset.dispatchAction]((id+1)?{id:id,...data}:data))
+    
+  }
+
+  const handleAddToCartDispatch = async(e,id, initialCartItem)=>{
+    e.preventDefault()
+    console.log("payload", initialCartItem)
+    try {
+      
+      if(sess.getItem('jwt')){
+        await addCartItem({productId:id, initialCartItem}).then(res => //.unwrap()
+          extractJwt(res.headers))//unwrap() 
+        // extractJwt(loginRes.headers)
+      }
+    } catch (error) {
+      console.error('Failed to complete transcation: ', error)
+    }
+  }
+  const handleBeginCheckoutDispatch = async(e,cartId)=>{
+    e.preventDefault()
+    console.log("payload", cartId)
+    try {
+      
+      if(sess.getItem('jwt')){
+        await beginItemCheckout({cartId:cartId}).then(res => //.unwrap()
+          extractJwt(res.headers))//unwrap() 
+        // extractJwt(loginRes.headers)
+      }
+    } catch (error) {
+      console.error('Failed to complete transcation: ', error)
+    }
+  }
+  const handleCompleteCheckoutDispatch = async(e,id, cartId, initialOrderItem)=>{
+    e.preventDefault()
+    console.log("payload", initialOrderItem)
+    try {
+      
+      if(sess.getItem('jwt')){
+        await completeItemCheckout({orderId:id, cartId:cartId, initialOrderItem}).then(res => //.unwrap()
+          extractJwt(res.headers))//unwrap() 
+        // extractJwt(loginRes.headers)
+      }
+    } catch (error) {
+      console.error('Failed to complete transcation: ', error)
+    }
+  }
+  const Show = ({show, useHook, selector})=>{
+    let showObj = false
+    // console.log("se;", useHook)
+    
+    const { data:obj, isLoading, isSuccess, isError, error } = useHook(show.id);
+    if (isLoading) {
+      showObj = "..isLoading"
+    } else if (isSuccess) {
+      const { id, links, type, attributes } =  obj.data[0] ? obj.data[0] : obj.data
+      const obj2 = {id, ...attributes}
+      // console.log("showObj", obj)
+
+      showObj = Object.fromEntries(
+        Object.entries(obj2).map(([k,v],x)=>{
+          console.log("v", k,v)
+          if(v === null){
+            v="null"
+          }
+          if(v?.map){
+            if(v[0]){
+              k=k+"_id"
+              v=v[0].id
+            }else{
+              k=k+"_empty"
+              v="null"
+            }
+          }
+          return [k,v]
+        })
+         .filter(([k,v])=> !selector[0].hasOwnProperty(k))
+      )
+      // console.log("showObj", showObj)
+    } else if (isError) {
+      showObj = error.data.error
+    }
+
+    const orderItemBody = {
+        "order":{
+            "items":{
+                    "product_quantity": 1,
+                    "delivery_date" : "Thu Sep 12 2024",
+                    "delivery_time" : "07:29:56 GMT+0300 (Moscow Standard Time)",
+                    "delivery_address" : "15 Some place warm",
+                    "receiver" : "Someone",
+                    "receiver_phone" : "+1 234-567-89",
+                    "order_status": "ORDER_COMPLETE"
+                }
+                
+        }
+            
+    }
+    const cartItemBody = {
+      cart_item:{
+        items:[
+          {
+            product_variation_id:showObj.variations_id, 
+            product_count:1, 
+            item_status:"In Cart"
+          }
+        ]
+      }
+    } 
+    const dispatchFor ={
+      "Product": {action:"addedToCart", fn:(args)=> handleAddToCartDispatch(args.e, args.id, args.cartItemBody)},
+      "ShoppingCart": {action:"beganCheckout", fn:(args)=> handleBeginCheckoutDispatch(args.e,args.id) },
+      "Checkout":{action:"completedCheckout", fn:(args)=> handleCompleteCheckoutDispatch(args.e,args.id, args.cartId, args.orderItemBody)}
+    }
+    // console.log("shw", showObj)
+    return (
+      
+        <span   className='w-max flex gap-2'>
+          {
+            Object.entries(showObj).map(
+              ([k, v], i) =>
+                // v ?
+                <>
+                  <span>
+                    {k.length > 8 ? k.slice(0,8)+"..." : k}
+                  </span>
+                  
+                  <span key={i} className='appearance-none  text-center'>
+                    {v}
+                  </span>
+                </>
+                  // : null
+            )
+
+
+          }
+          <span>
+            {
+              (["Product","ShoppingCart","Checkout"].includes(model) )
+              ? <>
+                  <span data-dispatch-action={dispatchFor[model].action} onClick={(e) => dispatchFor[model].fn({e, id:show.id, cartItemBody, orderItemBody})} className='cursor-pointer'>📩</span>
+                </>
+              : null
+            }
+              
+          </span>
+        </span>
+
+    
+     
+    )
+  }
+  
+  
+  const Model = ({useHook, isAuth})=>{
+
+    const [show, setShow]=useState({for:null, id:null})
+  
+    const {data:obj, isLoading, isSuccess, isError, error, refetch} = useHook?.call() || {}; 
+    let selector;
+  
+    if (isLoading) {
+      selector = ["..isLoading"]
+    } else if (isSuccess) {
+      selector = obj.data?.map(d=> ({id:d.id, ...d.attributes})) || []
+    } else if (isError) {
+      console.log(error)
+      selector = [error.data.error]
+    }
+      const UserForm = ()=>{
+        const sess = sessionStorage
+        
+        return(
+         <form className='child:border' id="data" name="data" data-dispatch-action={sess.getItem('jwt') ? "logged_in" : "signed_in"} onSubmit={(e)=>handleAuthDispatch(e)}>
+            {
+              !(model === "User" ) ?
+                ""
+                : <>
+                    {
+                      (sess.getItem('jwt')) ?
+                      
+                       null
+                      :<input id="name" placeholder='name'/>
+                    }
+                    <input id="email" placeholder='email'/>
+                    {
+                      (sess.getItem('jwt')) ?
+                
+                       null
+                      :<input id="avatar_url" placeholder='avatar_url'/>
+                    }
+                    <input id="password" placeholder='password'/>
+                  </>
+            }
+            
+            <input id={sess.getItem('jwt') ? "login" : "signup"} type='submit'  value={sess.getItem('jwt') ? "login" : "signup"} className='px-2 text-white dark:text-black  bg-gray-500 rounded-lg cursor-pointer active:underline'/>
+            {
+              (sess.getItem('jwt')) ?
+              <input id="logout" type='submit'  value={"logout"} className='px-2 text-white dark:text-black  bg-gray-500 rounded-lg cursor-pointer active:underline'/>
+              : null
+            }
+        </form> 
+      )}
+      return (
+      <div>
+          {
+            isAuth ?
+              <UserForm/>
+            : <>
+                <ul className=' w-[600px] grid'>
+                  <li  className=' w-full flex flex-col border  '>
+                    <span className='flex justify-center'>
+                      <span colSpan="4" >---{model}---</span>
+                    </span>
+                    <ul className='w-full flex flex-row justify-between'> 
+                        {
+                          Object.keys(selector[0]||{}).map((k,x)=>
+                            selector[0][k] ?
+                              <li key={'h-'+x} colSpan={0} className='w-full border px-1'>
+                                  {k}
+                              </li>
+                              : null
+                          )
+                        }
+                      <span className='border font-semibold'>actions</span>
+                    </ul> 
+                  </li>
+                  <li className='child:border'>
+                      {
+                        selector?.map((s,x)=>
+                        <>
+                          <ul key={x} className='grid grid-flow-col gap-2'>
+                              {
+                                Object.entries(s).map(
+                                  ([k,v],i)=>
+                                    v ?
+                                    <li key={i} className='appearance-none flex text-center'>
+                                    {v.length > 8 ? v.slice(0,8)+"..." : v}
+                                    </li>
+                                    : null
+                                )
+
+                                
+                              }
+                              
+                                
+                              <li className=' child:px-1 flex justify-end child:cursor-pointer child:text-white child:bg-white'>
+                                <span onClick={()=>(show.for && (show.id===s.id)) ? setShow({for:null, id:null}) :setShow({for:s.id, id:s.id})}>{(show.for && (show.id===s.id))? '🔓' : '🔒'} </span>
+                                {
+                                  (["ShoppingCart", "Checkout"].includes(model)) ?
+                                    <span onClick={refetch}>{'🔃'} </span>
+                                  : null
+                                }
+                               
+                              </li>
+                          </ul>
+                          <ul className='flex flex-col items-end'>
+                            {
+                              (show.for && (show.id === s.id)) ?
+                                <Show key={'s-'+x} show={show} selector={selector} useHook={hooks[model+"Item"]}  />
+                                : null
+                            }
+                          </ul>
+                        </>
+                        )
+                      }
+                    
+                        
+                    
+                  </li>
+                </ul>
+        
+              </>
+          }
+          
+      </div>
+    )
+  }
+
+  
+  
+  
+  return (
+   <div className='flex flex-col items-center'>
+      <h2> Testing redu-orm, basics --- only dispatch and select</h2>
+      <p>
+        {
+          
+          ["User", "Store", "Product",  "Catalog",  "ShoppingCart", "Checkout"].map((m,x) => 
+            <input type='button' key={x} className="appearance-none mx-2 text-base  hover:text-white hover:bg-black cursor-pointer"  onClick={(e)=>handleChooseModel(e)} value={m}/>
+          )
+        }
+        
+      </p>
+      <Model  useHook={hooks[model]} isAuth={model === "User"}/>
+    </div>
+  );
+}
+
+export default ReduxTester;

@@ -1,47 +1,66 @@
 import { attr, Model } from "redux-orm";
-import { actions } from "../actions/actionTypes";
+import {actionCreator } from "../actions/actionTypes";
 import customReducer from "./reducer";
-
+import { isIterable } from "../utilities";
+import PropTypes from 'prop-types';
 
 
 
 class ProductCategory extends Model {
     static reducer(action, ProductCategory, session) {
+        // return  customReducer({session, model:ProductCategory, action})
+
         switch (action.type) {
-            case "orm/ProductCategory/setCatActive":
-                // session.ProductCategory.options.currCatId = action.payload //set("currCatId",action.payload)
+            case "orm/ProductCategory/CREATED_CATALOG":
+                // console.log("sess", session)
                 
-                console.log("", session)
+                if(isIterable(action.payload)){
+                    action.payload.forEach(load=> session.ProductCategory.create(load))
+                    break;
+                }
+                session.ProductCategory.create(action.payload)
+                // session.ProductCategory.active = action.payload.active //set("currCatId",action.payload)
+                
                 break;
-            case "orm/ProductCategory/removedCatActive":
-                // session.ProductCategory.options.currCatId = action.payload //set("currCatId",action.payload)
-                console.log("", session)
+            case "orm/ProductCategory/TOGGLED_CATEGORY":
+                // console.log("", session.ProductCategory.get({active:true}))
+                session.ProductCategory.get({active:true})?.update({active:false})
+                // session.ProductCategory.upsert(action.payload)
+                const {uuid, ...rest} = action.payload 
+
+                session.ProductCategory.withId(uuid)?.update(rest) //set("currCatId",action.payload)
+                // console.log("", session)
                 break;
-            case "orm/ProductCategory/removedAllCatActive":
-                // session.ProductCategory.options.currCatId = action.payload //set("currCatId",action.payload)
-                console.log("", session)
+            default:
+                // customReducer({session, model:ProductCategory, action})
                 break;
-            // default:
-            //     customReducer({session, model:ProductCategory, action})
-            //     break;
         }
+        return session.state;
     }
 }
 // ProductCategory.initialState = {currCatId: 0}
 ProductCategory.modelName = 'ProductCategory';
+ProductCategory.propTypes = {
+    uuid: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    active: PropTypes.bool.isRequired
+}
 ProductCategory.fields = {
-    id: attr(),
+    uuid: attr(),
     name: attr(),
     active: attr()  
 }
 
 ProductCategory.options = {
-    idAttribute: 'id'
+    idAttribute: 'uuid'
 }
-export const { UPDATE: updatedCatActive, UPDATE_ALL: updatedAllCatActive} = actions().createDefaultFor('ProductCategory')
-// export const [updatedProductCategory, removedProductCategory, addedProductCategory, createdProductCategory, addedProductCategoryTo, removedProductCategoryFrom,] = actions().createDefaultFor('ProductCategory')
-// export const setCatActive = actions().createCustomFor('ProductCategory', 'setCatActive')
-// export const removedCatActive = actions().createCustomFor('ProductCategory', 'removedCatActive')
-// export const removedAllCatActive = actions().createCustomFor('ProductCategory', 'removedAllCatActive')
+
+// export const { UPDATE: updatedCatActive, CREATE: createdCat,  UPDATE_ALL: updatedAllCatActive} = actionCreator().createDefaultFor('ProductCategory')
+// export const [updatedProductCategory, removedProductCategory, addedProductCategory, createdProductCategory, addedProductCategoryTo, removedProductCategoryFrom,] = actionCreator().createDefaultFor('ProductCategory')
+export const createdCatalog = actionCreator().createCustomFor('ProductCategory', 'CREATED_CATALOG')
+export const toggledCategory = actionCreator().createCustomFor('ProductCategory', 'TOGGLED_CATEGORY')
+// export const removedAllCatActive = actionCreator().createCustomFor('ProductCategory', 'removedAllCatActive')
+
+
 
 export default ProductCategory;

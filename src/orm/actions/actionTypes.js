@@ -1,12 +1,12 @@
 import { createAction } from "@reduxjs/toolkit";
 
 
-const constantsArr = ['UPDATE', 'UPDATE_ALL', 'REMOVE', 'ADD', 'CREATE', 'ADD_TO', 'REMOVE_FROM', 'REMOVE_ALL_OF', 'ASSIGN', 'FULFILLED', 'SET_LOADING', 'CLEAR_LOADING', 'FETCH_DATA', 'DELETE']
-const modelSpecificConsts  = [ 'ORDERED', 'IN_CART', 'ORDERED_PENDING',
-  'ORDERED_COMPLETE', 'AUTH_VALID', 'AUTH_EXPIRED', 'SELECT_PRODUCT']
+const actions = ['UPDATE', 'UPDATE_ALL', 'REMOVE', 'ADD', 'CREATE', 'UPSERT', 'ADD_TO', 'REMOVE_FROM', 'REMOVE_ALL_OF', 'ASSIGN', 'FULFILLED', 'SET_LOADING', 'CLEAR_LOADING', 'FETCH_DATA', 'DELETE', 'SET_TOAST', 'UPDATE_TOAST', 'REMOVE_TOAST']
+const states  = [ 'ORDERED', 'IN_CART', 'OUT_CART', 'ORDERED_PENDING',
+  'ORDERED_COMPLETE', 'AUTH_VALID', 'AUTH_EXPIRED', 'SELECT_PRODUCT', 'TOAST_MESSAGE', 'TOAST_ERROR', 'TOAST_VALID', 'TOAST_EXPIRED']
 
 // export const [UPDATE, REMOVE, ADD, CREATE, ADD_TO, REMOVE_FROM, REMOVE_ALL_OF, ASSIGN, FULFILLED, SET_LOADING, CLEAR_LOADING, FETCH_DATA, SELECT_PRODUCT, DELETE,ORDERED, IN_CART] 
-// = constantsArr;
+// = actions;
 const types = { 
     // UPDATE:'UPDATE',
     // UPDATE_ALL: 'UPDATE_ALL',
@@ -27,13 +27,15 @@ const types = {
     // ORDERED_PENDING: 'ORDERED_PENDING',
     // ORDERED_COMPLETE: 'ORDERED_COMPLETE',
    }
-constantsArr.forEach(e=> types[e]=e)
-export function actions(){
+actions.concat(states).forEach(e=> types[e]=e)
+
+
+export function actionCreator(){
   return {
   createCustomFor: (model, type) => createAction(`orm/${model}/` + type),
-  createDefaultFor: (model)=> Object.fromEntries(constantsArr.map((i, d) => {
+  createDefaultFor: (model, prepare=undefined)=> Object.fromEntries(actions.map((i, d) => {
     // const key = [UPDATE, REMOVE, ADD, CREATE, ADD_TO, REMOVE_FROM, ASSIGN, FULFILLED, SET_LOADING, CLEAR_LOADING][d]
-    const action = createAction(`orm/${model}/` + i)
+    const action = createAction(`orm/${model}/` + i, prepare)
     return[i,action]
     // return [i = createAction(`orm/${model}/` + [UPDATE, REMOVE, ADD, CREATE, ADD_TO, REMOVE_FROM, ASSIGN, FULFILLED, SET_LOADING, CLEAR_LOADING][d])]
   }))

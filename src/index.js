@@ -7,20 +7,24 @@ import reportWebVitals from './reportWebVitals';
 import { Provider } from 'react-redux';
 import { BrowserRouter, HashRouter } from 'react-router-dom';
 import Store from './js/store';
-import { asyncThunk,} from './orm/utilities/StateLoader';
-import ReduxTester from './ReduxTester';
+// import { asyncThunk,} from './orm/utilities/StateLoader';
+// import ReduxTester from './ReduxTester.js.example';
+import App from './App';
+import { apiSlice } from './js/middleware/queryHandler';
 
 
-// Store.dispatch(asyncThunk())
+
+Store.dispatch(apiSlice.endpoints.getProducts.initiate())
+Store.dispatch(apiSlice.endpoints.getCatalog.initiate())
 
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter basename='katundu-store'>
       {/* <HashRouter> */}
         <Provider store={Store}>
-        <ReduxTester/>
+        {/* <ReduxTester/> */}
           
-          {/* <App /> */}
+          <App />
         </Provider>
       {/* </HashRouter> */}
     </BrowserRouter>

@@ -9,7 +9,7 @@ import { createdOrder } from '../orm/models/OrderModel';
 import { momentDate } from '../orm/utilities';
 import types from '../orm/actions/actionTypes';
 import { authenticatedUsers, isAlreadyOrdered, isAuthedUser, isInCart } from '../orm/selectors';
-import { createdCartItem } from '../orm/models/CartModel';
+import { addedCartItem, createdCartItem } from '../orm/models/CartModel';
 import BuyBtns from './BuyBtns';
 import randomizer from '../js/utils/randomizer';
 
@@ -22,7 +22,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
   const location = useLocation()
   const isOrdered = useSelector(isInCart(product?.id))
   const authSessions = useSelector(authenticatedUsers)
-  const userAuthed = useSelector(isAuthedUser(authSessions[0]?.id))
+  const userAuthed = useSelector(isAuthedUser(authSessions[0]?.uuid))
   // let cats = useSelector(filteredCategoriesFromModel(product?.categoryIds))
   const textStyle = {
     maxWidth: '100%',
@@ -35,7 +35,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
 
   
   const handleAddToCart=(id)=>{
-    dispatch(createdCartItem({
+    dispatch(addedCartItem({
       DateCreated: momentDate().full,
       product: id,
       productCount:1,
@@ -59,17 +59,17 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
   )
   const PriceTag =({children, product})=>{
     // const disc = product.isDiscounted[1] 
-    const old_price = product.priceRange.sort((a, b) => a - b)[0] 
-    const price = product.isDiscounted[0] ? calcDisc(product.priceRange.sort((a, b) => a - b)[0], product.isDiscounted[1]) : product.priceRange.sort((a, b) => a - b)[0] 
+    // const old_price = product.priceRange.sort((a, b) => a - b)[0] 
+    // const price = product.isDiscounted[0] ? calcDisc(product.priceRange.sort((a, b) => a - b)[0], product.isDiscounted[1]) : product.priceRange.sort((a, b) => a - b)[0] 
     
     return(
       
        <span className='py-1 flex gap-2  items-baseline less-than-xs:text-xs text-md '>
         <span className=" py-1 px-[0.25rem] flex gap-1  border-1 rounded-md text-orange-600 text-lg leading-[8px]   font-bold items-baseline">
-          {tags.currencyType + price}
-          {product.isDiscounted[0] === true
-            ? <span id="old_price" className="text-slate-400 line-through font-[600] text-[10px] leading-[8px]  greater-than-md:text-[0.9rem] ">
-              {tags.currencyType + old_price}
+          {tags.currencyType + (product?.discountTag ? product?.newPrice : product?.oldPrice)}
+          {product?.discountTag
+            ? <span id="oldPrice" className="text-slate-400 line-through font-[600] text-[10px] leading-[8px]  greater-than-md:text-[0.9rem] ">
+              {tags.currencyType + product?.oldPrice}
             </span>
             : ""
           }
@@ -88,7 +88,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
   )
   const ProductHeader = ()=>(
     <div id="product_header" className=" px-1 w-[45%]  justify-center items-end  ">
-      <Link to={"/product/" + product?.id} id="product_image" className="flex w-full justify-center items-end" >
+      <Link to={"/products/" + product?.id} id="product_image" className="flex w-full justify-center items-end" >
         {
           noPrd
           ? <Image imagepath={no_product_img} />
@@ -131,7 +131,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
           {
             noPrd
               ? <div className="no-prd-field w-[70%] h-6 border rounded-md bg-gradient-to-tr from-slate-400 to-slate-500 animate-pulse opacity-30"></div>
-              : <Link to={"/product/" + product?.id} style={textStyle} >
+              : <Link to={"/products/" + product?.id} style={textStyle} >
                 {product?.name}
               </Link>
           }

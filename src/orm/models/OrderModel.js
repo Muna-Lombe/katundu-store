@@ -1,43 +1,72 @@
 import { attr,fk, many, Model, oneToOne } from "redux-orm";
 
-import {  actions } from "../actions/actionTypes";
+import { actionCreator } from "../actions/actionTypes";
 import customReducer from "./reducer";
-
+import { isIterable } from "../utilities";
+// import { getPropTypesMixin } from "redux-orm-proptypes";
+import PropTypes from 'prop-types';
 // import { createStore, combineReducers } from "redux";
 // import { createReducer } from "redux-orm";
 // import moment from "moment";
 
 class Order extends Model {
-    // static reducer(action, Order, session) {
-    //     return customReducer({session, model:Order, action})
-    // }
-//   
+    static reducer(action, Order, session) {
+        // return customReducer({session, model:Order, action})
+        switch (action.type) {
+            case "orm/OrderHistory/ADD":
+                if(isIterable(action.payload)){
+                    action.payload.forEach(load=> session.Order.upsert(load))
+                    break;
+                }
+                session.Order.upsert(action.payload)
+                break;
+            case "orm/OrderHistory/REMOVE":
+                const {uuid, ...rest} = action.payload 
+                session.Order.withId(uuid)?.delete() 
+                break;
+            default:
+             break;
+        }
+    }  
 }
+
 Order.modelName = 'Order';
+Order.propTypes = {
+    uuid: PropTypes.string.isRequired,
+    orderItems: PropTypes.arrayOf(PropTypes.shape({
+        uuid: PropTypes.string.isRequired,
+        productQuantity: PropTypes.number.isRequired,
+        productPrice: PropTypes.number.isRequired,
+        productName: PropTypes.string.isRequired,
+        storeName: PropTypes.string.isRequired,
+    })).isRequired,
+    deliveryDate: PropTypes.string.isRequired,
+    deliveryTime: PropTypes.string.isRequired,
+    deliveryAddress: PropTypes.string.isRequired,
+    orderCost: PropTypes.number.isRequired,
+    orderStatus: PropTypes.string.isRequired
+}
 Order.fields = {
-    id: attr(),
-    // product: fk({ to: 'Product', as: 'product', through: "Product", throughFields: { itemId: attr(), itemQuantity: attr(), itemPrice: attr() }, relatedName: 'orders' }),
-    productIds: many({to:'Product', relatedName: 'orders'}),
-    DateCreated: attr(),
-    OrderProps: attr({
-        quantity: attr([{ 
-            itemId: fk({ to: 'Product', as: 'product', relatedName: 'orders' }), 
-            itemQuantity: attr(), 
-            itemPrice: attr() 
-        }]),
-        storeName:attr(),
-        deliveryDate: attr(),
-        deliveryTime: attr(),
-        deliveryAddress: attr(),
-        receiver:attr(),
-        receiverPhone: attr(),
-        orderCost: attr(),
-        deliveryCost: attr(),
-        totalCost: attr()
-    }),
-
-
-    OrderStatus: attr()
+    uuid: attr(),
+    orderItems:attr([
+        {
+            uuid: fk({ to: 'Product', as: 'product', through: "Product",  relatedName: 'orders' }),
+            productQuantity: attr(), 
+            productPrice: attr(), 
+            productName: attr(), 
+            storeName:attr(),
+        }
+    ]),
+    // productUuids: one({to:'Product', relatedName: 'orders'}),
+    deliveryDate: attr(),
+    deliveryTime: attr(),
+    deliveryAddress: attr(),
+    orderCost: attr(),
+    orderStatus: attr()
 };
-export const {UPDATE:updatedOrder, REMOVE:removedOrder, ADD:addedOrder, CREATE:createdOrder, ADD_TO:addedOrderTo, REMOVE_FROM:removedOrderFrom} = actions().createDefaultFor('Order')
+Order.options = {
+    IdAttribute: "uuid",
+};
+
+export const {UPDATE:updatedOrderItem, REMOVE:removedOrderItem, ADD:addedOrderItem, CREATE:createdOrderItem, ADD_TO:addedOrderItemTo, REMOVE_FROM:removedOrderItemFrom} = actionCreator().createDefaultFor('OrderHistory')
 export default Order;

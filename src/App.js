@@ -5,6 +5,7 @@ import {Routes, Route, BrowserRouter } from "react-router-dom";
 import AppWrapper from './components/AppWrapper';
 import { Login } from './components';
 import { PrivateRoute } from './pages';
+import Signup from './components/Signup';
 
 // BrowserRouter
 
@@ -26,7 +27,7 @@ function App() {
     <AppWrapper>
       <Routes>
         <Route path="/" exact element={<Main/>} />
-        <Route path="/product/:id" exact element={<ShowProduct />} />
+        <Route path="/products/:id" exact element={<ShowProduct />} />
         <Route path="/search" exact element={<Search />} />
         <Route path="/categories" exact element={<Categories />} />
         <Route path="/cart" exact element={
@@ -38,6 +39,7 @@ function App() {
         <Route path="/history" exact element={
           <PrivateRoute component={History} />
         } />
+        <Route path="/signup" exact element={<Signup /> } /> 
         <Route path="/signin" exact element={<Login /> } /> 
         
         <Route

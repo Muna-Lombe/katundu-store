@@ -5,17 +5,26 @@ import Logo from "./Logo";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { createdAuth } from "../orm/models/AuthModel";
-import { momentDate, sha256 } from "../orm/utilities";
+import { momentDate, preloadCartItems, preloadOrderHistory, sha256 } from "../orm/utilities";
 import types from "../orm/actions/actionTypes";
 import { useEffect } from "react";
 import { authenticatedUsers, isAuthedUser } from "../orm/selectors";
+import { apiSlice, useGetShoppingCartQuery, useLoginUserMutation, useSignupUserMutation } from "../js/middleware/queryHandler";
+import { createdToastMessage } from "../orm/models/ToastMessageModel";
 
 export default function Login({userId}) {
 
   const dispatch = useDispatch()
   const location = useLocation()
   const goto = useNavigate()
+  const [signupUser, { isLoading: signupIsLoading }] = useSignupUserMutation()
 
+  const [loginUser, { isLoading: loginIsLoading }] = useLoginUserMutation()
+  const sess = sessionStorage;
+  const performAuthedActions = async (asyncAxns) =>{
+    asyncAxns.forEach(ax=>dispatch(ax()))
+     
+  }
   const handleSignin = async(e)=>{
     try {
       e.preventDefault()
@@ -28,13 +37,26 @@ export default function Login({userId}) {
           data[target] =  k 
         });
       }
-      const h = await Promise.all([sha256(data.password)])
-      dispatch(createdAuth({dateCreated:momentDate().shortDate, timeCreated:new Date().toString(),  authStatus:types.AUTH_VALID}))
-      location.state.pathname ||= "/"
-      goto(location.state,{state:{from: location.pathname}})
+      data['email'] = data.email
+      data['password'] = [...(await Promise.all([sha256(data.password)]))][0]
+      
+      const res = await loginUser({ initialCred: {user:{email:data.email, password:data.password}} })
+      if(res.error) throw new Error(JSON.stringify(res.error.data.error))
+      //  console.log(res)
+      dispatch(createdAuth({uuid:res.data.uuid, dateCreated:momentDate().shortDate, timeCreated:new Date().toString(),  authStatus:types.AUTH_VALID}))
+      await performAuthedActions([
+        preloadCartItems,
+        preloadOrderHistory
+        // () => dispatch(preloadCartItems),
+
+      ])
+      location.state.pathname ||= "/";
+      goto(location.state,{state:{from: location.pathname}});
       
     } catch (error) {
-      alert(error)
+      const msg = error.message.toString().split("\"")
+      console.log("err", error)
+      dispatch(createdToastMessage({status:types.TOAST_VALID, text:{header:"Error",body:msg[1]}, type: types.TOAST_ERROR, id:"login error" }))
     }
   }
   return (
@@ -53,9 +75,10 @@ export default function Login({userId}) {
             </h2>
             <p className="mt-2 text-center text-sm text-gray-600">
               Or{' '}
-              <a href="/" className="font-medium text-orange-600 hover:text-orange-500">
+              <Link to="/signup" state={{...location}} className="font-medium text-orange-600 hover:text-orange-500" >
                 create a new account for free
-              </a>
+              </Link>
+              
             </p>
           </div>
           <form id="Signin-form" name="Signin-form" className="mt-8 space-y-6" action="#" method="POST" onSubmit={(e) => handleSignin(e)}>
@@ -106,7 +129,7 @@ export default function Login({userId}) {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-orange-600 hover:text-orange-500">
+                <a href="/#" className="font-medium text-orange-600 hover:text-orange-500">
                   Forgot your password?
                 </a>
               </div>
@@ -117,7 +140,7 @@ export default function Login({userId}) {
                 type="submit"
                 // onSubmit={(e) => handleSignin(e)}
                 // onClick={(e) => handleSignin(e)}
-                className="group relative flex w-full justify-center rounded-md bg-orange-600 py-2 px-3 text-sm font-semibold text-white hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                className="group relative flex w-full justify-center rounded-md bg-orange-600 py-2 px-3 text-sm font-semibold text-white dark:text-black  hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   {/* <LockClosedIcon className="h-5 w-5 text-orange-500 group-hover:text-orange-400" aria-hidden="true" /> */}
