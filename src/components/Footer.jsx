@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { FbIco, InstaIco, VkIco, titleTagTypes as tags } from '../assets'
+import { FbIco, InstaIco, VkIco, titleTagTypes as tags } from './icons'
 import Google_Play_Link from '../assets/tests/jsonServer/img/placeholders/Google_Play_Lnk.png'
 import Apple_Store_Link from '../assets/tests/jsonServer/img/placeholders/App_Store_Lnk.png'
 import Logo from './Logo'

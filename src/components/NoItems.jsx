@@ -1,5 +1,5 @@
 import React from 'react'
-import { titleTagTypes as tags } from '../assets'
+import { titleTagTypes as tags } from './icons'
 const NoItems = ({ subText, mainText }) => {
   return (
     <div

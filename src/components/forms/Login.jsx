@@ -1,33 +1,29 @@
 
 import { useDispatch, useSelector } from "react-redux";
-import { InfoIco,titleTagTypes as tags  } from "../assets";
-import Logo from "./Logo";
+import { InfoIco,titleTagTypes as tags  } from "../icons";
+import Logo from "../Logo";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { createdAuth } from "../orm/models/AuthModel";
-import { momentDate, sha256 } from "../orm/utilities";
-import types from "../orm/actions/actionTypes";
+import { createdAuth } from "../../orm/models/AuthModel";
+import { momentDate, preloadCartItems, preloadOrderHistory, sha256 } from "../../orm/utilities";
+import types from "../../orm/actions/actionTypes";
 import { useEffect } from "react";
-import { authenticatedUsers, isAuthedUser } from "../orm/selectors";
-import { useSignupUserMutation } from "../js/middleware/queryHandler";
+import { authenticatedUsers, isAuthedUser } from "../../orm/selectors";
+import { apiSlice, useGetShoppingCartQuery, useLoginUserMutation, useSignupUserMutation } from "../../js/middleware/queryHandler";
+import { createdToastMessage } from "../../orm/models/ToastMessageModel";
 
-export default function Signup({userId}) {
+export default function Login({userId}) {
 
   const dispatch = useDispatch()
   const location = useLocation()
   const goto = useNavigate()
   const [signupUser, { isLoading: signupIsLoading }] = useSignupUserMutation()
 
+  const [loginUser, { isLoading: loginIsLoading }] = useLoginUserMutation()
   const sess = sessionStorage;
-  const extractJwt = (headers) => {
-    console.log("headers", headers)
-    const authorizationHeader = headers["authorization"];
-
-    // Remove the "Bearer " text from the authorization header
-    const jwtToken = authorizationHeader.replace("Bearer ", "");
-
-    // Update the jwt-auth variable in the collection parent with the JWT token
-    sess.setItem("jwt", jwtToken);
+  const performAuthedActions = async (asyncAxns) =>{
+    asyncAxns.forEach(ax=>dispatch(ax()))
+     
   }
   const handleSignin = async(e)=>{
     try {
@@ -41,18 +37,26 @@ export default function Signup({userId}) {
           data[target] =  k 
         });
       }
-      //  data['password'] = [...(await Promise.all([sha256(data.password)]))][0]
       data['email'] = data.email
       data['password'] = [...(await Promise.all([sha256(data.password)]))][0]
-      // console.log(data)
-      await signupUser({ initialCred: {user:data} })
-      // console.log(data)
-      dispatch(createdAuth({dateCreated:momentDate().shortDate, timeCreated:new Date().toString(),  authStatus:types.AUTH_VALID}))
-      location.state.pathname ||= "/login"
-      goto(location.state,{state:{from: location.pathname}})
+      
+      const res = await loginUser({ initialCred: {user:{email:data.email, password:data.password}} })
+      if(res.error) throw new Error(JSON.stringify(res.error.data.error))
+      //  console.log(res)
+      dispatch(createdAuth({uuid:res.data.uuid, dateCreated:momentDate().shortDate, timeCreated:new Date().toString(),  authStatus:types.AUTH_VALID}))
+      await performAuthedActions([
+        preloadCartItems,
+        preloadOrderHistory
+        // () => dispatch(preloadCartItems),
+
+      ])
+      location.state.pathname ||= "/";
+      goto(location.state,{state:{from: location.pathname}});
       
     } catch (error) {
-      console.log(error)
+      const msg = error.message.toString().split("\"")
+      console.log("err", error)
+      dispatch(createdToastMessage({status:types.TOAST_VALID, text:{header:"Error",body:msg[1]}, type: types.TOAST_ERROR, id:"login error" }))
     }
   }
   return (
@@ -67,48 +71,39 @@ export default function Signup({userId}) {
               </div>
             </Logo>
             <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-              Signup for your account
+              Sign in to your account
             </h2>
-            
+            <p className="mt-2 text-center text-sm text-gray-600">
+              Or{' '}
+              <Link to="/signup" state={{...location}} className="font-medium text-orange-600 hover:text-orange-500" >
+                create a new account for free
+              </Link>
+              
+            </p>
           </div>
-          <form id="Signup-form" name="Signup-form" className="mt-8 space-y-6" action="#" method="POST" onSubmit={(e) => handleSignin(e)}>
+          <form id="Signin-form" name="Signin-form" className="mt-8 space-y-6" action="#" method="POST" onSubmit={(e) => handleSignin(e)}>
+            <input form="Signin-form" type="hidden" name="remember" defaultValue="true" />
             <div className="-space-y-px rounded-md shadow-sm">
-
-              <div className="text">
-                <label htmlFor="name" className="sr-only">
-                  name
-                </label>
-                <input form="Signup-form"
-                  id="name"
-                  name="name"
-
-                  type="text"
-                  required
-                  className="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-orange-600 indent-2 sm:text-sm sm:leading-6"
-                  placeholder="User name"
-                />
-              </div>
               <div className="text">
                 <label htmlFor="email-address" className="sr-only">
                   Email address
                 </label>
-                <input form="Signup-form"
+                <input form="Signin-form"
                   id="email-address"
                   name="email"
 
                   type="email"
                   autoComplete="email"
                   required
-                  className="relative block w-full  border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-orange-600 indent-2 sm:text-sm sm:leading-6"
+                  className="relative block w-full rounded-t-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-orange-600 indent-2 sm:text-sm sm:leading-6"
                   placeholder="Email address"
                 />
               </div>
-              
               <div>
                 <label htmlFor="password" className="sr-only">
                   Password
                 </label>
-                <input form="Signup-form"
+                <input form="Signin-form"
                   id="password"
                   name="password"
                   type="password"
@@ -117,6 +112,26 @@ export default function Signup({userId}) {
                   className="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-orange-600 indent-2 sm:text-sm sm:leading-6"
                   placeholder="Password"
                 />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center">
+                <input form="Signin-form"
+                  id="remember-me"
+                  name="remember-me"
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-gray-300 text-orange-600 focus:ring-orange-600"
+                />
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
+                  Remember me
+                </label>
+              </div>
+
+              <div className="text-sm">
+                <a href="/#" className="font-medium text-orange-600 hover:text-orange-500">
+                  Forgot your password?
+                </a>
               </div>
             </div>
 
@@ -131,16 +146,10 @@ export default function Signup({userId}) {
                   {/* <LockClosedIcon className="h-5 w-5 text-orange-500 group-hover:text-orange-400" aria-hidden="true" /> */}
                   <InfoIco/>
                 </span>
-                Sign up
+                Sign in
               </button>
             </div>
           </form>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Already have an account? 
-            <Link to="/signin" className="font-medium text-orange-600 hover:text-orange-500" >
-               {" Login to continue."} 
-            </Link>
-          </p>
         </div>
       </div>
     </>

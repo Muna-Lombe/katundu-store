@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { image1_1, imagepath } from '../assets/images'
 import { useLocation, useNavigate } from "react-router-dom"
 
-import { ArrowDown, CheckIco, DeleteIco, EditIco, OpenIco, StarIco, ThumbIco, titleTagTypes as tags } from '../assets'
-import { CopyIco } from '../assets'
+import { ArrowDown, CheckIco, DeleteIco, EditIco, OpenIco, StarIco, ThumbIco, titleTagTypes as tags } from './icons'
+import { CopyIco } from './icons'
 import no_img_path from '../assets/tests/jsonServer/img/placeholders/no_product_img.png'
 import no_avtr_path from '../assets/tests/jsonServer/img/placeholders/avatar.png'
 import { useSelector } from 'react-redux'

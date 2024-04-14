@@ -2,7 +2,7 @@ import React, { Suspense, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Product,CategoryTag, NoItems, Sidebar } from '../components'
 import { filteredProductsFromModel, categories } from '../orm/selectors';
-import { titleTagTypes as tags } from '../assets';
+import { titleTagTypes as tags } from '../components/icons';
 import { useGetCatalogItemQuery, useGetCatalogQuery } from '../js/middleware/queryHandler';
 import { createdToastMessage } from '../orm/models/ToastMessageModel';
 import types from '../orm/actions/actionTypes';

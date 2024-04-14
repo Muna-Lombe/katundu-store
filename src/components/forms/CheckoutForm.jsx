@@ -4,18 +4,18 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 
 // assets
-import { LocationIco, setTextBg, textBg } from '../assets'
-import { createdOrder } from '../orm/models/OrderModel'
-import ProductDescriptor from './ProductDescriptor'
-import { momentDate, returnOnReload } from '../orm/utilities'
-import types from '../orm/actions/actionTypes'
-import NameTag from './NameTag'
-import { orderedCartItem } from '../orm/models/CartModel'
-import { checkouts as checkoutSelector, getNextId } from '../orm/selectors'
-import { titleTagTypes as tags } from "../assets";
-import { useBeginItemCheckoutQuery, useCompleteItemCheckoutMutation } from '../js/middleware/queryHandler'
-import { createdToastMessage } from '../orm/models/ToastMessageModel'
-import { createdCheckout, updatedCheckout } from '../orm/models/CheckoutModel'
+import { LocationIco, setTextBg, textBg } from '../icons'
+import { createdOrder } from '../../orm/models/OrderModel'
+import ProductDescriptor from '../ProductDescriptor'
+import { momentDate, returnOnReload } from '../../orm/utilities'
+import types from '../../orm/actions/actionTypes'
+import NameTag from '../NameTag'
+import { orderedCartItem } from '../../orm/models/CartModel'
+import { checkouts as checkoutSelector, getNextId } from '../../orm/selectors'
+import { titleTagTypes as tags } from "../icons";
+import { useBeginItemCheckoutQuery, useCompleteItemCheckoutMutation } from '../../js/middleware/queryHandler'
+import { createdToastMessage } from '../../orm/models/ToastMessageModel'
+import { createdCheckout, updatedCheckout } from '../../orm/models/CheckoutModel'
 
 
 const CheckoutForm = ({ location}) => {

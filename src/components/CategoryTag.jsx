@@ -1,7 +1,7 @@
 import React from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { CancelIco, colorTags } from '../assets'
+import { CancelIco, colorTags } from './icons'
 import { toggledCategory } from '../orm/models/ProductCategoryModel'
 import { categories } from '../orm/selectors'
 const CategoryTag = ({children, tag, id, text, borderId=0, customFn=false})=>{

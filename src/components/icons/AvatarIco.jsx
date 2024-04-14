@@ -1,6 +1,6 @@
 
 import React from 'react'
-import img_path from '../assets/tests/jsonServer/img/placeholders/avatar.png'
+import img_path from '../../assets/tests/jsonServer/img/placeholders/avatar.png'
 
 const AvatarIco = ({size="2.1rem"}) => {
   

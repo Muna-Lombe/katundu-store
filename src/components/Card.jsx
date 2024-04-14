@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { titleTagTypes as tags } from "../assets";
+import { titleTagTypes as tags } from "./icons";
 
 const Card = ({ imgBg, centered}) => {
   return (

@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Link } from "react-router-dom";
 
 // assets
-import { CouponIco, DeleteIco } from '../assets'
+import { CouponIco, DeleteIco } from './icons'
 import { useDispatch, useSelector } from 'react-redux';
 import  { imagepath, no_img_path } from '../assets/images';
 import { checkedOutCartItem, removedCartItem, updatedCartItem } from '../orm/models/CartModel';
 
-import { titleTagTypes as tags } from "../assets";
+import { titleTagTypes as tags } from "./icons";
 import randomizer from '../js/utils/randomizer';
 import { useRemoveCartItemMutation, useUpdateCartItemMutation, useBeginItemCheckoutQuery } from '../js/middleware/queryHandler';
 import Logo from './Logo';

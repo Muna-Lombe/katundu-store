@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { ArrowLeft } from "../assets"
+import { ArrowLeft } from "../icons"
 
 const BackBtn = ({location}) =>{
     const path = (location?.state?.from?.includes("signin") ? "/" : -1)

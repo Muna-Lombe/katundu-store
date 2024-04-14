@@ -1,5 +1,5 @@
 import React from 'react'
-import { imagepath } from '../assets/images'
+import { imagepath } from '../../assets/images'
 
 const GridBanner = () => {
   const banners = [

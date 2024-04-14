@@ -1,4 +1,4 @@
-import { setTextBg, textBg } from "../assets";
+import { setTextBg, textBg } from "./icons";
 
 const ProductDescriptor = ({ id, label = "Some descriptively long", values = ["Textword"] }) => {
   // console.log("", id,label, values)

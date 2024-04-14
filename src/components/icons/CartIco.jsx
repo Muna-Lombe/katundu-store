@@ -1,9 +1,9 @@
 
 import React from 'react'
 import { useSelector } from 'react-redux'
-import { itemIdsInCart, selectcartIds } from '../js/slices/cart/cartSlice'
+// import { itemIdsInCart, selectcartIds } from '../../js/slices/cart/cartSlice'
 import BasketIco from './BasketIco'
-import { authenticatedUsers, cartItemsCount, isAuthedUser } from '../orm/selectors'
+import { authenticatedUsers, cartItemsCount, isAuthedUser } from '../../orm/selectors'
 
 
 const CartIco = ({size, isBurgerMenu,isCartBtn=false}) => {

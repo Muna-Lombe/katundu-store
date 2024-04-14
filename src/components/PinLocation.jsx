@@ -1,4 +1,4 @@
-import { ArrowRight, titleTagTypes as tags } from "../assets";
+import { ArrowRight, titleTagTypes as tags } from "./icons";
 import randomizer from "../js/utils/randomizer";
 
 const PinLocation = ({  }) => {

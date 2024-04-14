@@ -1,4 +1,4 @@
-import Logo from "./Logo"
+import Logo from "../Logo"
 
 const ContentDetails = ({showLogo, contentType, variations = [{ id: 1, name: "yellow bag" }], children }) => {
   // const [activeTab, setActiveTab] = useState("PRs")

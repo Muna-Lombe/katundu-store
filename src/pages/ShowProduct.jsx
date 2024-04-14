@@ -1,5 +1,5 @@
 import { Suspense, useEffect, } from "react";
-import { ArrowLeft,  ArrowRight,  BasketIco,  CartIco,  PinIco, popularTags } from "../assets";
+import { ArrowLeft,  ArrowRight,  BasketIco,  CartIco,  PinIco, popularTags } from "../components/icons";
 import { categories, filteredProductsFromModel } from "../orm/selectors";
 import { useDispatch, useSelector } from "react-redux";
 import { Link,useParams, useLocation, createSearchParams, } from "react-router-dom";

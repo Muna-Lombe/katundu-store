@@ -1,7 +1,7 @@
 import React from 'react'
 import no_img_path from '../assets/tests/jsonServer/img/placeholders/no_product_img.png'
 import no_avtr_path from '../assets/tests/jsonServer/img/placeholders/avatar.png'
-import { CheckIco } from '../assets'
+import { CheckIco } from './icons'
 
 const PostCreatorTag = ({posterName, posterVerified, avtr_url, postTimestamp}) => {
   return (

@@ -1,5 +1,5 @@
-import { BellIco } from "../assets";
-import { titleTagTypes as tags } from "../assets";
+import { BellIco } from "./icons";
+import { titleTagTypes as tags } from "./icons";
 
 const DiscountInfo = ({ children }) => {
     return (

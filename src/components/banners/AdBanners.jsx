@@ -1,8 +1,8 @@
 import React from 'react'
-import Card from './Card'
+import Card from '../Card'
 import GridBanner from './GridBanner'
-import imgBg1 from '../assets/tests/jsonServer/img/placeholders/newCollection1.png'
-import imgBg2 from '../assets/tests/jsonServer/img/placeholders/newCollection2.png'
+import imgBg1 from '../../assets/tests/jsonServer/img/placeholders/newCollection1.png'
+import imgBg2 from '../../assets/tests/jsonServer/img/placeholders/newCollection2.png'
 
 const AdBanners = ({grid, mosaic}) => {
   const MosaicBanner = ()=>(

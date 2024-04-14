@@ -213,8 +213,8 @@ export const apiSlice = createApi({
     }),
     getProducts: builder.query({
       // The URL for the request is '/fakeApi/posts'
-      query: (from) => '/products'+(from ? '?from='+from : ''),
-      transformResponse(res){return res.data},
+      query: (query) => query ? '/products' + '?' + query : '/products',
+      transformResponse(res){return res.data?.map(configObject)},
       transformErrorResponse(err){return err.data.errors},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
         // console.log("arg", arg)
@@ -222,15 +222,36 @@ export const apiSlice = createApi({
         // console.log("queryFulfilled", queryFulfilled)
 
         try {
-          const {data} = await queryFulfilled
+          // const {data} = await queryFulfilled
           
-          const products = data?.map(configObject)
+          const {data:products} = await queryFulfilled;
           // console.log("data", data, "=>",products)
           dispatch(addedProduct(products))
         } catch (error) {
           console.log("error", error)
         }
       }
+    }),
+    getEmbeddedProducts: builder.query({
+      // The URL for the request is '/fakeApi/posts'
+      query: (query) => query ? '/products' + '?' + query : '/products',
+      transformResponse(res){return res.data?.map(configObject)},
+      transformErrorResponse(err){return err.data.errors},
+      // async onQueryStarted (arg, { dispatch, queryFulfilled }){
+      //   // console.log("arg", arg)
+      //   // console.log("dispatch", dispatch)
+      //   // console.log("queryFulfilled", queryFulfilled)
+
+      //   try {
+      //     // const {data} = await queryFulfilled
+          
+      //     const {data:products} = await queryFulfilled;
+      //     // console.log("data", data, "=>",products)
+      //     dispatch(addedProduct(products))
+      //   } catch (error) {
+      //     console.log("error", error)
+      //   }
+      // }
     }),
     getProduct: builder.query({
       // The URL for the request is '/fakeApi/posts'
@@ -793,6 +814,7 @@ export const {
    useGetStoreQuery,
    useGetProductsQuery,
    useLazyGetProductsQuery,
+   useGetEmbeddedProductsQuery,
    useGetProductQuery,
    useGetCatalogQuery,
    useGetCatalogItemQuery,

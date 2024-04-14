@@ -2,7 +2,7 @@ import React, { Suspense, createElement, useEffect, useRef, useState } from 'rea
 import { useSelector } from 'react-redux'
 import { Product,CategoryTag, NoItems, Sidebar, HeroBanner, GridBanner, LoadingStateComponent, AdBanners } from '../components'
 import { filteredProductsFromModel, categories } from '../orm/selectors';
-import { popularTags, titleTagTypes as tags } from '../assets';
+import { popularTags, titleTagTypes as tags } from '../components/icons';
 import { useDispatch } from 'react-redux';
 import { addedProduct } from '../orm/models/ProductModel';
 import { load } from '../orm/utilities/StateLoader';
@@ -63,11 +63,11 @@ const Main = () => {
     const cats = useSelector(categories)
     const goto = useNavigate()
     return(
-    <div className="product-category-tags my-4 w-full greater-than-sm:max-w-[70%] overflow-x-clip">
+    <div className="product-category-tags my-4 w-full flex justify-center greater-than-md:justify-start greater-than-sm:max-w-[90%] overflow-x-clip">
        
-        <div id="product_tags" className=" w-full mb-3  flex flex-row flex-nowrap justify-center indent-3 " >
+        {/* <div id="product_tags" className=" w-full mb-3  flex flex-row flex-nowrap justify-center indent-3 " > */}
           
-          <div  id="scrollable_product_tags"  className="scrollable_product_tags  w-auto max-w-fit  flex flex-row flex-wrap  justify-start less-than-xs:grid gap-2 grid-flow-col grid-rows-2 overflow-scroll shadow-slate-600  tag child:m-0 child:p-2 child:text-lg  child:less-than-xs:text-xs">
+        <div id="scrollable_product_tags" className="scrollable_product_tags  w-full  flex flex-row flex-wrap  justify-center greater-than-md:justify-start less-than-xs:grid gap-2 grid-flow-col grid-rows-2 overflow-scroll shadow-slate-600  tag child:m-0 child:p-2 child:text-lg  child:less-than-xs:text-xs">
             {
               popularTags.map((tag, idx) => {
                 return (
@@ -82,14 +82,15 @@ const Main = () => {
             }
           </div>
 
-        </div>
+        {/* </div> */}
       </div>
   )}
   const ProductsSection=({products,index, forwardRef})=>{
     // {/* grid-cols-[repeat(auto-fit,minmax(auto,7rem))] */ }
     console.log("products", products)
+    // less - than - xs: grid - cols - 2 greater - than - xs: grid - cols - [repeat(auto - fit, minmax(auto, 12rem))] greater - than - sm: grid - cols - [repeat(auto - fit, minmax(auto, 14rem))] 
     return(
-      < div id ={ "products-section"+index} className = { "w-full p-2 grid grid-flow-row-dense less-than-xs:grid-cols-2 greater-than-xs:grid-cols-[repeat(auto-fit,minmax(auto,12rem))] greater-than-sm:grid-cols-[repeat(auto-fit,minmax(auto,16rem))]  overflow-x-scroll scroll-smooth justify-center  transition-all  tag gap-3 greater-than-xs:gap-6"} >
+      < div id ={ "products-section"+index} className = { "w-full p-4 grid grid-flow-col-dense grid-rows-2 overflow-x-scroll scroll-smooth justify-center  transition-all  tag gap-3 greater-than-xs:gap-6"} >
         {
           !products[0].noProd
             ? products.map((i,x) => (
@@ -125,7 +126,7 @@ const Main = () => {
         }
         
         setTimeout(() => {
-          getProducts(products?.at(-1)?.uuid)
+          getProducts("from="+products?.at(-1)?.uuid)
           
         }, 1000);
 
@@ -224,7 +225,52 @@ const Main = () => {
         
       )
     }
-    const chunkSize = 6;
+    // need to set a stateful variable to keep track of the chunksize and update it when the screen size changes
+    // the variable should not cause a re-render when it changes
+    const [chunkSize, setChunkSize] = useState(() => {
+      if (window.innerWidth < 320) {
+        return 4;
+      } else if (window.innerWidth < 431) {
+        return 4;
+      } else if (window.innerWidth < 720) {
+        return 6;
+      } else if (window.innerWidth < 1024) {
+        return 8;
+      } else if (window.innerWidth < 2048) {
+        return 10;
+      } else {
+        return 2;
+      }
+    });
+
+    useEffect(() => {
+
+      const handleResize = () => {
+        if (window.innerWidth < 320) {
+          setChunkSize(4);
+        } else if (window.innerWidth < 431) {
+          setChunkSize(4);
+        } else if (window.innerWidth < 720) {
+          setChunkSize(6);
+        } else if (window.innerWidth < 1024) {
+          setChunkSize(8);
+        } else if (window.innerWidth < 2048) {
+          setChunkSize(10);
+        } else {
+          setChunkSize(2);
+        }
+        console.log(window.innerWidth,"resize", chunkSize)
+      };
+
+      window.addEventListener('resize', handleResize);
+
+      return () => {
+        window.removeEventListener('resize', handleResize);
+      };
+    }, [window.innerWidth]);
+    
+    // const chunkSize =() => window.innerWidth < 320 ? 2 : window.innerWidth < 425 ? 4 : window.innerWidth < 1024 ? 4 : 6;
+    // const chunkSize = 4;
     const chunks = [];
     for (let i = 0; i < products.length; i += chunkSize) {
       chunks.push(products.slice(i, i + chunkSize));

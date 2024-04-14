@@ -1,4 +1,4 @@
-import { ProductDeliveries as deliveryOpts } from './tests/jsonServer'
+import { ProductDeliveries as deliveryOpts } from '../../assets/tests/jsonServer'
 
 
 

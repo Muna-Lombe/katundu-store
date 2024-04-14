@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react"
-import { ToggleIco, filterData, titleTagTypes as tags } from "../assets"
-import RangeSelector from "./rangSelector/RangeSelector"
-import FilterIco from "../assets/FilterIco"
+import { ToggleIco, filterData, titleTagTypes as tags } from "../icons"
+import RangeSelector from "../rangSelector/RangeSelector"
+import FilterIco from "../icons/FilterIco"
 
 const FilterSearchResults = ({ children }) => {
 
@@ -199,7 +199,7 @@ const FilterSearchResults = ({ children }) => {
     };
 
     const AddIcon = ({ iconName = "InfoIco", size }) => {
-      const Icon = require("../assets/" + iconName + ".jsx").default
+      const Icon = require("../icons/" + iconName + ".jsx").default
       return (<Icon size={size} />)
     }
     const selectType = (d, t) => {

@@ -3,7 +3,7 @@ import { createSelector } from "redux-orm";
 import {session } from '../orm/reducers/rootOrmReducer';
 import types from "./actions/actionTypes";
 import {  useSelector } from "react-redux";
-import { addToProductData, calcDisc } from "../assets";
+import { addToProductData, calcDisc } from "../components/icons";
 import Store from "../js/store";
 import { momentDate } from "./utilities";
 import { updatedAuth } from "./models/AuthModel";

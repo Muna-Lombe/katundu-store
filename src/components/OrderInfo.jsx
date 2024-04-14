@@ -1,4 +1,4 @@
-import { titleTagTypes as tags} from "../assets";
+import { titleTagTypes as tags} from "./icons";
 
 
 const OrderInfo = ({  children }) => {

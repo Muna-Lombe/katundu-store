@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 
 // assets 
-import { CopyIco, ArrowDown, titleTagTypes as tags, OpenIco, ArrowLeft, ArrowRight} from '../assets'
-import ContentDetails from './ContentDetails'
+import { CopyIco, ArrowDown, titleTagTypes as tags, OpenIco, ArrowLeft, ArrowRight} from './icons'
+import ContentDetails from './contents/ContentDetails'
 import NameTag from './NameTag'
 import ProductDescriptor from './ProductDescriptor'
-import ContentDescription from './ContentDescription'
+import ContentDescription from './contents/ContentDescription'
 import Logo from './Logo'
 import NoItems from './NoItems'
 import { Link } from 'react-router-dom'

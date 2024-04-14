@@ -5,7 +5,7 @@ import {Routes, Route, BrowserRouter } from "react-router-dom";
 import AppWrapper from './components/AppWrapper';
 import { Login } from './components';
 import { PrivateRoute } from './pages';
-import Signup from './components/Signup';
+import Signup from './components/forms/Signup';
 
 // BrowserRouter
 
@@ -14,6 +14,7 @@ function App() {
   //components
   const Main = lazy(() => import("./pages/Main"))
   const Search = lazy(() => import("./pages/Search"))
+  const NoRoute = lazy(() => import("./pages/404"))
   const Basket = lazy(() => import("./pages/Basket"))
   const Checkout = lazy(() => import("./pages/Checkout"))
   const History = lazy(() => import("./pages/History"))
@@ -44,11 +45,7 @@ function App() {
         
         <Route
           path="*"
-          element={
-            <main style={{ padding: "1rem" }}>
-              <p>There's nothing here!</p>
-            </main>
-          }
+          element={<NoRoute/>}
         />
       {/* <p className="p-4 cursor-pointer text-xl font-sans font-bold underline" onClick={()=>handleTest()}> 
                 test data

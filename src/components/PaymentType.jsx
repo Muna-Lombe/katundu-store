@@ -1,4 +1,4 @@
-import { titleTagTypes as tags } from "../assets";
+import { titleTagTypes as tags } from "./icons";
 
 const PaymentType = ({  plan = { amount: 109, period: { count: 6, type: "months" } }, children }) => {
   return (

@@ -1,6 +1,6 @@
 import { useGetName } from "../orm/selectors";
-import ContentDescription from "./ContentDescription";
-import ContentDetails from "./ContentDetails";
+import ContentDescription from "./contents/ContentDescription";
+import ContentDetails from "./contents/ContentDetails";
 import NameTag from "./NameTag";
 import ProductDescriptor from "./ProductDescriptor";
 

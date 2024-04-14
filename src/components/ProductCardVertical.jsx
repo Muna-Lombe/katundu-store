@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector} from 'react-redux';
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BasketIco, CouponIco, calcDisc, titleTagTypes as tags } from '../assets';
+import { BasketIco, CouponIco, calcDisc, titleTagTypes as tags } from './icons';
 import IMG, { imagepath } from '../assets/images';
 import no_product_img from '../assets/tests/jsonServer/img/placeholders/no_product_img.png'
 // assets
@@ -71,10 +71,10 @@ const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW =8}) => {
     return(
       
        <span className='py-1 flex gap-2  items-baseline less-than-xs:text-xs text-md '>
-        <span className=" py-1 px-[0.25rem] flex gap-1  border-1 rounded-md text-orange-600 text-lg leading-[8px]   font-bold items-baseline">
+        <span className=" py-1 px-[0.25rem] flex gap-1  border-1 rounded-md text-orange-600 text-xl leading-[8px]   font-[600] items-baseline">
           {tags.currencyType +(product?.discountTag? product?.newPrice :product?.oldPrice)}
           {product?.discountTag
-            ? <span id="oldPrice" className="text-slate-400 line-through font-[600] text-[10px] leading-[8px]  greater-than-md:text-[0.9rem] ">
+            ? <span id="oldPrice" className="text-slate-400 line-through font-[600] text-[12px] leading-[8px]  greater-than-md:text-[0.9rem] ">
               {tags.currencyType +product?.oldPrice}
             </span>
             : ""
@@ -86,15 +86,15 @@ const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW =8}) => {
   }
 
   const Image = ({ imagepath }) => (
-    <div className={" py-1  flex items-end  " + (noPrd ? " min-w-[100px] min-h-[100px] border rounded animate-pulse " : " ")}>
-      <img alt="gallery" className="min-w-[80%] min-h-[100px] w-auto aspect-square object-cover object-center z-0" src={imagepath} />
+    <div className={" py-1  flex justify-center  " + (noPrd ? " min-w-[100px] min-h-[100px] border rounded animate-pulse " : " ")}>
+      <img alt="gallery" className="max-w-[100%] w-auto aspect-square object-cover object-center z-0 rounded-md" src={imagepath} />
       </div>
   
     )
   
   return (
    
-    <div id={"product_card_" + product?.uuid} ref={forwardRef} className={(noPrd ? " " : " ")  + (isSearchOrMain ? " min-w-[6rem] " : " min-w-[8rem] " ) +" min-w-[8rem] w-auto max-w-[15rem] h-full max-h-[20rem] flex flex-nowrap shrink flex-col justify-start bg-white shadow-md border border-gray-200 rounded-md font-raleway lining-nums tabular-nums  overflow-y-hidden"}>
+    <div id={"product_card_" + product?.uuid} ref={forwardRef} className={(noPrd ? " " : " ")  + (isSearchOrMain ? " min-w-[6rem] " : " min-w-[8rem] " ) +"w-auto max-w-[15rem] h-full max-h-[20rem] flex flex-nowrap shrink flex-col justify-start bg-white shadow-md border border-gray-200 rounded-md font-raleway lining-nums tabular-nums  overflow-y-hidden"}>
       <div id="product_header" className="relative px-1 w-[100%] h-[100%]  justify-center items-end  ">
         <Link state={{ uuid: product?.uuid }} to={"/products/" + product?.name + "-" + product?.uuid} id="product_image" className="flex  justify-center items-end" >
           {
@@ -106,7 +106,7 @@ const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW =8}) => {
         <DiscountTag product={product}/>  
       </div>
       <div id="product_content" className=" px-2 py-1 w-full max-h-[50%] flex flex-wrap  justify-between bg-white rounded-md">
-        <h2 id="product_price" className=" w-full text-sm greater-than-md:text-[1.2rem]   lining-nums tabular-nums">
+        <h2 id="product_price" className=" w-full text-lg greater-than-md:text-[1.2rem]   lining-nums tabular-nums">
           {
             noPrd
               ? <>
@@ -135,7 +135,7 @@ const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW =8}) => {
                   </span>
               }
             </h1>
-            <h4 id='product_name' className=" h-12 bg-white text-[#2D2D2F] text-ran text-sm greater-than-md:text-base hover:text-orange-500 font-medium ">
+            <h4 id='product_name' className=" h-12 bg-white text-[#2D2D2F] text-sm greater-than-md:text-base hover:text-orange-500 font-medium ">
               {
                 noPrd
                   ? <div className="no-prd-field w-[70%] h-6 border rounded-md bg-gradient-to-tr from-slate-400 to-slate-500 animate-pulse opacity-30"></div>

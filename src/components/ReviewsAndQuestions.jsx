@@ -3,7 +3,7 @@ import ProductReviews from "./ProductReviews";
 import QAs from "./QAs";
 import prs from "../assets/tests/jsonServer/ProductReviews.json"
 import qas from "../assets/tests/jsonServer/QandAs.json"
-import { titleTagTypes as tags } from "../assets";
+import { titleTagTypes as tags } from "./icons";
 import { useGetProductReviewsQuery } from "../js/middleware/queryHandler";
 import { createdToastMessage } from "../orm/models/ToastMessageModel";
 import { useDispatch } from "react-redux";

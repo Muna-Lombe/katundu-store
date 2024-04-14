@@ -9,7 +9,7 @@ const Search = () => {
   
   const SearchResults = ({ children }) => {
     const searchTextArr = JSON.parse(useSearchParams()[0].get('query'))
-    // console.log("prods matching", searchTextArr )
+    console.log("prods matching", searchTextArr )
     const products = useSelector(productsMatchingSearch(searchTextArr)) || []
     const bigScreens = "grid-rows-[repeat(auto-fit,minmax(14rem,1fr))] gap-8"
     const smallScreens = "grid-rows-[repeat(auto-fit,minmax(auto-fill,12rem))] gap-2"
@@ -35,7 +35,7 @@ const Search = () => {
       <Suspense fallback={<NoItems />}>
         <div className="search-wrapper relative flex flex-col">
           <SearchResults/>
-          <EmbeddedProducts title={"Product You Might Be Interested In"} tagname={"suggested-products"}/>
+          <EmbeddedProducts title={"Products You May Like"} tagname={"suggested-products"}/>
         </div>
       </Suspense>
   )

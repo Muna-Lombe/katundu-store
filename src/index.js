@@ -19,7 +19,7 @@ Store.dispatch(apiSlice.endpoints.getCatalog.initiate())
 
 ReactDOM.render(
   <React.StrictMode>
-    <BrowserRouter basename='katundu-store'>
+    <BrowserRouter basename='/'>
       {/* <HashRouter> */}
         <Provider store={Store}>
         {/* <ReduxTester/> */}

@@ -1,5 +1,5 @@
 import React from 'react'
-import {  DiscountIco, SidebarBanner } from '../assets'
+import {  DiscountIco, SidebarBanner } from './icons'
 import Card from './Card'
 import imgBg1 from '../assets/tests/jsonServer/img/placeholders/newCollection1.png'
 import imgBg2 from '../assets/tests/jsonServer/img/placeholders/newCollection2.png'

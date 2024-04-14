@@ -2,7 +2,7 @@ import React, {  useEffect, useRef, useState } from 'react';
 import { Link, createSearchParams, useLocation, useNavigate } from "react-router-dom";
 
 // assets
-import { AvatarIco, CartIco, PinIco, SearchIco, titleTagTypes as tags } from '../assets';
+import { AvatarIco, CartIco, PinIco, SearchIco, titleTagTypes as tags } from './icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectProductNamesThatMatch, setSearchedProductId } from '../js/slices/products/productsSlice';
 import Logo from './Logo';
@@ -260,7 +260,7 @@ const Navbar = ({children}) => {
   }
   
   const LogoImg = ()=>{
-    const [activeLogo, setActiveLogo] = useState("long")
+    const [activeLogoType, setActiveLogoType] = useState("long")
     const sess = sessionStorage
     if (!sess.getItem("canRerender")){
       sess.setItem("canRerender", true)
@@ -382,7 +382,6 @@ const Navbar = ({children}) => {
       return (() => resizeObserver.unobserve(logoParent))
   }
     useEffect(() => {
-      // console.log("jsdhffdalfj")
       toggleOnResize()
     },[])
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector} from 'react-redux';
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BasketIco, CouponIco, calcDisc, titleTagTypes as tags } from '../assets';
+import { BasketIco, CouponIco, calcDisc, titleTagTypes as tags } from './icons';
 import IMG, { imagepath } from '../assets/images';
 import no_product_img from '../assets/tests/jsonServer/img/placeholders/no_product_img.png'
 // assets
@@ -10,7 +10,7 @@ import { momentDate } from '../orm/utilities';
 import types from '../orm/actions/actionTypes';
 import { authenticatedUsers, isAlreadyOrdered, isAuthedUser, isInCart } from '../orm/selectors';
 import { addedCartItem, createdCartItem } from '../orm/models/CartModel';
-import BuyBtns from './BuyBtns';
+import BuyBtns from './buttons/BuyBtns';
 import randomizer from '../js/utils/randomizer';
 
 

@@ -1,7 +1,7 @@
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowLeft, ArrowRight } from '../assets'
-import { imagepath } from '../assets/images'
+import { ArrowLeft, ArrowRight } from '../icons'
+import { imagepath } from '../../assets/images'
 
  const HeroBanner=()=>{
     const BtnBasic = ({className, id, clickEv, children}) => (

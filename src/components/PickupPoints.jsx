@@ -1,4 +1,4 @@
-import { ArrowRight, titleTagTypes as tags } from "../assets";
+import { ArrowRight, titleTagTypes as tags } from "./icons";
 
 const PickupPoints = ({  points = { date: { day_tag: "tomorrow", date_text: "6 February" }, price: 0 } }) => (
   <span className="pickup-points p-2 flex flex-row justify-between gap-4 ">
