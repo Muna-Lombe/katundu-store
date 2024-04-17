@@ -5,10 +5,9 @@ import React, { useCallback, useEffect, useState, useRef } from "react";
 import PropTypes from "prop-types";
 import "./rangeSelector.css";
 
-const RangeSelector = ({ min, max, stateUpdaters, editableValues, onChange }) => {
+const RangeSelector = ({ min, max, stateUpdaters, editableValues, onChange, rangeRef }) => {
   const minValRef = useRef(null);
   const maxValRef = useRef(null);
-  const range = useRef(null);
   const [minValue, setMinValue] = useState(editableValues.min);
   const [maxValue, setMaxValue] = useState(editableValues.max);
 
@@ -16,32 +15,35 @@ const RangeSelector = ({ min, max, stateUpdaters, editableValues, onChange }) =>
     (value) => Math.round(((value - min) / (max - min)) * 100),
     [min, max]
   );
-
+  const stepValue = Math.floor((max/min));
+  // useEffect for maxValRef
   useEffect(() => {
     if (maxValRef.current) {
       const minPercent = getPercent(minValue);
       const maxPercent = getPercent(maxValue);
 
-      if (range.current) {
-        range.current.style.left = `${minPercent}%`;
-        range.current.style.width = `${maxPercent - minPercent > 250 ? 100 : maxPercent - minPercent
+      if (rangeRef.current) {
+        rangeRef.current.style.left = `${minPercent}%`;
+        rangeRef.current.style.width = `${maxPercent - minPercent > 250 ? 100 : maxPercent - minPercent
           }%`;
       }
     }
   }, [minValue, maxValue, getPercent]);
 
+  // useEffect for minValRef
   useEffect(() => {
     if (minValRef.current) {
       const minPercent = getPercent(minValue);
       const maxPercent = getPercent(maxValue);
 
-      if (range.current) {
-        range.current.style.width = `${maxPercent - minPercent > 250 ? 100 : maxPercent - minPercent
+      if (rangeRef.current) {
+        rangeRef.current.style.width = `${maxPercent - minPercent > 250 ? 100 : maxPercent - minPercent
           }%`;
       }
     }
   }, [minValue, maxValue, getPercent]);
 
+  // useEffect for onChange
   useEffect(() => {
     onChange({ min: stateUpdaters.min.val, max: stateUpdaters.max.val });
   }, [stateUpdaters.min.val, stateUpdaters.max.val, onChange]);
@@ -59,18 +61,21 @@ const RangeSelector = ({ min, max, stateUpdaters, editableValues, onChange }) =>
   };
 
   return (
-    <div className="range_container">
+    <div className="range_container relative">
+      {/* left thumb */}
       <input
         type="range"
         min={min}
         max={max}
         value={stateUpdaters.min.val}
-        step={100}
+        step={stepValue}
         ref={minValRef}
         name="range-left"
         onChange={(event) => {
           const value = Math.min(+event.target.value, stateUpdaters.max.val - 1);
-          updateMinVal(value);
+          if (((value+min) <= (maxValue)) && maxValue - stepValue >= value) {//
+            updateMinVal(value);
+          }
         }}
         className={
           stateUpdaters.min.val > max - 100
@@ -79,17 +84,22 @@ const RangeSelector = ({ min, max, stateUpdaters, editableValues, onChange }) =>
         }
         onBlur={() => updateMinVal(minValRef.current.value)}
       />
+      {/* right thumb */}
       <input
         type="range"
         min={min}
         max={max}
         value={stateUpdaters.max.val}
-        step={100}
+        step={stepValue}
         ref={maxValRef}
         name="range-right"
         onChange={(event) => {
           const value = Math.max(+event.target.value, stateUpdaters.min.val + 1);
-          updateMaxVal(value);
+          console.log("value", value, "minValue", minValue)
+          if ((value >= (minValue+min)) && (minValue + stepValue <= value)) { //
+            // value = max
+            updateMaxVal(value);
+          }
         }}
         className="thumb thumb-right thumb--zindex-4"
         onBlur={() => updateMaxVal(maxValRef.current.value)}
@@ -97,7 +107,7 @@ const RangeSelector = ({ min, max, stateUpdaters, editableValues, onChange }) =>
 
       <div className="slider">
         <div className="slider__track" />
-        <div ref={range} className="slider__range" />
+        <div ref={rangeRef} className="slider__range" />
       </div>
     </div>
   );

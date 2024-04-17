@@ -14,9 +14,9 @@ const NoRoute = () => {
     const bigScreens = "grid-rows-[repeat(auto-fit,minmax(14rem,1fr))] gap-8"
     const smallScreens = "grid-rows-[repeat(auto-fit,minmax(auto-fill,12rem))] gap-2"
     return (
-        <div className="no-route-wrapper relative w-full h-max flex flex-col md:flex-row">
+        <div className="no-route-wrapper relative w-full h-max flex flex-col">
           <p className='flex flex-col items-center text-orange-500 text-lg font-raleway font-bold'>
-            <img src={img404} className='w-80' alt="404" />
+            <img src={img404} className='w-96' alt="404" />
             <span>
               Did you wonder too far?
             </span>

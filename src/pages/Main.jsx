@@ -1,6 +1,6 @@
 import React, { Suspense, createElement, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
-import { Product,CategoryTag, NoItems, Sidebar, HeroBanner, GridBanner, LoadingStateComponent, AdBanners } from '../components'
+import { ProductCardVertical,CategoryTag, NoItems, Sidebar, HeroBanner, GridBanner, LoadingStateComponent, AdBanners } from '../components'
 import { filteredProductsFromModel, categories } from '../orm/selectors';
 import { popularTags, titleTagTypes as tags } from '../components/icons';
 import { useDispatch } from 'react-redux';
@@ -17,7 +17,7 @@ import { forwardRef } from 'react';
 const Main = () => {
 
   
-
+  
   const dispatch = useDispatch()
 
   const scrollFn = function (event) {
@@ -95,12 +95,12 @@ const Main = () => {
           !products[0].noProd
             ? products.map((i,x) => (
                 (x===products.length-1 && forwardRef) ?
-                  <Product key={x} product={i} forwardRef={forwardRef} isSearchOrMain = { true} />
-                : <Product key= {x } product = { i }  isSearchOrMain = { true} />
+                  <ProductCardVertical key={x} product={i} forwardRef={forwardRef} isSearchOrMain = { true} />
+                : <ProductCardVertical key= {x } product = { i }  isSearchOrMain = { true} />
               ))
             : <>
                 {
-                  new Array(6).fill().map((i, x) => <Product key={ x } noPrd = { products[0].noProd} />)
+                  new Array(6).fill().map((i, x) => <ProductCardVertical key={ x } noPrd = { products[0].noProd} />)
                 }
 
               </>

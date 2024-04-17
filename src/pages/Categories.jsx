@@ -1,6 +1,6 @@
 import React, { Suspense, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Product,CategoryTag, NoItems, Sidebar } from '../components'
+import { ProductCardVertical,CategoryTag, NoItems, Sidebar } from '../components'
 import { filteredProductsFromModel, categories } from '../orm/selectors';
 import { titleTagTypes as tags } from '../components/icons';
 import { useGetCatalogItemQuery, useGetCatalogQuery } from '../js/middleware/queryHandler';
@@ -11,6 +11,7 @@ const Categories = () => {
   const dispatch = useDispatch()
   let catalog;
   catalog = useSelector(categories)
+  <ProductCardVertical 
   // const { data, isLoading, isSuccess, isError, error } = useGetCatalogQuery()
   
   
@@ -85,11 +86,11 @@ const Categories = () => {
 
             products?.length
               ? products?.map((i) => (
-                <Product key={i.id} product={i} isSearchOrMain={true} />
+                <ProductCardVertical  key={i.id} product={i} isSearchOrMain={true} />
               ))
               : <>
                 {
-                  new Array(6).fill().map((i, x) => <Product key={x} noPrd={"true"} />)
+                  new Array(6).fill().map((i, x) => <ProductCardVertical  key={x} noPrd={"true"} />)
                 }
                 {/* <NoItems /> */}
 
@@ -122,7 +123,7 @@ const Categories = () => {
       
       <div className="sectioned_products w-full h-full flex flex-col max-h-screen overflow-y-scroll scroll-smooth scrollbar ">
 
-        <ProductSection category={catalog?.find(c=>c.active)}/>
+        <ProductCardVertical Section category={catalog?.find(c=>c.active)}/>
         
       </div>
     </div>
@@ -137,7 +138,7 @@ const Categories = () => {
               {tags.home.categoriesText}
             </h3>
           </div>
-          <ProductContent/>
+          <ProductCardVertical Content/>
         </MainContent>
       </Suspense>
     </>

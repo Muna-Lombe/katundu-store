@@ -66,7 +66,20 @@ module.exports = {
         },
         scrollbar:{
           
-        }
+        },
+        transitionProperty: {
+          'height': 'height',
+          'width': 'width',
+          'spacing': 'margin, padding',
+          'background': 'background-color',
+          'border': 'border-color',
+          'colors': 'color, border-color, background-color',
+          'opacity': 'opacity',
+          'transform': 'transform',
+          'filter': 'filter',
+          'transition': 'transition',
+          'box-shadow': 'box-shadow',
+        },
       },
       
     },

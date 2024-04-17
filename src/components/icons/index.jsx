@@ -33,7 +33,7 @@ export const filterData = {
       type: "range",
       data: {
         id: "price", label: "Price",
-        prices: { min: { id: "priceMin", value: 100 }, max: { id: "priceMax", value: 100000 } }
+        prices: { min: { id: "priceMin", value: 100 }, max: { id: "priceMax", value: 1000 } }
       }
     }
 

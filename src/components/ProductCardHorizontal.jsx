@@ -48,12 +48,17 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
     goto("/signin", {   state: { ...location } })
   }
   const DiscountTag = ({product})=>(
-     product?.isDiscounted[0]
-      ? <span id="discount" className={" absolute top-3 right-1 p-[2px] w-max flex flex-row items-baseline gap-[0px] bg-orange-400 border-1 rounded-md text-slate-500 text-xs  font-semibold  greater-than-md:text-[1.0rem] lining-nums tabular-nums "}>
+    (product?.discountTag)
+      ? <span id="discount" className={" absolute bottom-0 right-1 p-[2px] w-max flex flex-row  items-baseline gap-[0px] bg-orange-400 border-1 rounded-md text-slate-500 text-xs  font-semibold  greater-than-md:text-[1.0rem] lining-nums tabular-nums "}>
         {/* <span className="less-than-sm:hidden">save</span> */}
-        <span className=" less-than-sm:flex fill-slate-500" ><CouponIco /> </span>
+        <span className=" p-[1.5px] less-than-sm:flex fill-slate-500" ><CouponIco /> </span>
+        {
+          // product?.newPrice === 0
+          // ?  
+          product?.discountTag
+          // : '-' + ( parseFloat((product?.newPrice/product.oldPrice )*100)).toFixed(0)+ '%'
+        }
 
-      {'-' + product?.isDiscounted[1] + '%'}
       </span>
       : <></>
   )
@@ -87,7 +92,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
   
   )
   const ProductHeader = ()=>(
-    <div id="product_header" className=" px-1 w-[45%]  justify-center items-end  ">
+    <div id="product_header" className=" px-1 w-[45%] flex justify-center items-center  ">
       <Link to={"/products/" + product?.id} id="product_image" className="flex w-full justify-center items-end" >
         {
           noPrd
@@ -142,7 +147,12 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
             noPrd
               ? <div className="no-prd-field w-[20%] h-8 border rounded-md bg-gradient-to-tr from-slate-400 to-slate-500 animate-pulse opacity-30"></div>
               : <span>
-                {product?.store.name.length > 16 ? product?.store.name.slice(0, 16) + '...' : product?.store.name}
+                {
+                  product.store?
+                    product?.store?.name.length > 16 ? product?.store.name.slice(0, 16) + '...' : product?.store.name
+                  : product?.storeName.length > 16 ? product?.storeName.slice(0, 16) + '...' : product?.storeName
+                  
+                }
               </span>
           }
         </h1>
@@ -150,7 +160,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
     </div>
   )  
   const ProductContent =()=>(
-    <div id="product_content" className=" px-2 py-1  w-full max-w-[100%] max-h-[50%] flex grow flex-wrap  justify-between bg-white rounded-md">
+    <div id="product_content" className=" px-2 py-1  w-full max-w-[100%] max-h-[50%] flex grow flex-wrap  justify-between items-center bg-white rounded-md">
       <NameStore/>
       <ProductPrice />
     </div>

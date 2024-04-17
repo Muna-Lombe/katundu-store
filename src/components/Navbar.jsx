@@ -7,6 +7,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectProductNamesThatMatch, setSearchedProductId } from '../js/slices/products/productsSlice';
 import Logo from './Logo';
 import { imagepath } from '../assets/images';
+import { useGetEmbeddedProductsQuery, useGetPopularSearchesQuery, useGetProductsQuery, useLazyGetProductsQuery, useLazySearchForProductsQuery } from '../js/middleware/queryHandler';
+import types from '../orm/actions/actionTypes';
+import { createdToastMessage } from '../orm/models/ToastMessageModel';
+
+
 const Navbar = ({children}) => {
   
   const prodNames = useSelector(selectProductNamesThatMatch());
@@ -15,14 +20,35 @@ const Navbar = ({children}) => {
   const ref = useRef(null)
   const goto = useNavigate()
   const location = useLocation()
-  // const handleClick =(e)=>{
-  //   e.stopPropagation()
-  //   dispatch( setSearchedProductId([e.target.value]))
-  //   const inp = document.querySelector('input.search')
-  //   // console.log(inp)
-  //   // inp.value = 
-  //   inp.value = prodNames.find((i)=> i.name === e.target.value).name
-  // }
+  
+  const { data: popSearchData, isSuccess: isPopSearchSuccess, isLoading: isPopSearchLoading, isError: isPopSearchError, error } = useGetPopularSearchesQuery("filters[popular_searches]=1")
+  // { data: [], isError: false, isLoading: false, isSuccess: false }//
+  // console.log("forced rerender");
+  let popularSearchedProductNames = []
+  if (isPopSearchError) {
+
+    dispatch(createdToastMessage(
+      {
+        text:
+        {
+          header: "Error",
+          body: "Something happened back-stage. Refresh the page and try again."
+        },
+        status: types.TOAST_VALID,
+        type: types.TOAST_ERROR,
+        id: "checkout error"
+      })
+    )
+
+  }
+
+  if (isPopSearchSuccess) {
+    console.log("dadada", popSearchData)
+    popularSearchedProductNames = popSearchData
+  }
+  console.log("render...")
+
+  
   
   const textStyle = {
     maxWidth: 'inherit',
@@ -32,6 +58,7 @@ const Navbar = ({children}) => {
     overflow: 'hidden',
     textOverflow: 'ellipsis',
   }
+
   const handleBlur = (e, type) =>{
 
     e?.stopPropagation()
@@ -72,15 +99,77 @@ const Navbar = ({children}) => {
   const isShowProductPath = () => (
     location.pathname.includes("product")
   )
+  const editDistance = (str1, str2) => {
+    str1 = str1.toLowerCase();
+    str2 = str2.toLowerCase();
+    let costs = new Array();
+    for (let i = 0; i <= str1.length; i++) {
+      let lastValue = i;
+      for (let j = 0; j <= str2.length; j++) {
+        if (i === 0)
+          costs[j] = j;
+        else {
+          if (j > 0) {
+            let newValue = costs[j - 1];
+            if (str1.charAt(i - 1) !== str2.charAt(j - 1))
+              newValue = Math.min(Math.min(newValue, lastValue), costs[j]) + 1;
+            costs[j - 1] = lastValue;
+            lastValue = newValue;
+          }
+        }
+      }
+      if (i > 0)
+        costs[str2.length] = lastValue;
+    }
+    return costs[str2.length];
+  }
+  const similarityWeight = (str1, str2) => {
+    let longer = str1;
+    let shorter = str2;
+    if (str1.length < str2.length) {
+      longer = str2;
+      shorter = str1;
+    }
+    let longerLength = longer.length;
+    if (longerLength === 0) {
+      return 1.0;
+    }
+    const weight = (longerLength - editDistance(longer, shorter)) / parseFloat(longerLength);
+    return weight;
+    // console.log("str1", str1, "str2", str2, "weight", weight)
+  }
   
 
   const handleChange = (e) => {
     e.preventDefault()
-    const suggestions = ((str) =>
-      str.toString().length > 1 ? prodNames.filter(i => 
-        i.name.toLowerCase().includes(str.toLowerCase())
-        ) : []
-    );
+    
+    // setTimeout(() => {
+
+      // searchFor({ searchString: e.target.value })
+    // }, 1200);
+    //
+    // return popularSearchedProductNames
+    //  popularSearchedProductNames
+    //  return new Set([...popularSearchedProductNames]
+    //           // .filter(i => i.name
+    //           //   .toLowerCase().includes(str.toLowerCase()))
+    //           .sort((a,b) => similarityWeight(str, a.name) - similarityWeight(str, b.name)).slice(0,10))
+    
+    const suggestions = (str) =>{
+      const suggestionsArray = [];
+      // console.log("data", data)
+      if(str.toString().length < 1) return popularSearchedProductNames.slice(0,10);
+      
+      
+
+      // match str with popularSearchedProductNames by similarity weight
+      // where those productnames with higher similarityweight get put at the top of suggestions array
+      const sorted = [...popularSearchedProductNames].sort((a, b) =>similarityWeight(str, b.name)-similarityWeight(str, a.name));
+
+      suggestionsArray.push(...sorted.slice(0, 10))
+      console.log("suggestionsArray", suggestionsArray)
+      return suggestionsArray
+    };
     // UNCOMMENT BEFORE COMMIT
     if( e.target.value.length < 1){
       dispatch(setSearchedProductId([]))
@@ -88,9 +177,10 @@ const Navbar = ({children}) => {
     if (e.key === "Enter" && e.code === "Enter") {
       // console.log("suggestions ", suggestions(e.target.value), e.target.value)
       handleSubmit([e.target.value])
-      return
+      return;
     }
     ///////////////////////////////////////////////
+    
     const optgrp = document.querySelector("optgroup");
     const toggle=(classList, token) =>({
       on: ()=>{
@@ -100,30 +190,32 @@ const Navbar = ({children}) => {
         classList.replace(token.tar, token.curr)
       }
     });
-   
+    
     const toggleBoarder = toggle(optgrp.previousElementSibling.classList, { curr: "rounded-3xl", tar: "rounded-t-3xl" });
     const toggleVisibility = toggle(optgrp.classList, { curr: "hidden", tar: "visible" });
     
     optgrp.childNodes.forEach(i=>optgrp.removeChild(i));
-    if(suggestions(e.target.value).length > 0){
-      
+    
+    const sugs = suggestions(e.target.value)
+    if(sugs){
       toggleBoarder.on()
       toggleVisibility.on()
+      optgrp.childNodes.forEach(i=>optgrp.removeChild(i));
+      sugs.forEach((prod, i) =>{
+        const optElem = document.createElement('option')
+        optElem.className = "w-full hover:text-black dark:text-white  hover:bg-slate-200 truncate overflow-x-clip";
+        optElem.style = textStyle
+        optElem.value = prod.name
+        optElem.innerText = prod.name //prod.name.length > 36 ? prod.name.slice(0, 36) + "..." : prod.name
+        optElem.key = i
+        optElem.addEventListener("click", (ev) => { handleSubmit([ev.target.innerText]) })
+        optgrp.insertAdjacentElement("beforeend", optElem)  
+      })
+    } else {
       
-    }else{
       toggleBoarder.off()
       toggleVisibility.off()
     };
-    suggestions(e.target.value)?.forEach((prod, i) =>{
-      const optElem = document.createElement('option')
-      optElem.className = "w-full hover:text-black dark:text-white  hover:bg-slate-200 truncate overflow-x-clip";
-      optElem.style = textStyle
-      optElem.value = prod.name
-      optElem.innerText = prod.name //prod.name.length > 36 ? prod.name.slice(0, 36) + "..." : prod.name
-      optElem.key = i
-      optElem.addEventListener("click", (ev) => { handleSubmit([ev.target.innerText]) })
-      optgrp.insertAdjacentElement("beforeend", optElem)  
-    })
   };
 
   const Menu= ({children})=>{
@@ -203,6 +295,7 @@ const Navbar = ({children}) => {
   }
   const SearchField =({children})=>{
     const [curtext, setCurtext] =useState("")
+
     const setParams = () =>{
       return createSearchParams({ query: JSON.stringify([curtext]) })
     }
@@ -211,7 +304,7 @@ const Navbar = ({children}) => {
       <div id="search_field" tabIndex={0} className="relative min-w-[14rem]  greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem] less-than-xs:h-[2rem] h-[2.8rem] max-h-[3.2rem] flex justify-between border-[1px] rounded-3xl">
         {/* <div className="search-input relative w-full max-w-[22rem]  flex   justify-between p-[1px]"> */}
           
-          <input type="text" ref={ref}  name="search" defaultValue={curtext} placeholder={searchProductText||""} onKeyUp={(e) => {handleChange(e); setCurtext(e.target.value)}} className=" search autofill:selection bg-white w-full rounded-bl-3xl rounded-tl-3xl bg-transparent px-2  text-black dark:text-white    text-[1rem] focus:outline-none" />
+          <input type="text" ref={ref}  name="search" defaultValue={curtext} placeholder={popularSearchedProductNames[0]?.name||""} onKeyUp={(e) => {handleChange(e); setCurtext(e.target.value)}} className=" search autofill:selection bg-white w-full rounded-bl-3xl rounded-tl-3xl bg-transparent px-2  text-black dark:text-white    text-[1rem] focus:outline-none" />
     
           <Link to={"search?" + setParams()} onClick={() => handleBlur()} className=" top-0 right-0 w-1/5 h-full rounded-3xl m-[0.00rem] px-2 bg-[#F0F4FB] flex justify-center items-center">
             <SearchIco />

@@ -26,7 +26,7 @@ export const selectProductNamesThatMatch =(string) => createSelector(
     .filter((item,i)=>{
         return string ?
          item.name.includes(string)
-         : Number.isInteger(item.id)
+         : i 
     })
 )
 

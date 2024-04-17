@@ -151,11 +151,15 @@ export const apiSlice = createApi({
       //   res['data']= res.data.data
       //   return res
       // }
-      if(res.headers.get("content-type") === "text/html; charset=utf-8"){
-        return res.text()
+      // console.log("c-type", res.headers.get('content-type'))
+      if(res.headers.get("content-type").includes("text/html; charset=utf-8")){
+        return await res.text()
       }
-      if((res.headers.get("content-type") === "application/json")||(res.headers.get("content-type") === "application/vnd.api+json")){
-        return res.json()
+      if((res.headers.get("content-type").includes("application/json; charset=utf-8"))||(res.headers.get("content-type").includes("application/vnd.api+json"))){
+        const resp = await res.json()
+
+        // console.log("res",resp)
+        return resp
       }
     }
     
@@ -214,7 +218,7 @@ export const apiSlice = createApi({
     getProducts: builder.query({
       // The URL for the request is '/fakeApi/posts'
       query: (query) => query ? '/products' + '?' + query : '/products',
-      transformResponse(res){return res.data?.map(configObject)},
+      transformResponse(res){ return res.data?.map(configObject)},
       transformErrorResponse(err){return err.data.errors},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
         // console.log("arg", arg)
@@ -226,11 +230,20 @@ export const apiSlice = createApi({
           
           const {data:products} = await queryFulfilled;
           // console.log("data", data, "=>",products)
-          dispatch(addedProduct(products))
+          if(typeof products[0] !== "string" || typeof products[0] !== "number"){
+            dispatch(addedProduct(products))
+          }
+          return;
         } catch (error) {
           console.log("error", error)
         }
       }
+    }),
+    getPopularSearches: builder.query({
+      // The URL for the request is '/fakeApi/posts'
+      query: (query) => query ? '/products' + '?' + query : '/products',
+      transformResponse(res){ return res?.data},
+      transformErrorResponse(err){return err.data.errors},
     }),
     getEmbeddedProducts: builder.query({
       // The URL for the request is '/fakeApi/posts'
@@ -395,6 +408,17 @@ export const apiSlice = createApi({
         }
       },
       
+    }),
+    searchForProducts: builder.query({
+      query: ({searchString,getFilters, filters, sort}) => `/search${searchString ? '?query='+searchString:''}${getFilters ? '&getFilters['+getFilters+']=1' : ""}${filters ? '&filters='+filters : ""}${sort ? '&sort='+sort : ""}`,
+      transformResponse(res){
+        if(res?.data){
+          const {search_filters, search_results} =res.data.attributes;
+          console.log("res", res.data.attributes)
+          return {searchFilters:configObject(search_filters.data), searchResults:configObject(search_results.data)}
+        }
+      },
+      transformErrorResponse(err){return err.data.errors},
     }),
     getCheckout: builder.query({
       // The URL for the request is '/fakeApi/posts'
@@ -802,11 +826,13 @@ export const apiSlice = createApi({
       invalidatesTags: ['ProductReviews']
     })
 
-  })
+  }),
+  
+  
 
 })
 
-// Export the auto-generated hook for the `getPosts` query endpoint
+// Export the auto-generated hook for each endpoint
 export const {
   useSignupUserMutation,
    useLoginUserMutation,
@@ -814,6 +840,7 @@ export const {
    useGetStoreQuery,
    useGetProductsQuery,
    useLazyGetProductsQuery,
+   useGetPopularSearchesQuery,
    useGetEmbeddedProductsQuery,
    useGetProductQuery,
    useGetCatalogQuery,
@@ -822,12 +849,14 @@ export const {
    useGetShoppingCartItemQuery,
    useGetCheckoutQuery,
    useGetCheckoutItemQuery,
+   useSearchForProductsQuery,
+   useLazySearchForProductsQuery,
+   useGetProductReviewsQuery,
    useAddCartItemMutation,
    useUpdateCartItemMutation,
    useRemoveCartItemMutation,
    useBeginItemCheckoutQuery,
    useCompleteItemCheckoutMutation,
-   useGetProductReviewsQuery,
    useAddReviewMutation,
    useUpdateReviewMutation,
    useRemoveReviewMutation,
@@ -837,5 +866,5 @@ export const {
    useAddAnswerMutation,
    useUpdateAnswerMutation,
    useRemoveAnswerMutation,
-   use
+   
   } = apiSlice

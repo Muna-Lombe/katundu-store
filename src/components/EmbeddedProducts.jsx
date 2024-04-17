@@ -36,7 +36,7 @@ const EmbeddedProducts = ({title, tagname, productId}) => {
         </div>
         <div className={tagname+"-grid py-2 px-1 w-full flex flex-col  gap-12 overflow-scroll tag "}>
           <>
-            <div slot={0} className="scroll-div-1 grid grid-cols-[repeat(auto-fit,minmax(auto,12rem))] gap-8">
+            <div slot={0} className="scroll-div-1 less-than-sm:flex grid  grid-cols-[repeat(auto-fit,minmax(auto,12rem))] gap-8">
               {
                 products[0]?.type !== "loading" ?
                   topHalf.map((i, x) => (<Product key={x} id={i.uuid} product={i} minW={11} />))
@@ -51,7 +51,7 @@ const EmbeddedProducts = ({title, tagname, productId}) => {
 
               }
             </div>
-            <div className="scroll-div-2 grid grid-cols-[repeat(auto-fit,minmax(auto,12rem))] gap-8">
+            <div className="scroll-div-2 less-than-sm:flex grid grid-cols-[repeat(auto-fit,minmax(auto,12rem))] gap-8">
               {
                 products[0]?.type !== "loading"?
                   bottomHalf.map((i,x) => (<Product key={x} id={i.uuid} product={i} minW={11} />))
