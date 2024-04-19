@@ -6,6 +6,7 @@ import { createdCatalog, toggledCategory } from '../../orm/models/ProductCategor
 import { setActiveUrl, isIterable } from '../../orm/utilities';
 import {  addedCartItem, removedCartItem, updatedCartItem } from '../../orm/models/CartModel';
 import { addedOrderItem } from '../../orm/models/OrderModel';
+import { object } from 'prop-types';
 
 
 const base = 'http://127.0.0.1:5000/api/v1';
@@ -410,7 +411,78 @@ export const apiSlice = createApi({
       
     }),
     searchForProducts: builder.query({
-      query: ({searchString,getFilters, filters, sort}) => `/search${searchString ? '?query='+searchString:''}${getFilters ? '&getFilters['+getFilters+']=1' : ""}${filters ? '&filters='+filters : ""}${sort ? '&sort='+sort : ""}`,
+      query: ({searchString,getFilters, filters, sort}) => {
+
+
+        const areJsonTypeKeys =(keysArr)=>{
+            return (keysArr.length && keysArr?.every(k => isNaN(k)))
+        }
+        
+        const convert2Param = ([initK,initV={}], nested) => {
+          let paramString = initK;
+
+          const initVKeys = Object.keys(initV);
+          const initVValues = Object.values(initV);
+
+          initVValues.forEach((value,x)=>{
+            if(areJsonTypeKeys(Object.keys(value))){
+              paramString += convert2Param([`${paramString.endsWith(initK) ? '' : initK
+}[${initVKeys[x]}]`,value], true)
+              
+            }else if(Array.isArray(value)){
+              paramString += `${paramString.endsWith(initK) ? "" : initK
+            }[${initVKeys[x]}]=${value.join(",")}&`
+            }else if(nested){
+              paramString += `${paramString.endsWith(initK) ? "" : initK
+            }[${initVKeys[x]}]=${value}&`
+            }else{
+              // console.log("should be str", value);
+              paramString += `[${initVKeys[x]}]=${value}&`
+            }
+          })
+          // console.log("paramString", paramString)
+          return paramString
+        }
+
+
+        const buildQueryParams = (paramsArray=[{}]) => {
+            let params = "";
+            if(paramsArray){
+              
+              paramsArray.map((param,x)=>{
+                const [pk, pv] = Object.entries(param)[0]
+                // console.log("pk",pk,"pv",pv)
+                let p = ""
+                if(pk&&pv){
+                  if(typeof pv === "string"){
+                    p = `${pk}=${pv}`
+                  }
+                  if(Array.isArray(pv)){
+                    p = `${pk}=${pv.join(",")}`
+                  }
+                  if(Object.keys(pv).every((key)=> isNaN(key))){
+                    // p = flattenNestedObject([pk,pv])[0]
+                    p = convert2Param([pk,pv])
+                  }
+                  params += `${p}&`
+                }
+                // console.log("p", p)
+              })
+            }
+            console.log("params", params)
+            return params
+        }
+        const searchParams = buildQueryParams([{query:searchString}, {getFilters}, {filters}, {sort} ])
+        // {test:{"some1":["data1","data2", "data3"], "some2":{try21:"catch21",try22:"catch22", try23:"catch23"}, "some3":"string3"}}
+
+        return `/search?${searchParams}`
+          // return `/search?
+          // ${searchString ? 'query=' + searchString +"&" : ''}
+          // ${getFilters ? 'getFilters[' + getFilters + ']=1&' :''}
+          // ${filters ?  'filters=' + filters + "&" : ''}
+          // ${sort ? 'sort=' + sort : ''}`
+        // return "/search?"+searchParams.toString()
+      },
       transformResponse(res){
         if(res?.data){
           const {search_filters, search_results} =res.data.attributes;

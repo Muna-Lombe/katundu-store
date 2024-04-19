@@ -95,7 +95,7 @@ const RangeSelector = ({ min, max, stateUpdaters, editableValues, onChange, rang
         name="range-right"
         onChange={(event) => {
           const value = Math.max(+event.target.value, stateUpdaters.min.val + 1);
-          console.log("value", value, "minValue", minValue)
+          // console.log("value", value, "minValue", minValue)
           if ((value >= (minValue+min)) && (minValue + stepValue <= value)) { //
             // value = max
             updateMaxVal(value);

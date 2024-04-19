@@ -3,15 +3,17 @@ import { ToggleIco, filterData, titleTagTypes as tags } from "../icons"
 import FilterIco from "../icons/FilterIco"
 
 import {RangeSelector } from "../rangSelector";
+import { useLazySearchForProductsQuery } from "../../js/middleware/queryHandler";
 
 
-const FilterSearchResults = ({searchFilters, hasProducts, children }) => {
+const FilterSearchResults = ({searchFilters, queryText, hasProducts, children }) => {
+
+const [searchFor, state, {lastArg}] = useLazySearchForProductsQuery();
 
 
 
 
-
-  const handleApplyFilters = (e) => {
+  const handleApplyFilters = async(e) => {
     e.preventDefault();
     // "filter-search-results"
     console.log("applying filters")
@@ -20,15 +22,26 @@ const FilterSearchResults = ({searchFilters, hasProducts, children }) => {
 
     for (const form of forms) {
       new FormData(form).forEach((k, v, x) => {
+        // console.log("kv", k, v)
         let target = v.split("-")[0]
         let newk = v.split("-")[1]
-        data[target] = { ...data[target], [newk]: k }
-        console.log("form data", k, v, x, newk, target, data)
+        let newk2 = v.split("-")[2] || null
+        if(k==="on"){
+          data[target] = newk2 ? {[newk]: newk2} : newk
+
+        }else{
+          data[target] = { ...data[target], ...(newk2 ? { [newk]: {[newk2]:k} } : {[newk]: k} )}
+
+        }
+        // console.log("form data", k, v, x, newk, target, data)
+        // 
       });
     }
-    console.log("data", JSON.stringify(data))
-    const shouldToggle = window.innerWidth <= 767
-    handleToggleFilters(shouldToggle)
+    console.log("data", JSON.stringify(data), queryText)
+    
+    await searchFor({searchString:queryText, getFilters: {"all":1}, filters: data })
+    // const shouldToggle = window.innerWidth <= 767
+    // handleToggleFilters(shouldToggle)
   }
   const Categories = ({ categories, children }) => {
     return (
@@ -51,7 +64,7 @@ const FilterSearchResults = ({searchFilters, hasProducts, children }) => {
   const FilterInput = ({ inputType = "toggle", data, children }) => {
 
     const ToggleOpt = ({ data, type = "checkbox" }) => (
-      <form onSubmit={(e)=>(e.preventDefault())} id={data.type + "-" + data.uuid} action="" name={data.uuid}>
+      <form onSubmit={(e) => (e.preventDefault())} id={data.uuid.replace("-", "_") + "-" + data.uuid} action="" name={data.uuid}>
         <div className="toggle-wrapper flex justify-between items-center whitespace-nowrap font-semibold ">
           <label className="w-auto whitespace-normal" htmlFor={data.type + "-" + data.uuid} >{data.label}</label>
           <ToggleIco inputName={data.type + "-" + data.uuid} type={type} form={data.type + "-" + data.uuid} />
@@ -64,7 +77,7 @@ const FilterSearchResults = ({searchFilters, hasProducts, children }) => {
       
       
       const SelectForm = ({opt,k})=>{
-        const formId = data.uuid.split("-").map((i, x) => (x > 0 ? i[0].toUpperCase() + i.slice(1) : i)).join("") + "-" + (opt.type || opt.text);
+        const formId = data.uuid.replace("-", "_") + "-" + (opt?.tag || "") + "-" + (opt.type || opt.text);//.map((i, x) => (x > 0 ? i[0].toUpperCase() + i.slice(1) : i)).join("") + "-" + (opt.type || opt.text);
         const formName = formId;
         return(
           <form key={k} id={formId} action="" name={formName}>
@@ -184,14 +197,14 @@ const FilterSearchResults = ({searchFilters, hasProducts, children }) => {
             <div className="current-range-values mx-2 flex flex-row justify-between gap-3">
               <div className="min-value px-2 min-w-[3.5rem] max-w-[6rem] flex justify-center border-2 border-blue-500 rounded-lg">
                 <form
-                  id={"price-" + data.prices.min.uuid}
+                  id={data.uuid.replace("-","_")+ "-" + data.prices.min.uuid}
                   onSubmit={(e) => (e.preventDefault(), handleBlur("min"))}
-                  name={"price-" + data.prices.min.uuid}
+                  name={data.uuid.replace("-","_")+ "-" + data.prices.min.uuid}
                 >
                   <input
                     type="number"
-                    name={"price-" + data.prices.min.uuid}
-                    form={"price-" + data.prices.min.uuid}
+                    name={data.uuid.replace("-","_")+ "-" + data.prices.min.uuid}
+                    form={data.uuid.replace("-","_")+ "-" + data.prices.min.uuid}
                     min={data.prices.min.value}
                     max={data.prices.max.value}
                     value={editableMin}
@@ -202,23 +215,23 @@ const FilterSearchResults = ({searchFilters, hasProducts, children }) => {
 
                     className="w-16 focus-within:appearance-none focus:appearance-none flex justify-center text-center"
                   />
-                  <label htmlFor={"price-" + data.prices.min.uuid}></label>
+                  <label htmlFor={data.uuid.replace("-","_")+ "-" + data.prices.min.uuid}></label>
                 </form>
               </div>
               <div className="max-value px-2 min-w-[3.5rem] max-w-[6rem] flex justify-center border-2 border-blue-500 rounded-lg">
                 <form
 
-                  id={"price-" + data.prices.max.uuid}
+                  id={data.uuid.replace("-","_")+ "-" + data.prices.max.uuid}
                   action=""
 
-                  name={"price-" + data.prices.max.uuid}
+                  name={data.uuid.replace("-","_")+ "-" + data.prices.max.uuid}
                   onSubmit={(e) => (e.preventDefault(), handleBlur("max"))}
                 >
                   <input
                     
                     type="number"
-                    name={"price-" + data.prices.max.uuid}
-                    form={"price-" + data.prices.max.uuid}
+                    name={data.uuid.replace("-","_")+ "-" + data.prices.max.uuid}
+                    form={data.uuid.replace("-","_")+ "-" + data.prices.max.uuid}
                     max={data.prices.max.value}
                     value={editableMax}
                     ref={maxInputRef}
@@ -228,7 +241,7 @@ const FilterSearchResults = ({searchFilters, hasProducts, children }) => {
                     
                     className="w-16 appearance-none focus:appearance-none flex justify-center decoration-transparent text-center"
                   />
-                  <label htmlFor={"price-" + data.prices.max.uuid}></label>
+                  <label htmlFor={data.uuid.replace("-","_")+ "-" + data.prices.max.uuid}></label>
                 </form>
               </div>
               <button onClick={handleStateReset} className="range-resetter flex items-center fill-blue-500 stroke-blue-500 ">
@@ -268,25 +281,31 @@ const FilterSearchResults = ({searchFilters, hasProducts, children }) => {
       </div>
     )
   }
-  const handleToggleFilters = (shouldToggle = true) => {
 
+  const toggleOnOff = (cl,cs1, cs2) =>{
+    cl.contains(cs1) ? cl.replace(cs1,cs2) : cl.replace(cs2,cs1)
+  }
+  const handleToggleFilters = (shouldToggle = true) => {
+    // return;
     if (!shouldToggle) return;
-    const filterCon = document.getElementById("filter-search-results")
-    filterCon.classList.toggle("hidden")
-    filterCon.classList.toggle("flex")
-    filterCon.previousSibling.classList.toggle("hidden")
+    const filterComp = document.getElementById("filter-search-results")
+    
+    // filterComp.classList.toggle("hidden")
+    // filterComp.classList.toggle("flex")
+    toggleOnOff(filterComp.classList, "hidden", "flex")
+    filterComp.previousSibling.classList.toggle("hidden")
     // console.log(e)
-    filterCon.parentNode.classList.toggle("filter-modal-open")
-    filterCon.parentNode.nextSibling.classList.toggle("hidden")
-    // console.log(filterCon.parentNode)
-    filterCon.parentNode.parentNode.nextSibling.classList.toggle("hidden")
+    filterComp.parentNode.classList.toggle("filter-modal-open")
+    filterComp.parentNode.nextSibling.classList.toggle("hidden")
+    // console.log(filterComp.parentNode)
+    filterComp.parentNode.parentNode.nextSibling.classList.toggle("hidden")
   }
 
-  const ApplyFiltersBtn = ({ }) => (
+  const ApplyFiltersBtn = ({applyFilters }) => (
     <button
       id="apply_filters_btn"
       className={` py-[3px] px-8 w-max text-base h-max flex flex-row-reverse justify-center border-[#2967FF]  rounded-lg border-[1px] active:bg-[#2967FF] stroke-blue-500`}
-      onClick={(e) => handleApplyFilters(e)}
+      onClick={(e) =>{ handleApplyFilters(e); handleToggleFilters(true)}}
     >
       <span className='px-1 md:flex lg:flex xl:flex   text-sm  text-[#2967FF]    active:text-[#ffffff] font-raleway lining-nums tabular-nums  font-[600] text-center'>
         {tags.filterSearchResults.applyFiltersText}
@@ -294,7 +313,7 @@ const FilterSearchResults = ({searchFilters, hasProducts, children }) => {
     </button>
   )
   const FilterComponent = ({onClick}) => (
-    <div id="filter-search-results" className="filter-search-results hidden  w-full h-screen py-2 mx-1  greater-than-sm:flex flex-col gap-6 bg-white font-raleway lining-nums tabular-nums  z-[5] overflow-y-clip scrollbar" >
+    <div id="filter-search-results" className="filter-search-results   w-[90%] greater-than-sm:w-full  h-screen py-2 mx-1 hidden flex-col gap-6 bg-white font-raleway lining-nums tabular-nums  z-[5] overflow-y-clip scrollbar" >
       <h4 className="title w-max text-lg text-blue-500 font-raleway lining-nums tabular-nums  font-semibold underline underline-offset-1 greater-than-sm:pointer-events-none" onClick={(e)=>onClick(e)}>{"Filters"}</h4>
       
       <div className="categories-input-wrapper w-full h-auto flex flex-row flex-wrap greater-than-md:flex-col gap-1">
@@ -309,15 +328,15 @@ const FilterSearchResults = ({searchFilters, hasProducts, children }) => {
       </div>
       
       <div className="btn py-4 w-full flex justify-center">
-        <ApplyFiltersBtn />
+        <ApplyFiltersBtn applyFilters={onClick} />
       </div>
     </div>
 
   )
   return (
-    <div className={"filter-search-results-wrapper mx-1 w-full greater-than-md:max-w-[20rem] flex gap-1 overflow-x-hidden " + (hasProducts ? " h-auto " : "hidden   ") + " transition-height duration-200 ease-linear"
+    <div className={"filter-search-results-wrapper mx-1 w-full greater-than-md:max-w-[20rem] flex gap-1 overflow-x-hidden " + (hasProducts ? " h-auto " : "hidden   ") + " transition-height duration-200 ease-linear first:greater-than-sm:hidden  2n-child:greater-than-sm:flex"
 }>
-      <span className="flex greater-than-sm:hidden">
+      <span className="flex">
         <FilterIco onClick={handleToggleFilters} />
       </span>
       <FilterComponent onClick={handleToggleFilters} />

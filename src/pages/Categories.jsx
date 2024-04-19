@@ -11,7 +11,7 @@ const Categories = () => {
   const dispatch = useDispatch()
   let catalog;
   catalog = useSelector(categories)
-  <ProductCardVertical 
+
   // const { data, isLoading, isSuccess, isError, error } = useGetCatalogQuery()
   
   
@@ -123,7 +123,7 @@ const Categories = () => {
       
       <div className="sectioned_products w-full h-full flex flex-col max-h-screen overflow-y-scroll scroll-smooth scrollbar ">
 
-        <ProductCardVertical Section category={catalog?.find(c=>c.active)}/>
+        <ProductSection category={catalog?.find(c=>c.active)}/>
         
       </div>
     </div>
@@ -138,7 +138,7 @@ const Categories = () => {
               {tags.home.categoriesText}
             </h3>
           </div>
-          <ProductCardVertical Content/>
+          <ProductContent/>
         </MainContent>
       </Suspense>
     </>

@@ -14,7 +14,7 @@ const Search = () => {
     const searchTextArr = JSON.parse(useSearchParams()[0].get('query'))
     console.log("prods matching", searchTextArr )
     // const [searchFor, { data, isLoading, isSuccess, isError }] = useLazySearchForProductsQuery();
-    const { data, isLoading, isSuccess, isError } = useSearchForProductsQuery({getFilters:"all", searchString: (searchTextArr.length>0 ? searchTextArr : null) });
+    const { data, isLoading, isSuccess, isError } = useSearchForProductsQuery({getFilters:{"all":1}, searchString: (searchTextArr[0].length>0 ? searchTextArr : null) });
     let products = [];
     let filters = {};
     const dispatch = useDispatch();
@@ -63,7 +63,7 @@ const Search = () => {
                 products.length > 0 
                   ? <>
                      
-                      <FilterSearchResults searchFilters={filters} hasProducts={products.length}/>
+                      <FilterSearchResults queryText={searchTextArr} searchFilters={filters} hasProducts={products.length}/>
                      
                       {
                         isLoading ?
@@ -71,19 +71,19 @@ const Search = () => {
                                 <LoadingStateComponent forwardRef={loadMoreRef} />
                             </div>
 
-                          : <>
+                          : <div className="search-results">
                           
                               <div id="search__content" className={"horizontal less-than-xs:hidden p-2 w-full flex flex-col overflow-x-clip scroll-smooth gap-[38px] justify-center  transition-all  tag"}>
                                   {products.map((i) => 
-                                    <ProductCardHorizontal key={i.id}  product={i} isSearchOrMain/>
+                                    <ProductCardHorizontal key={i.uuid}  product={i} isSearchOrMain/>
                                   )}
                               </div>
-                              <div id="search__content" className={"vertical hidden  less-than-xs:flex p-2 w-full flex flex-row overflow-x-clip scroll-smooth gap-[38px] justify-center  transition-all  tag"}>
+                              <div id="search__content" className={"vertical hidden  less-than-xs:flex p-2 w-full flex-row overflow-x-clip scroll-smooth gap-[38px] justify-center  transition-all  tag"}>
                                 {products.map((i) =>
-                                  <ProductCardVertical key={i.id} product={i} isSearchOrMain />
+                                  <ProductCardVertical key={i.uuid} product={i} isSearchOrMain />
                                 )}
                               </div>
-                            </>
+                            </div>
                       }
                       
                     

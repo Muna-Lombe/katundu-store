@@ -6,13 +6,13 @@ module.exports = {
       function ({ matchVariant, addVariant }) {
         addVariant('child', '& > *');
         addVariant('child-hover', '& > *:hover');
-        addVariant('2n-child', '&:nth-child(2)');
-        addVariant('3n-child', '&:nth-child(3)');
-        addVariant('4n-child', '&:nth-child(4)');
-        addVariant('5n-child', '&:nth-child(5)');
-        addVariant('6n-child', '&:nth-child(6)');
-        addVariant('7n-child', '&:nth-child(7)');
-        addVariant('8n-child', '&:nth-child(8)');
+        addVariant('2n-child', '&  :nth-child(2)');
+        addVariant('3n-child', '&  :nth-child(3)');
+        addVariant('4n-child', '&  :nth-child(4)');
+        addVariant('5n-child', '&  :nth-child(5)');
+        addVariant('6n-child', '&  :nth-child(6)');
+        addVariant('7n-child', '&  :nth-child(7)');
+        addVariant('8n-child', '&  :nth-child(8)');
         addVariant('exclude-xs', '@media (min-width: 640px),@media (min-width: 768px),@media (min-width: 1024px)');
         addVariant('exclude-sm', '@media (min-width: 475px),@media (min-width: 768px),@media (min-width: 1024px)');
         addVariant('exclude-md', '@media (min-width: 475px),@media (min-width: 640px),@media (min-width: 1024px)');

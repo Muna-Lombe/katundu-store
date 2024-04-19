@@ -82,7 +82,7 @@ const AppWrapper = ({children}) => {
   return (
     <Suspense fallback={<NoItems />}>
 
-      <div id="App" className=" dark:child:bg-slate-700 relative min-w-[200px] w-auto max-w-[2528px]  h-auto flex flex-col justify-start gap-4 2n-child:self-start child:px-2 ">
+      <div id="App" className=" dark:child:bg-slate-700 relative min-w-[200px] w-auto max-w-[2528px]  h-auto flex flex-col justify-start gap-4 child:px-2 ">
         {
           toasts.length?
             <ToastMessage toast={toasts[0]}/>
