@@ -1,5 +1,6 @@
 import moment from "moment"
 import { apiSlice } from "../../js/middleware/queryHandler"
+import { Sha256 } from "@aws-crypto/sha256-browser"
 
 
 
@@ -83,19 +84,19 @@ export function isIterable(obj) {
   return obj && typeof obj[Symbol.iterator] === 'function';
 }
 
+
 export async function sha256(message) {
   // encode as UTF-8
   const msgBuffer = new TextEncoder('utf-8').encode(message);
 
   // hash the message
-  const hashBuffer = await window?.crypto?.subtle?.digest('SHA-256', msgBuffer);
+  const hashBuffer =  await (hash=>{hash.update(msgBuffer); return hash.digest()})(new Sha256())//await window?.crypto?.subtle?.digest('SHA-256', msgBuffer);
 
   // convert ArrayBuffer to Array
   const hashArray = Array.from(new Uint8Array(hashBuffer));
 
   // convert bytes to hex string
   const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
-  // console.log(hashHex);
   return hashHex;
 }
 

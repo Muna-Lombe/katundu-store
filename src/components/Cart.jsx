@@ -54,11 +54,11 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
   }
   
   
-  const CheckoutBtn = () => (
+  const CheckoutBtn = ({disabled}) => (
     <button id="Checkout_btn"
-      onClick={(e) => handleCheckedItems(e)}
-    
-      className={" less-than-xs:w-[5rem] less-than-xs:h-[1rem] w-[7rem] h-[2.1rem] md:w-[10rem] md:h-[2.5rem] lg:w-[10rem] lg:h-[2.5rem] xl:w-[10rem] xl:h-[2.5rem] px-8 py-3 bg-orange-600 active:bg-orange-500 border-[1px] border-orange-600  flex justify-center items-center rounded-lg text-base greater-than-md:text-xl text-white dark:text-black  font-medium"}
+      onClick={(e) => disabled ? "" : handleCheckedItems(e)}
+      disabled={disabled}
+      className={" disabled:bg-gray-400 disabled:opacity-30 disabled:border-none less-than-xs:w-[5rem] less-than-xs:h-[1rem] w-[7rem] h-[2.1rem] md:w-[10rem] md:h-[2.5rem] lg:w-[10rem] lg:h-[2.5rem] xl:w-[10rem] xl:h-[2.5rem] px-8 py-3 bg-orange-600 active:bg-orange-500 border-[1px] border-orange-600  flex justify-center items-center rounded-lg text-base greater-than-md:text-xl text-white dark:text-black  font-medium"}
     >
         {tags.cart.checkoutTag}
     
@@ -86,7 +86,7 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
           {tags.currencyType + total}
         </p>
 
-        <CheckoutBtn/>
+        <CheckoutBtn disabled={total <= 0}/>
       </div>
     )
   }
@@ -147,9 +147,7 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
           </div> */}
         </div>
       )
-      const CartProductDetails =() =>{
-
-        const CartProductDescription = () => (
+      const CartProductDescription = () => (
           <div id="product_description"
             className="w-auto max-w-[352px] flex flex-col justify-between"  >
             <Link state={{ uuid: orderItem.product?.uuid }} to={"/products/" + orderItem.product?.name + "-" + orderItem.product?.uuid}
@@ -160,20 +158,23 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
             <CartProductTags/>
           </div>
         )
+      const CartProductDetails =() =>{
+
+        
 
         return(
           <div id="product_details"
-            className=" w-auto  md:max-w-[312px] lg:max-w-[450px] xl:w-full flex flex-wrap xs:flex-wrap sm:flex-nowrap md:flex-nowrap lg:flex-nowrap xl:flex-nowrap  justify-start gap-x-2 ">
+            className=" w-auto  md:max-w-[312px] lg:max-w-[450px] xl:w-full flex flex-wrap greater-than-logo-min:flex-nowrap xs:flex-nowrap sm:flex-nowrap md:flex-nowrap lg:flex-nowrap xl:flex-nowrap  justify-start gap-x-2 ">
            
-            <div className="w-max flex flex-row justify-between">
+            <div className="product-details-header w-auto flex flex-row justify-between">
               <Link state={{ uuid: orderItem?.product?.uuid }} to={"/products/" + orderItem?.product?.name + "-" + orderItem?.product?.uuid} id="product_image" className="w-max max-h-[5rem] px-2 flex justify-center items-center">
 
-                <img className=" max-w-[5rem] max-h-[5rem] md:w-full md:h-full lg:w-full lg:h-full xl:w-full xl:h-full object-contain" src={"https://placehold.co/600x400/orange/" + randomizer(["black", "white", "gray", "red"])} alt="IGM" />
+                <img className=" max-w-[5rem] max-h-[5rem]  greater-than-md:max-w-[25rem] greater-than-md:max-h-[8rem] md:w-full md:h-full lg:w-full lg:h-full xl:w-full xl:h-full object-contain" src={"https://placehold.co/600x400/orange/" + randomizer(["black", "white", "gray", "red"])} alt="IGM" />
               </Link>
-              <div className="hidden less-than-logo-min:flex">
+              {/* <div className="hidden less-than-logo-min:flex">
                 <ActionBtns />
 
-              </div>
+              </div> */}
             </div>
 
 
@@ -186,13 +187,18 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
         
         const CartProductCounter =()=>(
           <div id="product_count"
-            className="less-than-xs:w-auto w-[6rem] md:w-[8rem] lg:w-[8rem] xl:w-[8rem]  h-[2rem] p-2 flex justify-around gap-[0.2rem] md:gap-2 lg:gap-4 xl:gap-4 border-b greater-than-xs:border-[1px] items-center border-gray-300 greater-than-xs:rounded-3xl">
-            <p className="less-than-xs:px-2 px-3 text-3xl font-medium cursor-pointer" onClick={(e) => isOrdered ? "" :handleCounter(e, "minus")}>-</p>
+            className="less-than-logo-min:w-auto w-fit md:w-[8rem] lg:w-[8rem] xl:w-[8rem]  h-[2rem] p-2 flex justify-around gap-[0.2rem] md:gap-2 lg:gap-4 xl:gap-4 border-b greater-than-xs:border-[1px] items-center border-gray-300 greater-than-xs:rounded-3xl">
+
+            <span className=" text-xl fill-slate-500 cursor-pointer" onClick={(e) => isOrdered ? "" :handleCounter(e, "minus")}>
+              <svg width="24" height="24"  xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 512 512" ><path d="M417.4,224H94.6C77.7,224,64,238.3,64,256c0,17.7,13.7,32,30.6,32h322.8c16.9,0,30.6-14.3,30.6-32 C448,238.3,434.3,224,417.4,224z" /></svg>
+            </span>
 
             <input type="text" value={orderItem.productCount} disabled="disabled"
-              className="w-[2rem] flex justify-center items-center text-center text-orange-700 decoration-transparent bg-transparent " />
+              className="w-[2rem] flex justify-center items-center text-center text-xl text-orange-700 decoration-transparent bg-transparent " />
 
-            <p className="less-than-xs:px-2 px-3 text-2xl cursor-pointer" onClick={(e) => isOrdered ? "" : handleCounter(e,"plus")}>+</p>
+            <span className=" text-xl fill-slate-500 cursor-pointer" onClick={(e) => isOrdered ? "" : handleCounter(e,"plus")}>
+              <svg width="24" height="24"  xmlns="http://www.w3.org/2000/svg"   viewBox="0 0 512 512" ><path d="M417.4,224H288V94.6c0-16.9-14.3-30.6-32-30.6c-17.7,0-32,13.7-32,30.6V224H94.6C77.7,224,64,238.3,64,256 c0,17.7,13.7,32,30.6,32H224v129.4c0,16.9,14.3,30.6,32,30.6c17.7,0,32-13.7,32-30.6V288h129.4c16.9,0,30.6-14.3,30.6-32 C448,238.3,434.3,224,417.4,224z" /></svg>
+            </span>
           </div>
         )
         
@@ -222,7 +228,7 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
         return(
           <div id="product_quantity"
             // md:flex-col-reverse  lg:flex lg:flex-row xl:flex xl:flex-row
-            className=" w-full md:w-max lg:w-max xl:w-max flex flex-nowrap justify-around items-center  sm:justify-center md:justify-center    lg:justify-center xl:justify-center gap-2 sm:gap-14 md:gap-14 lg:gap-28 xl:gap-14 ">
+            className=" greater-than-xs:w-full md:w-max lg:w-max xl:w-max flex  less-than-logo-in:flex-col-reverse xs:flex-wrap-reverse flex-wrap  items-center  xs:justify-center md:justify-center    lg:justify-center xl:justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-28 xl:gap-14 ">
               <CartProductCounter/>
               <CartProductPrice/>
           </div>
@@ -263,19 +269,20 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
         <div id={ orderItem.uuid} 
           className="product_wrapper relative  w-auto py-3 mx-2 md:mx-8  lg:py-6 lg:mx-8  xl:py-6 xl:mx-8 p-1 flex justify-between gap-0 md:gap-4 lg:gap-8 xl:gap-8 border-b-[1px] border-b-gray-300 ">
           <div className="select-item">
-            <input disabled={isOrdered} type="checkbox" id={"select_item_" + orderItem.uuid} name={"select_item_" + orderItem.uuid} value={"select_item_" + orderItem.uuid} className='select-item w-[20px] flex scale-125' />
+            <input  disabled={isOrdered} on type="checkbox" id={"select_item_" + orderItem.uuid} name={"select_item_" + orderItem.uuid} value={"select_item_" + orderItem.uuid} className='select-item w-[20px] flex scale-125' />
           </div>
           
-          <div id="product_item__wrapper" className="w-auto sm:w-[95%] md:w-[99%] lg:w-[95%] xl:w-[95%] flex flex-col flex-nowrap xs:flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row  justify-between gap-1 md:gap-2 lg:gap-4 xl:gap-4">  
+          <div id="product_item__wrapper" className="w-auto sm:w-[95%] md:w-[99%] lg:w-[95%] xl:w-[95%] flex flex-row flex-wrap greater-than-xs:flex-nowrap greater-than-xs:flex-row  justify-between gap-1 md:gap-2 lg:gap-4 xl:gap-4">  
+          {/* <div id="product_item__wrapper" className="w-auto sm:w-[95%] md:w-[99%] lg:w-[95%] xl:w-[95%] flex flex-row less-than-xs:grid grid-cols-2  gap-1 md:gap-2 lg:gap-4 xl:gap-4">  */}
             <CartProductDetails/>
-            
+
             <CartProductQuantity/>
 
             
+            
           </div>
-          <div className="flex less-than-logo-min:hidden">
-            <ActionBtns/>
-
+          <div className="flex less-than-logo-min:hidden ">
+            <ActionBtns />
           </div>
           
         </div>
@@ -381,13 +388,17 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
 
     return (
       <div id="cart_container" 
-        className="w-full flex flex-col justify-center ">
+        className="w-full max-w-[1000px] flex flex-col justify-center ">
         <div id="cart_header" 
           className=" p-2 flex justify-between items-center">
           <div className="select-all w-auto flex gap-x-2 justify-center items-center">
+
             <input type="checkbox" id="select_all" name="select_all" value="select_all" className='w-[20px] scale-125 flex ' onClick={(e)=> handleSelectAll(e) }/>
-            <label htmlFor="select_all" className='text-md text-orange-600 font-raleway lining-nums tabular-nums  font-semibold leading-normal'>Select All</label>
+
+            <label htmlFor="select_all" className='text-md text-orange-600 font-raleway lining-nums tabular-nums  font-semibold leading-normal'>Select All {`(${0})`}</label>
+
           </div>
+
           <CartHeaderPrice total={totalRef.current}/>
           {/* <div 
             className="text-lg text-black dark:text-white  font-raleway lining-nums tabular-nums  font-[800]">
@@ -405,7 +416,16 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
             ? 
              <div className="unordered-items flex flex-col items-end">
                {
-                unOrd.map((uno,idx) => {return <CartStoreItem key={"unord"+idx} keyId={idx} storeName={uno.storeName}  orders={uno.orders} total={uno.currentCummulativeTotal}/> })
+                unOrd.map((uno,idx) => {
+                  return <CartStoreItem 
+                            key={"unord"+idx} 
+                            keyId={idx} 
+                            storeName={uno.storeName}  
+                            orders={uno.orders} 
+                            total={uno.currentCummulativeTotal}
+                            
+                          /> 
+                  })
                 }
              </div>
             : <NoItems/>
@@ -417,7 +437,15 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
                   <h3>{" Cart History"}</h3>
                 </div>
                 {
-                  ord.map((or, idx) => { return <CartStoreItem key={"ord"+idx} storeName={or.storeName} orders={or.orders} isOrdered={true} total={or.currentCummulativeTotal} />  })
+                  ord.map((or, idx) => { 
+                    return <CartStoreItem 
+                              key={"ord"+idx} 
+                              storeName={or.storeName} 
+                              orders={or.orders} 
+                              isOrdered={true} 
+                              total={or.currentCummulativeTotal}
+                            /> 
+                    })
                 }
               </div> 
             

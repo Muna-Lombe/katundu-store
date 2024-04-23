@@ -11,6 +11,8 @@ import { useEffect } from "react";
 import { authenticatedUsers, isAuthedUser } from "../../orm/selectors";
 import { apiSlice, useGetShoppingCartQuery, useLoginUserMutation, useSignupUserMutation } from "../../js/middleware/queryHandler";
 import { createdToastMessage } from "../../orm/models/ToastMessageModel";
+import { removedAllCartItems } from "../../orm/models/CartModel";
+import { removedAllOrderItems } from "../../orm/models/OrderModel";
 
 export default function Login({userId}) {
 
@@ -25,6 +27,9 @@ export default function Login({userId}) {
     asyncAxns.forEach(ax=>dispatch(ax()))
      
   }
+
+  dispatch(removedAllCartItems({}))
+  dispatch(removedAllOrderItems({}))
   const handleSignin = async(e)=>{
     try {
       e.preventDefault()
@@ -56,9 +61,21 @@ export default function Login({userId}) {
     } catch (error) {
       const msg = error.message.toString().split("\"")
       console.log("err", error)
-      dispatch(createdToastMessage({status:types.TOAST_VALID, text:{header:"Error",body:msg[1]}, type: types.TOAST_ERROR, id:"login error" }))
+      dispatch(
+        createdToastMessage({
+          status:types.TOAST_VALID, 
+          text:{
+            header:"Error",
+            body:msg[1]
+          }, 
+          type: types.TOAST_ERROR, 
+          id:"login error" 
+        })
+      )
     }
   }
+
+
   return (
     <>
       <div className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">

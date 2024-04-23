@@ -87,7 +87,7 @@ const Main = () => {
   )}
   const ProductsSection=({products,index, forwardRef})=>{
     // {/* grid-cols-[repeat(auto-fit,minmax(auto,7rem))] */ }
-    console.log("products", products)
+    // console.log("products", products)
     // less - than - xs: grid - cols - 2 greater - than - xs: grid - cols - [repeat(auto - fit, minmax(auto, 12rem))] greater - than - sm: grid - cols - [repeat(auto - fit, minmax(auto, 14rem))] 
     return(
       < div id ={ "products-section"+index} className = { "w-full p-4 grid grid-flow-col-dense grid-rows-2 overflow-x-scroll scroll-smooth justify-center  transition-all  tag gap-3 greater-than-xs:gap-6"} >
@@ -95,8 +95,8 @@ const Main = () => {
           !products[0].noProd
             ? products.map((i,x) => (
                 (x===products.length-1 && forwardRef) ?
-                  <ProductCardVertical key={x} product={i} forwardRef={forwardRef} isSearchOrMain = { true} />
-                : <ProductCardVertical key= {x } product = { i }  isSearchOrMain = { true} />
+                  <ProductCardVertical key={x} product={i} forwardRef={forwardRef} isSearchOrMain = { true} maxWH={"max-w-[12rem] max-h-[24rem"} />
+                : <ProductCardVertical key= {x } product = { i }  isSearchOrMain = { true} maxWH={"max-w-[12rem] max-h-[24rem"}/>
               ))
             : <>
                 {
@@ -185,12 +185,12 @@ const Main = () => {
 
         const observer = new IntersectionObserver((entries) => {
           const [entry] = entries;
-          console.log("entry", entry, "scrolled?:",userHasScrolled);
+          // console.log("entry", entry, "scrolled?:",userHasScrolled);
           if (entry.intersectionRatio <= 0) return;
           if (entry.isIntersecting && userHasScrolled) {
             // Start scrolling when component is in view
-            console.log("entry in view", entry);
-            console.log("lastArg", lastArg, products?.at(-1)?.uuid)
+            // console.log("entry in view", entry);
+            // console.log("lastArg", lastArg, products?.at(-1)?.uuid)
 
             handleLoadMore();
 
@@ -259,7 +259,7 @@ const Main = () => {
         } else {
           setChunkSize(2);
         }
-        console.log(window.innerWidth,"resize", chunkSize)
+        // console.log(window.innerWidth,"resize", chunkSize)
       };
 
       window.addEventListener('resize', handleResize);

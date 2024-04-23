@@ -24,6 +24,10 @@ class Order extends Model {
                 const {uuid, ...rest} = action.payload 
                 session.Order.withId(uuid)?.delete() 
                 break;
+            case "orm/OrderHistory/REMOVE_ALL":
+                session.Order.all().delete()
+                // session.Order.withId(uuid)?.delete() 
+                break;
             default:
              break;
         }
@@ -68,5 +72,5 @@ Order.options = {
     IdAttribute: "uuid",
 };
 
-export const {UPDATE:updatedOrderItem, REMOVE:removedOrderItem, ADD:addedOrderItem, CREATE:createdOrderItem, ADD_TO:addedOrderItemTo, REMOVE_FROM:removedOrderItemFrom} = actionCreator().createDefaultFor('OrderHistory')
+export const {UPDATE:updatedOrderItem, REMOVE:removedOrderItem, REMOVE_ALL:removedAllOrderItems, ADD:addedOrderItem, CREATE:createdOrderItem, ADD_TO:addedOrderItemTo, REMOVE_FROM:removedOrderItemFrom} = actionCreator().createDefaultFor('OrderHistory')
 export default Order;

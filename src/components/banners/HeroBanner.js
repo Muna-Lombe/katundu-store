@@ -138,7 +138,7 @@ import { imagepath } from '../../assets/images'
             <span className=" flex flex-grow items-baseline bg-transparent w-full overflow-x-scroll scrollbar pointer-events-none ">
               {
                 banners.map((b,x) => 
-                  <img id={("banner_page_" + (x+1) )} data-active-banner={x===0}  key={x} className={"banner w-full h-full object-fit border border-transparent rounded-xl"} src={b} loading='eager' placeholder='some' alt="" />
+                  <img id={("banner_page_" + (x+1) )} data-active-banner={x===0}  key={x} className={"banner w-fit  h-full object-fit border border-transparent rounded-xl"} src={b} loading='eager' placeholder='some' alt="" />
                   )
               }
             </span>
@@ -149,7 +149,7 @@ import { imagepath } from '../../assets/images'
       )
     }
     return(
-      <div id="Hero-Banner" className={" relative inline-block min-w-[250px] w-full greater-than-sm:max-w-[90%] aspect-[6/3] greater-than-xs:aspect-[6/2] text-white dark:text-black  overflow-clip bg-transparent "}>
+      <div id="Hero-Banner" className={" relative inline-block min-w-[250px] w-full greater-than-sm:max-w-[56%]  aspect-[4/2] greater-than-xs:aspect-[6/2] text-white dark:text-black  overflow-clip bg-transparent "}>
         
         <ScrollableGallery/>
         

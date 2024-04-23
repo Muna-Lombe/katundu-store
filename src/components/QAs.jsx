@@ -600,7 +600,7 @@ const QAs = ({ qas, productReviewId , productId}) => {
       })
     }
     const ReplyBtn = () =>(
-      <p onClick={(e) => { e.preventDefault(); setToggleRespond(true) }} className="  p-1 w-max min-w-[80px] bg-inherit rounded-md text-white text-base font-raleway lining-nums tabular-nums font-semibold cursor-pointer"> {"Reply"} </p>
+      <p onClick={(e) => { e.preventDefault(); setToggleRespond(true) }} className="reply-btn  p-1 w-max min-w-[80px] bg-inherit rounded-md text-inherit text-base font-raleway lining-nums tabular-nums font-semibold cursor-pointer"> {"Reply"} </p>
     )
     return(
       <>
@@ -615,43 +615,46 @@ const QAs = ({ qas, productReviewId , productId}) => {
   }
   const QuestionsWrapper = ({children})=>{
 
-    
+    const Questions = ({children})=>(
+      <div id="questions" className="questions max-w-4xl py-4 ">
+        {
+          qas?.map((q, x) => {
+            // console.log("q",q)
+            return (
+              <Question key={x} qandas_id={q.uuid} question={{ ...q?.question, responses: "" }}>
+
+                {
+                  q?.question?.answers?.map((ans, x) =>
+                    <Answer key={x} qandas_id={q.uuid} response={ans} />
+                  )
+
+                }
+              </Question>
+
+            )
+
+          }
+          )
+        }
+      </div>
+    )
     return (
     <div className="questions-wrapper flex flex-col gap-6">
         <div className="question-input max-w-4xl flex flex-col gap-1 border-b border-spacing-1 " >
-        {children}
-      </div>
-        <div id="questions" className="questions max-w-4xl py-4 ">
-          <div className="product-tag flex flex-row items-center gap-2">
-            <div className="product-tag-iamge">
-              <img src={("https://placehold.co/600x400/orange/" + randomizer(["black", "white", "gray", "red"])) || qas[0]?.productImgUrl} alt="" className="w-[80px] h-max aspect-square border-[0.6px] shadow-sm" />
-            </div>
-            <div className="product-tag-name text-xl font-raleway lining-nums tabular-nums font-semibold">
-                {qas[0]?.productName}
-            </div>
-
+          {children}
+        </div>
+        <div className="product-tag flex flex-row items-center gap-2">
+          <div className="product-tag-iamge">
+            <img src={("https://placehold.co/600x400/orange/" + randomizer(["black", "white", "gray", "red"])) || qas[0]?.productImgUrl} alt="" className="w-[80px] h-max aspect-square border-[0.6px] shadow-sm" />
           </div>
-            
-          {
-            qas?.map((q, x) => {
-              // console.log("q",q)
-              return(
-                <Question key={x} qandas_id={q.uuid} question={{ ...q?.question, responses: "" }}>
-                  
-                  {
-                    q?.question?.answers?.map((ans, x) =>
-                      <Answer key={x} qandas_id={q.uuid} response={ans} />
-                    )
+          <div className="product-tag-name text-xl font-raleway lining-nums tabular-nums font-semibold">
+            {qas[0]?.productName}
+          </div>
 
-                  }
-                </Question>
+        </div>
 
-              )
-
-              }
-            )
-          }
-      </div>
+        <Questions/>
+         
     </div>
       
     
@@ -671,16 +674,19 @@ const QAs = ({ qas, productReviewId , productId}) => {
   return (
     <div className="QA-wrapper min-h-[351px] flex flex-col gap-4">
       
-      {
-      qas.length?
         <QuestionsWrapper>
-            <QuestionInput />
-            <AnswerSorter answersList={[]} />
+        {
+          qas.length?
+              <>
+                <QuestionInput />
+                <AnswerSorter answersList={[]} />
+              
+              </>
+            : <NoQuestions/>
+          }
         </QuestionsWrapper>
-        : <NoQuestions/>
         
         
-      }
     </div>
   )
 }

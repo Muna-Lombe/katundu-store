@@ -1,6 +1,6 @@
 export { default as CheckoutForm } from './forms/CheckoutForm';
 export { default as OrderHistory } from './OrderHistory';
-export { default as Navbar } from './Navbar';
+export { default as Navbar } from './navbar/Navbar';
 export { default as Sidebar } from './Sidebar';
 export { default as Cart } from './Cart';
 export { default as Card } from './Card';

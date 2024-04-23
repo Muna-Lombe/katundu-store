@@ -9,6 +9,7 @@ import { addedOrderItem } from '../../orm/models/OrderModel';
 import { object } from 'prop-types';
 
 
+// const base = 'https://leech-giving-seal.ngrok-free.app/api/v1'
 const base = 'http://127.0.0.1:5000/api/v1';
 // const base = 'http://192.168.1.66:3143/api/v1';
 const sess = sessionStorage
@@ -137,6 +138,7 @@ const axiosQuery =
 // Define our single API slice object
 export const apiSlice = createApi({
 
+  
   // The cache reducer expects to be added at `state.api` (already default - this is optional)
   reducerPath: 'api',
   // All of our requests will have URLs starting with '/fakeApi'
@@ -162,6 +164,15 @@ export const apiSlice = createApi({
         // console.log("res",resp)
         return resp
       }
+    },
+    prepareHeaders(headers){
+      if(base.includes("leech-giving-seal.ngrok-free")){
+        headers.set("Access-Control-Allow-Origin", "*")
+        headers.set('ngrok-skip-browser-warning','69420')
+
+      } 
+
+      return headers;
     }
     
   

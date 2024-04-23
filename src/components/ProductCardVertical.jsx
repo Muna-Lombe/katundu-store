@@ -13,7 +13,7 @@ import { createdCartItem } from '../orm/models/CartModel';
 import randomizer from '../js/utils/randomizer';
 
 
-const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW =8}) => {
+const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW =8, maxWH=""}) => {
   // console.log("prd", product)
   let img = new IMG()
   const dispatch = useDispatch()
@@ -94,7 +94,7 @@ const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW =8}) => {
   
   return (
    
-    <div id={"product_card_" + product?.uuid} ref={forwardRef} className={(noPrd ? " " : " ")  + (isSearchOrMain ? " min-w-[6rem] " : " min-w-[8rem] " ) +"w-auto max-w-[15rem] h-full max-h-[20rem] flex flex-nowrap shrink flex-col justify-start bg-white shadow-md border border-gray-200 rounded-md font-raleway lining-nums tabular-nums  overflow-y-hidden"}>
+    <div id={"product_card_" + product?.uuid} ref={forwardRef} className={(noPrd ? " " : " ") + (isSearchOrMain ? " min-w-[6rem] " : " min-w-[8rem] ") + (maxWH ? maxWH : "  max-w-[15rem] max-h-[20rem] ") + "w-auto h-full  flex flex-nowrap shrink flex-col justify-start bg-white shadow-md border border-gray-200 rounded-md font-raleway lining-nums tabular-nums  overflow-y-hidden"}>
       <div id="product_header" className="relative px-1 w-[100%] h-[100%]  justify-center items-end  ">
         <Link state={{ uuid: product?.uuid }} to={"/products/" + product?.name + "-" + product?.uuid} id="product_image" className="flex  justify-center items-end" >
           {

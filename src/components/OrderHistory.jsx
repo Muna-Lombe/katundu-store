@@ -211,9 +211,9 @@ const OrderHistory = ({ itemsOrdered}) => {
           <div id="item_header" className=" flex flex-col less-than-xs:flex-wrap justify-between gap-2">
             <div id="item_img" className="w-auto flex flex-row items-center gap-1 border-[1px] border-transparent rounded-2xl">
               {/* <img className="border-[1px] border-transparent rounded-[25px]" src={logo} alt="" /> */}
-                <Logo logo={order?.orderItems[0].storeName} size={{ font:30, h:40, w:40, x: 5, y: 30 }} addLogo addText={false}/>
+                <Logo logo={order?.orderItems[0]?.storeName} size={{ font:30, h:40, w:40, x: 5, y: 30 }} addLogo addText={false}/>
                 <div id="item_name" className="text-base text-slate-600 font-semibold ">
-                  <p>{order?.orderItems[0].storeName} </p>
+                  <p>{order?.orderItems[0]?.storeName} </p>
                 </div>
             
             </div>

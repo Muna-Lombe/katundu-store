@@ -97,9 +97,9 @@ const ProductMinified = ({children, productItem})=> {
                   </div>
                 </div>
                 
-                <div className="product-minified-buy-btn child:p-2 h-[180%]  border rounded-md child:appearance-none child:w-max child:h-max child:text-sm child:font-semibold">
+                <div className="product-minified-buy-btn child:p-2 h-[18%]  border rounded-md child:appearance-none child:w-max child:h-max child:text-sm child:font-semibold">
                   <BuyBtns id={productItem?.uuid} prodVars={productItem?.variations.map(v=>({id:v.uuid, stock:v.stock}))} onlyBtn>
-                    <BasketIco />
+                    <BasketIco className={"max-h-8"} />
                   </BuyBtns>
                 </div>
               </div>

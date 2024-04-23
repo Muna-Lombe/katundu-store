@@ -36,6 +36,14 @@ class CartItem extends Model {
                 session.CartItem.withId(uuid)?.delete() 
                 break;
             }
+            case "orm/CartItem/REMOVE_ALL":{
+                // session.CartItem.get({active:true})?.update({active:false})
+                session.CartItem.all().delete() 
+                
+                // session.CartItem.withId(uuid)?.delete() 
+                break;
+            }
+            
             default:
              break;
         }
@@ -66,5 +74,5 @@ CartItem.options={
     
 }
 
-export const { UPDATE: updatedCartItem, UPDATE: checkedOutCartItem, UPDATE: orderedCartItem, REMOVE:removedCartItem, ADD:addedCartItem ,  CREATE:createdCartItem, REMOVE_FROM:removedCartItemFrom} = actionCreator().createDefaultFor('CartItem')
+export const { UPDATE: updatedCartItem, UPDATE: checkedOutCartItem, UPDATE: orderedCartItem, REMOVE:removedCartItem, REMOVE_ALL:removedAllCartItems, ADD:addedCartItem ,  CREATE:createdCartItem, REMOVE_FROM:removedCartItemFrom} = actionCreator().createDefaultFor('CartItem')
 export default CartItem;

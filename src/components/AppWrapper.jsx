@@ -1,7 +1,7 @@
 import React, { Suspense } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { AvatarIco, CartIco, HomeIco } from './icons'
-import Navbar from './Navbar'
+import Navbar from './navbar/Navbar'
 import Footer from './Footer'
 import NoItems from './NoItems'
 import ProductMinified from './ProductMinified'

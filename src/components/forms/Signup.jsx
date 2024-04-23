@@ -39,12 +39,15 @@ export default function Signup({userId}) {
         new FormData(form).forEach((k, v, x) => {
           let target = v.split("-")[0]
           data[target] =  k 
+          console.log("k",k, "v", target)
         });
       }
       //  data['password'] = [...(await Promise.all([sha256(data.password)]))][0]
-      data['email'] = data.email
-      data['password'] = [...(await Promise.all([sha256(data.password)]))][0]
       // console.log(data)
+      data['email'] = data.email
+      const npw = [...(await Promise.all([sha256(data.password)]))][0]
+      // console.log(data, npw)
+      data['password'] = npw
       await signupUser({ initialCred: {user:data} })
       // console.log(data)
       dispatch(createdAuth({dateCreated:momentDate().shortDate, timeCreated:new Date().toString(),  authStatus:types.AUTH_VALID}))
