@@ -309,7 +309,7 @@ export const apiSlice = createApi({
       }),
     }),
     getUser: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: ({uuid}) => ({
         url:'/users/'+uuid,
         headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
@@ -318,17 +318,26 @@ export const apiSlice = createApi({
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       
     }),
+    getUserSettings: builder.query({
+      query: () => '/user_settings',
+      transformResponse(res) {
+        return res.data.map(configObject)[0];
+      },
+      transformErrorResponse(err) {
+        return err ? err.data?.errors : "unknown error";
+      },
+      }),
     getStores: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: () => '/stores'
     }),
     getStore: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: (storeId) => `/stores/${storeId}`,
 
     }),
     getProducts: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: (query) => query ? '/products' + '?' + query : '/products',
       transformResponse(res){ return res.data?.map(configObject)},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
@@ -352,7 +361,7 @@ export const apiSlice = createApi({
       }
     }),
     getPopularSearches: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: (query) => query ? '/products' + '?' + query : '/products',
       transformResponse(res){ return res?.data},
       transformErrorResponse(err){  return err ? err.data?.errors : "unknown error"},
@@ -370,7 +379,7 @@ export const apiSlice = createApi({
       }
     }),
     getEmbeddedProducts: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: (query) => query ? '/products' + '?' + query : '/products',
       transformResponse(res){return res.data?.map(configObject)},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
@@ -387,7 +396,7 @@ export const apiSlice = createApi({
       }
     }),
     getProduct: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: ({productId,queries}) => `/products/${productId}${queries? '?'+queries:''}`,
       transformResponse(res){return configObject(res.data)},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
@@ -396,7 +405,7 @@ export const apiSlice = createApi({
     }),
     // The `getPosts` endpoint is a "query" operation that returns data
     getCatalog: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: () => '/product_categories/catalog',
       transformResponse(res){return res.data},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
@@ -419,7 +428,7 @@ export const apiSlice = createApi({
       }
     }),
     getCatalogItem: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: (catId) => `/product_categories/catalog?id=${catId}`,
       transformResponse(res){return configObject(res.data)},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
@@ -439,7 +448,7 @@ export const apiSlice = createApi({
       }
     }),
     getShoppingCart: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: () => ({
         url:'/shopping-cart',
         headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
@@ -478,7 +487,7 @@ export const apiSlice = createApi({
     }),
 
     getShoppingCartItem: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: (cartId) => ({
         url:`/shopping-cart/${cartId}`,
         headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
@@ -489,7 +498,7 @@ export const apiSlice = createApi({
       providesTags: ['ShoppingCartItem']
     }),
     beginItemCheckout: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: ({cartIds}) => {
           if(cartIds.length > 0){
             return {
@@ -621,7 +630,7 @@ export const apiSlice = createApi({
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
     }),
     getCheckout: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: () => ({
         url:'/checkout/history',
         headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
@@ -668,7 +677,7 @@ export const apiSlice = createApi({
       providesTags: ['Checkout']
     }),
     getCheckoutItem: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: (orderId) => ({
         url:`/checkout/history/${orderId}`,
         headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
@@ -798,7 +807,7 @@ export const apiSlice = createApi({
       invalidatesTags: ['ShoppingCart']
     }),
     getProductReviews: builder.query({
-      // The URL for the request is '/fakeApi/posts'
+    
       query: ({productId}) => `/products/${productId}/product-reviews`,
       transformResponse(res){return configObject(res.data);
       },

@@ -8,6 +8,7 @@ module.exports = {
     plugins: [
       // plugin(
         // container,
+        // require('@tailwindcss/forms'),
         function({ matchVariant }) {
           matchVariant(
             'nth',

@@ -44,7 +44,7 @@ function App() {
         <Route path="/history" exact element={
           <PrivateRoute component={History} />
         } />
-        <Route path="/me" exact element={
+        <Route path="/me/*" exact element={
           <PrivateRoute component={Dashboard} />
         } />
         <Route path="/signup" exact element={<Signup /> } /> 
