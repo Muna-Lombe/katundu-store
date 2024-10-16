@@ -11,11 +11,13 @@ import { titleTagTypes as tags } from "./icons";
 import randomizer from '../js/utils/randomizer';
 import { useRemoveCartItemMutation, useUpdateCartItemMutation, useBeginItemCheckoutQuery } from '../js/middleware/queryHandler';
 import Logo from './Logo';
+import { ClassWatcher } from '../orm/utilities/classWatcher';
 
 
 
-const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedItems, setRef }) => {
-
+const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedItems, setRef, TotalBuy }) => {
+  
+  
   const [updateCartItem, { isLoading: updating }] = useUpdateCartItemMutation()
   const [removeCartItem, { isLoading: removing }] = useRemoveCartItemMutation()
   // const [beginCheckout, { isLoading: checkingout }] = useBeginItemCheckoutQuery()
@@ -73,11 +75,13 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
   
   const CartHeaderPrice = ({total}) => {
     
-    
+    // hidden w - auto  less - than - sm:flex flex - row flex - wrap justify - between less - than - xs: justify - end less - than - sm: gap - 4  items - center text - base greater - than - md: text - xl lining - nums tabular - nums
     return(
-      <div id="cart_item__total_price"
-        className="hidden w-auto  less-than-sm:flex flex-row flex-wrap justify-between less-than-xs:justify-end less-than-sm:gap-4  items-center text-base greater-than-md:text-xl lining-nums tabular-nums">
-        <p
+      
+      <div id="cart_store__total_price"
+        className="px-3">
+          {TotalBuy}
+        {/* <p
           className=" less-than-xs:text-base whitespace-nowrap">
           {tags.cart.totalInCartTag}:
         </p>
@@ -86,14 +90,17 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
           {tags.currencyType + total}
         </p>
 
-        <CheckoutBtn disabled={total <= 0}/>
+        <CheckoutBtn disabled={total <= 0}/> */}
       </div>
     )
   }
   const CartOrderItem = ({ isOrdered, orderItem, promoQty = "120",  promoDeadline = "12:48:35", cartedQty = "150", }) => {
 
       const state = { from: "/cart", cartItemIds: [orderItem.uuid] }
-
+      const handleItemChecked = (e)=>{
+        // e.preventDefault()
+        e.target.checked ? e.target.setAttribute("checked","") : e.target.removeAttribute("checked")
+      }
       const handleCounter = async (e,type)=>{
         e.preventDefault()
         if (type === "plus"){
@@ -118,12 +125,12 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
       const CartProductTags =()=>(
         <div id="product_tags"
           className="w-max mt-4 flex flex-col lg:flex-row xl:flex-row justify-between gap-2">
-          <div className="promo-tag hidden px-2 less-than-sm:flex items-baseline gap-2 border rounded-lg bg-orange-400 fill-white text-white">
+          {/* <div className="promo-tag hidden px-2 less-than-sm:flex items-baseline gap-2 border rounded-lg bg-orange-400 fill-white text-white">
             <CouponIco size={32}/>
-            <p className="text-base  font-raleway lining-nums tabular-nums  font-semibold">
+            <p className="text-base less-than-md:text-xs  font-raleway lining-nums tabular-nums  font-semibold">
               {"Hot Sale!"}
             </p>
-          </div>
+          </div> */}
           <div
             className="hidden w-max greater-than-sm:flex  lg:flex-row xl:flex-row justify-between -gap-1 ">
             <div
@@ -151,8 +158,14 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
           <div id="product_description"
             className="w-auto max-w-[352px] flex flex-col justify-between"  >
             <Link state={{ uuid: orderItem.product?.uuid }} to={"/products/" + orderItem.product?.name + "-" + orderItem.product?.uuid}
-              className=" h-auto max-h-[5rem] flex-wrap overflow-x-clip truncate">
+              className=" h-auto max-w-[8rem] max-h-[5rem] flex-wrap overflow-x-clip truncate">
               {orderItem.product.name}
+              <div className="promo-tag hidden px-1 less-than-sm:flex items-center fill-orange-500 text-orange-500">
+                <CouponIco size={32}/>
+                <p className="text-base less-than-md:text-xs  font-raleway lining-nums tabular-nums  font-semibold">
+                  {"Hot Sale!"}
+                </p>
+              </div>
             </Link>
             
             <CartProductTags/>
@@ -169,7 +182,7 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
             <div className="product-details-header w-auto flex flex-row justify-between">
               <Link state={{ uuid: orderItem?.product?.uuid }} to={"/products/" + orderItem?.product?.name + "-" + orderItem?.product?.uuid} id="product_image" className="w-max max-h-[5rem] px-2 flex justify-center items-center">
 
-                <img className=" max-w-[5rem] max-h-[5rem]  greater-than-md:max-w-[25rem] greater-than-md:max-h-[8rem] md:w-full md:h-full lg:w-full lg:h-full xl:w-full xl:h-full object-contain" src={"https://placehold.co/600x400/orange/" + randomizer(["black", "white", "gray", "red"])} alt="IGM" />
+                <img className=" max-w-[5rem] max-h-[5rem]  greater-than-md:max-w-[25rem] greater-than-md:max-h-[8rem] greater-than-sm:w-full greater-than-sm:h-full object-contain" src={"https://placehold.co/600x400/orange/" + randomizer(["black", "white", "gray", "red"])} alt="IGM" />
               </Link>
               {/* <div className="hidden less-than-logo-min:flex">
                 <ActionBtns />
@@ -228,7 +241,7 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
         return(
           <div id="product_quantity"
             // md:flex-col-reverse  lg:flex lg:flex-row xl:flex xl:flex-row
-            className=" greater-than-xs:w-full md:w-max lg:w-max xl:w-max flex  less-than-logo-in:flex-col-reverse xs:flex-wrap-reverse flex-wrap  items-center  xs:justify-center md:justify-center    lg:justify-center xl:justify-center gap-4 sm:gap-8 md:gap-12 lg:gap-28 xl:gap-14 ">
+            className=" less-than-logo-min:w-full w-max greater-than-sm:w-full md:w-max lg:w-max xl:w-max flex greater-than-logo-min:flex-col-reverse flex-row items-center justify-center less-than-logo-min:justify-end gap-4 sm:gap-8 md:gap-12 lg:gap-28 xl:gap-14 ">
               <CartProductCounter/>
               <CartProductPrice/>
           </div>
@@ -268,20 +281,23 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
       return (
         <div id={ orderItem.uuid} 
           className="product_wrapper relative  w-auto py-3 mx-2 md:mx-8  lg:py-6 lg:mx-8  xl:py-6 xl:mx-8 p-1 flex justify-between gap-0 md:gap-4 lg:gap-8 xl:gap-8 border-b-[1px] border-b-gray-300 ">
-          <div className="select-item">
-            <input  disabled={isOrdered} on type="checkbox" id={"select_item_" + orderItem.uuid} name={"select_item_" + orderItem.uuid} value={"select_item_" + orderItem.uuid} className='select-item w-[20px] flex scale-125' />
-          </div>
-          
-          <div id="product_item__wrapper" className="w-auto sm:w-[95%] md:w-[99%] lg:w-[95%] xl:w-[95%] flex flex-row flex-wrap greater-than-xs:flex-nowrap greater-than-xs:flex-row  justify-between gap-1 md:gap-2 lg:gap-4 xl:gap-4">  
-          {/* <div id="product_item__wrapper" className="w-auto sm:w-[95%] md:w-[99%] lg:w-[95%] xl:w-[95%] flex flex-row less-than-xs:grid grid-cols-2  gap-1 md:gap-2 lg:gap-4 xl:gap-4">  */}
-            <CartProductDetails/>
+          <div className="select-item-product w-full flex flex-row items-center">
 
-            <CartProductQuantity/>
+            <div className="select-item h-full">
+              <input disabled={isOrdered || false} type="checkbox" id={"select_item_" + orderItem.uuid} onChange={(e) => handleItemChecked(e) } name={"select_item_" + orderItem.uuid} value={"select_item_" + orderItem.uuid} className='select-item w-[20px] flex scale-125' />
+            </div>
+            
+            <div id="product_item__wrapper" className="w-full h-full sm:w-[95%] md:w-[99%] lg:w-[95%] xl:w-[95%] flex less-than-logo-min:flex-col flex-row  greater-than-xs:flex-nowrap greater-than-xs:flex-row  justify-between  md:gap-2 lg:gap-4 xl:gap-4">  
+            {/* <div id="product_item__wrapper" className="w-auto sm:w-[95%] md:w-[99%] lg:w-[95%] xl:w-[95%] flex flex-row less-than-xs:grid grid-cols-2  gap-1 md:gap-2 lg:gap-4 xl:gap-4">  */}
+              <CartProductDetails/>
 
-            
-            
+              <CartProductQuantity/>
+
+              
+              
+            </div>
           </div>
-          <div className="flex less-than-logo-min:hidden ">
+          <div className="flex less-than-xs:hidden ">
             <ActionBtns />
           </div>
           
@@ -289,12 +305,15 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
      )
    }
 
+
+   
+
    const CartStoreItem = ({keyId,storeName,orders, total, isOrdered})=> { 
      const disableItem = isOrdered
      const state = {  from: "/cart" , storeName, cartItemIds:orders.map(o=> o.uuid),total, orderedItems: orders.map(oi=> ({productId: oi.product.uuid, price: oi.product.price, quantity: oi.productCount})) }
   
      const CartStoreHeaderPrice = () =>(
-       <div id="cart_item__total_price"
+       <div id="cart_store__total_price"
          className=" flex justify-between less-than-sm:gap-4 gap-8  items-center text-base greater-than-md:text-xl lining-nums tabular-nums">
          <p
            className=" less-than-xs:text-base whitespace-nowrap">
@@ -338,11 +357,11 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
      )
 
      const CartStoreHeader = () =>(
-       <div id={"cart_item__header"+keyId}
+       <div id={"cart_store__header"+keyId}
          className=" flex flex-row p-2 justify-start items-center gap-3 border-[1px] border-gray-300 rounded-lg text-xl font-raleway lining-nums tabular-nums ">
          <div className="select-store">
-           <input disabled={isOrdered} type="checkbox" id={"select_store" + keyId} name={"select_store" + keyId} value={"select_store" + keyId} className='w-[20px] flex  scale-125' onClick={(e) => handleSelectStore(e, "cart_item__header" + keyId)}/>
-            <label htmlFor={"select_store" + keyId} className='text-md text-orange-600 font-raleway lining-nums tabular-nums  font-semibold'></label>
+           <input  disabled={isOrdered} type="checkbox" id={"select_store" + keyId} name={"select_store" + keyId} value={"select_store" + keyId} className='select_store w-[20px] flex  scale-125' onClick={(e) => handleSelectStore(e, "cart_store__header" + keyId)}/>
+           <label htmlFor={"select_store" + keyId} className='absolute top-0 right-0 w-0 h-0 hidden text-md text-orange-600 font-raleway lining-nums tabular-nums  font-semibold'>{storeName.replace(" ", "").replace("'", "")}</label>
          </div>
          <Logo  logo={storeName} addText={false} bgColor="bg-slate-500" />
          <div id="item_name"
@@ -355,8 +374,8 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
        </div>
      )
      return (
-          <div id="cart_item__wrapper"
-            className={"w-full flex flex-col mb-2"+(disableItem ? " filter grayscale contrast-50" : ""  ) }>
+          <div id={"store_"+storeName.replace(" ", "").replace("'", "")}
+         className={"cart_store__wrapper w-full flex flex-col mb-2"+(disableItem ? " filter grayscale contrast-50" : ""  ) }>
             <CartStoreHeader/>
             {
               orders.map((orderItem) => <CartOrderItem key= {orderItem.id} isOrdered={isOrdered}  orderItem = {orderItem}  /> )
@@ -388,12 +407,12 @@ const Cart = ({ unOrd, ord, handleSelectAll, handleSelectStore, handleCheckedIte
 
     return (
       <div id="cart_container" 
-        className="w-full max-w-[1000px] flex flex-col justify-center ">
+        className=" w-full @md:w-auto max-w-[1000px] flex flex-col justify-center ">
         <div id="cart_header" 
           className=" p-2 flex justify-between items-center">
           <div className="select-all w-auto flex gap-x-2 justify-center items-center">
 
-            <input type="checkbox" id="select_all" name="select_all" value="select_all" className='w-[20px] scale-125 flex ' onClick={(e)=> handleSelectAll(e) }/>
+            <input  type="checkbox" id="select_all" name="select_all" value="select_all"  className='w-[20px] scale-125 flex ' onClick={(e)=> handleSelectAll(e) }/>
 
             <label htmlFor="select_all" className='text-md text-orange-600 font-raleway lining-nums tabular-nums  font-semibold leading-normal'>Select All {`(${0})`}</label>
 

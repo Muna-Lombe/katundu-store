@@ -36,6 +36,8 @@ export { default as FilterSearchResults } from './forms/FilterSearchResults';
 export { default as EmbeddedProducts } from './EmbeddedProducts';
 export { default as NameTag } from './NameTag';
 export { default as Login } from './forms/Login';
+export { default as Signup } from './forms/Signup';
+export { default as ResetPassword } from './forms/ResetPassword';
 export { default as ToggleableField } from './ToggleableField';
 export { default as HeroBanner } from './banners/HeroBanner';
 export { default as ProductMinified } from './ProductMinified';

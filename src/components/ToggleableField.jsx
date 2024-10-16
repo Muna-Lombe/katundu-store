@@ -5,6 +5,7 @@ import NameTag from "./NameTag";
 import ProductDescriptor from "./ProductDescriptor";
 
 const ToggleableField = ({ children, contentType, variations, contentArray, hasChildElement }) => {
+  console.log("stuff", contentType, contentArray, variations)
   return(
     <div className="toggleable-field">
       <ContentDetails contentType={contentType} variations={variations}>

@@ -16,7 +16,7 @@ import { apiSlice } from './js/middleware/queryHandler';
 
 Store.dispatch(apiSlice.endpoints.getProducts.initiate())
 Store.dispatch(apiSlice.endpoints.getCatalog.initiate())
-
+sessionStorage.setItem("connectionRetry", 0)
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter basename='/'>

@@ -2,12 +2,12 @@ import React, {  useEffect, useMemo, useRef, useState } from 'react';
 import { Link, createSearchParams, useLocation, useNavigate } from "react-router-dom";
 
 // assets
-import { AvatarIco, CartIco, PinIco, SearchIco, titleTagTypes as tags } from '../icons';
+import { AvatarIco, BellIcon, CartIco, PinIco, SearchIco, titleTagTypes as tags } from '../icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectProductNamesThatMatch, setSearchedProductId } from '../../js/slices/products/productsSlice';
 import Logo from '../Logo';
 import { imagepath } from '../../assets/images';
-import { useGetEmbeddedProductsQuery, useGetPopularSearchesQuery, useGetProductsQuery, useLazyGetProductsQuery, useLazySearchForProductsQuery } from '../../js/middleware/queryHandler';
+import { useGetEmbeddedProductsQuery, useGetPopularSearchesQuery, useGetProductsQuery, useLazyGetPopularSearchesQuery, useLazyGetProductsQuery, useLazySearchForProductsQuery } from '../../js/middleware/queryHandler';
 import types from '../../orm/actions/actionTypes';
 import { createdToastMessage } from '../../orm/models/ToastMessageModel';
 import NavMenu from './NavMenu';
@@ -24,12 +24,12 @@ const Navbar = ({children}) => {
  
   const location = useLocation()
   
-  const { data: popSearchData, isSuccess: isPopSearchSuccess, isLoading: isPopSearchLoading, isError: isPopSearchError, error } = useGetPopularSearchesQuery("filters[popular_searches]=1")
+  const [getPopSearches, { data: popSearchData, isSuccess: isPopSearchSuccess, isLoading: isPopSearchLoading, isError: isPopSearchError, error }] = useLazyGetPopularSearchesQuery()
   // { data: [], isError: false, isLoading: false, isSuccess: false }//
   // console.log("forced rerender");
   let popularSearchedProductNames = []
-  if (isPopSearchError) {
-
+  if (isPopSearchError && error?.name !== "AbortError") {
+    console.log("err in disp", error)
     dispatch(createdToastMessage(
       {
         text:
@@ -75,6 +75,20 @@ const Navbar = ({children}) => {
     location.pathname.includes("product")
   )
   
+  useEffect(() => {
+    const t_out = setTimeout(() => {
+      getPopSearches(
+        "filters[popular_searches]=1",
+        true
+      )
+
+    }, 500)
+  
+    return () => {
+      clearTimeout(t_out)
+    }
+  }, [])
+  
   
   const GoToCartIco = ({isBurgerMenu=true,size="2.5rem"}) => (
    
@@ -82,11 +96,23 @@ const Navbar = ({children}) => {
         <CartIco size={size} isBurgerMenu={isBurgerMenu} isCartBtn={true} /> 
       </Link> 
   )
+
+  const Notifications = () => (
+    <div className="mx-2 flex items-center ">
+      <button
+        type="button"
+        className="bg-white rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 "
+      >
+        <BellIcon className="h-6 w-6" aria-hidden="true" />
+        {/* <span className="sr-only">View notifications</span> */}
+      </button>
+    </div>
+  )
   
   const GoToAvatarIco = ({size})=> (
 
     <div className="avtr min-w-[40px] h-10 flex justify-center items-center">
-      <Link to="history/" className='peer  flex'> 
+      <Link to="/me" className='peer  flex'> 
         <AvatarIco  size={size}  />
       </Link> 
       {/* <Link id='cart' to="cart/" className='hidden '>
@@ -413,9 +439,9 @@ const Navbar = ({children}) => {
 
     return (
       <Link to={''} id="logo_animation_container" className='cursor-pointer  '>
-        <img id="logo_gif_trans_to_long" src={imagepath("/img/placeholders/Katundu_reverse.gif")} className="max-w-[14rem] absolute top-0 left-0 z-10  hidden mix-blend-multiply" loading='eager' alt="" />
+        <img id="logo_gif_trans_to_long" src={imagepath("/img/placeholders/Katundu_reverse.gif")} className="max-w-[14rem]  top-0 left-0 z-10   hidden mix-blend-multiply" loading='eager' alt="" />
         <img id="logo_long_png" src={imagepath("/img/placeholders/Katundu.png")} className="max-w-[14rem] hidden" alt="" />
-        <img id="logo_gif_trans_to_short" src={imagepath("/img/placeholders/Katundu.gif")} className="max-w-[14rem] absolute top-0 left-0 z-10 hidden mix-blend-multiply " loading='eager' alt="" />
+        <img id="logo_gif_trans_to_short" src={imagepath("/img/placeholders/Katundu.gif")} className="max-w-[14rem]  top-0 left-0 z-10 hidden mix-blend-multiply " loading='eager' alt="" />
         <img id="logo_short_png" src={imagepath("/img/placeholders/Katundu_short.png")} className="max-w-[2.8rem] object-scale-down object-center hidden" loading='lazy' alt="" />
       </Link>
     )
@@ -431,9 +457,9 @@ const Navbar = ({children}) => {
           {/* m-1 align-start  w-full flex less-than-xs:flex-wrap justify-start gap-4 transition-all ease-in-out delay-700 */}
           <div id="logo_location" className="container order-1 w-min  relative flex justify-cente gap-2 insert-previous-classes-here  first:h-[44px]">
               {/* <Logo clickEv={()=>""} logo={tags.footer.storename} size={{ h: 40, w: 40, x:10, y: 32, font: 38 }}/> */}
-              <Logo>
-                <NavLogo toggle={toggle}/>
-              </Logo>
+            <Logo>
+              <NavLogo toggle={toggle}/>
+            </Logo>
            
             <Location locations={tags.locations}/>
           </div>
@@ -445,12 +471,13 @@ const Navbar = ({children}) => {
                 
                 
               <div className='w-full flex justify-center items-center gap-2'>
-                  <GotoCategories />
-                  <SearchField fref={ref} popSearchData={popSearchData} popularSearchedProductNames={popularSearchedProductNames}>
-                    <optgroup name="search-suggestions" tabIndex={1} id="search-suggestions" className="absolute top-full min-w-[12rem] greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem]  p-2 truncate border bg-black opacity-70 rounded-b-3xl text-white dark:text-black  cursor-pointer hidden">
-                    </optgroup>
+                <GotoCategories />
+                <SearchField toggle={toggle} fref={ref} popSearchData={popSearchData} popularSearchedProductNames={popularSearchedProductNames}>
+                  <optgroup name="search-suggestions" tabIndex={1} id="search-suggestions" className="absolute top-full min-w-[12rem] greater-than-md:min-w-[28rem] w-full max-w-[28rem] greater-than-md:max-w-[32rem]  p-2 truncate border bg-black opacity-70 rounded-b-3xl text-white dark:text-black  cursor-pointer hidden">
+                  </optgroup>
 
-                  </SearchField>
+                </SearchField>
+                <Notifications/>
 
               </div>
               

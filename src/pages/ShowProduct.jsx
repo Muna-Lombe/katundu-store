@@ -32,7 +32,7 @@ const ShowProduct = ()=>{
 
   const getCrumbs =()=> [
     {path:"/",text:"Catalog"}, 
-    {path:("/categories/?category="+getCat()?.id),text:(getCat()?.name.toString())}
+    {path:("/categories#product-section-"+getCat()?.uuid),text:(getCat()?.name.toString())}
     ||{path:"/", text:"Category/"}, (productItem?.name.slice(0, 10)+"...")
   ]
 

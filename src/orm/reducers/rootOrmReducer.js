@@ -14,6 +14,7 @@ import { createReducer } from "redux-orm";
 import baseModelCreator from "../models/BaseModel";
 import ToastMessage from "../models/ToastMessageModel";
 import Checkout from "../models/CheckoutModel";
+import ConnectionRetriesMonitor from "../models/ConnectionRetriesMonitorModel";
 
 export const orm = new ORM({
     stateSelector: state => {
@@ -35,7 +36,8 @@ orm.register(
     // ProductVariationProperty,
     // ProductVariationPropertyValue,
     // ProductVariationPropertyListValue,
-    ToastMessage
+    ToastMessage,
+    ConnectionRetriesMonitor
 );
 // const models = [
 //     {

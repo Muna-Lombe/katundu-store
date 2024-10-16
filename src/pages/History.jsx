@@ -8,7 +8,7 @@ const History = () => {
   // console.log(itemsOrdered)
   return (
     <Suspense fallback={<NoItems />}>
-      <OrderHistory itemsOrdered={itemsOrdered}  /> 
+      <OrderHistory itemsOrdered={itemsOrdered} listStyle={"grid"}  /> 
     </Suspense>
   )
 }

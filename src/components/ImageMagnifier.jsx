@@ -7,9 +7,11 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
   // const [activeImage, setActiveImage] = useState(false)
    const activeImage = useRef(false)
   useEffect(()=>{
-    return images?.length
-    ? activeImage.current = images[0]//setActiveImage(images[0])
-    : ""
+     if(images?.length){
+
+       activeImage.current = images[0]//setActiveImage(images[0])
+     }
+    return ()=>""
   }, [images])
   function magnify(imgId, zoom) {
     let img, mesh, glass, w, h, bw;

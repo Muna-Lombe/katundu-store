@@ -1,11 +1,13 @@
 const plugin = require('tailwindcss');
 const defaultTheme = require('tailwindcss/defaultTheme')
+// const container = require('@tailwindcss/container-queries')
 
 module.exports = {
     darkMode: 'class',
     content: ["./src/**/*.{js,jsx,ts,tsx}",],
     plugins: [
       // plugin(
+        // container,
         function({ matchVariant }) {
           matchVariant(
             'nth',
@@ -26,6 +28,7 @@ module.exports = {
           function ({  addVariant }) {
           addVariant('child', '& > *')
           addVariant('child-hover', '& > *:hover')
+          addVariant('2n-child', '&:nth-child(2)')
           addVariant('exclude-xs', '@media (min-width: 640px),@media (min-width: 768px),@media (min-width: 1024px)')
           addVariant('exclude-sm', '@media (min-width: 475px),@media (min-width: 768px),@media (min-width: 1024px)')
           addVariant('exclude-md', '@media (min-width: 475px),@media (min-width: 640px),@media (min-width: 1024px)')
@@ -43,6 +46,17 @@ module.exports = {
           addVariant('less-than-md', '@media (max-width: 1024px)')
           addVariant('less-than-lg', '@media (max-width: 1280px)')
           addVariant('less-than-xl', '@media (max-width: 1400px)')
+          // addVariant('@xs',	'@container (min-width: 20rem /* 320px */')
+          // addVariant('@sm',	'@container (min-width: 24rem /* 384px */')
+          // addVariant('@md',	'@container (min-width: 28rem /* 448px */')
+          // addVariant('@lg',	'@container (min-width: 32rem /* 512px */')
+          // addVariant('@xl',	'@container (min-width: 36rem /* 576px */')
+          // addVariant('@2xl', '@container (min-width: 42rem /* 672px */')
+          // addVariant('@3xl', '@container (min-width: 48rem /* 768px */')
+          // addVariant('@4xl', '@container (min-width: 56rem /* 896px */')
+          // addVariant('@5xl', '@container (min-width: 64rem /* 1024px */')
+          // addVariant('@6xl', '@container (min-width: 72rem /* 1152px */')
+          // addVariant('@7xl', '@container (min-width: 80rem /* 1280px */')
         }
       // )
       ,

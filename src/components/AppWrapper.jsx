@@ -7,9 +7,11 @@ import NoItems from './NoItems'
 import ProductMinified from './ProductMinified'
 import BackBtn from './buttons/BackBtn'
 import { useDispatch, useSelector } from 'react-redux'
-import { toastMessage } from '../orm/selectors'
+import { connectionRetries, toastMessage } from '../orm/selectors'
 import { updatedToastMessage } from '../orm/models/ToastMessageModel'
 import types from '../orm/actions/actionTypes'
+import BrokenConnection from '../pages/BrokenConnection'
+import BrokenConnNavbar from './navbar/BrokenConnNavbar'
 
 const AppWrapper = ({children}) => {
   
@@ -18,11 +20,17 @@ const AppWrapper = ({children}) => {
   const isAuthPath = () => (
     location.pathname.includes("signin")
     || location.pathname.includes("signup")
+    || location.pathname.includes("reset-password")
+    
 
   )
+  const retries = useSelector(connectionRetries) || null;
+  
   const dispatch = useDispatch()
-
-  const ToastMessage = ({ toast = { type: "TOAST_ERROR", text:{header: "Error", body:"Something is wrong somewhere"}, status:"TOAST_VALID"}})=>{
+  const ToastMessage = ({ toast = { type: "TOAST_ERROR", text: { header: "Error", body: "Something is wrong somewhere" }, status: "TOAST_VALID" }})=>{
+    if (isAuthPath ){
+      return <div className="hidden"></div>
+    }
     if(toast.type && (toast.status==="TOAST_VALID")){
       setTimeout(() => {
         dispatch(updatedToastMessage({uuid:toast.uuid, status:types.TOAST_EXPIRED}))
@@ -79,6 +87,21 @@ const AppWrapper = ({children}) => {
       </Navbar>
     </div>
   )
+  const NoConnectionMainbarNav = () => (
+    <div id="mainbar_nav" className="sticky top-0 w-full min-h-[10%] p-2 h-max flex flex-col items-center bg-white z-10 border-b-2 border-b-slate-200">
+      <BrokenConnNavbar noConn={true}/>
+
+    </div>
+  )
+  // sessionStorage.getItem("connectionRetry") > 2
+  if(retries?.attempt > 2 && retries?.status === types.DO_NOT_RETRY_CONNECTION){
+    return (
+      <div className="broken-connection">
+        <NoConnectionMainbarNav />
+        <BrokenConnection/>
+      </div>
+    )
+  }
   return (
     <Suspense fallback={<NoItems />}>
 

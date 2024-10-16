@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import Product from './ProductCardVertical'
 import { ArrowLeft, ArrowRight } from './icons'
 import { useDispatch, useSelector } from "react-redux"
 import { filteredProductsFromModel } from "../orm/selectors"
-import { useGetEmbeddedProductsQuery, useGetProductQuery, useGetProductsQuery } from '../js/middleware/queryHandler'
+import { useGetEmbeddedProductsQuery, useGetProductQuery, useGetProductsQuery, useLazyGetEmbeddedProductsQuery, useLazyGetProductQuery } from '../js/middleware/queryHandler'
 import { createdToastMessage } from '../orm/models/ToastMessageModel'
 import types from '../orm/actions/actionTypes'
 
@@ -81,10 +81,7 @@ const EmbeddedProducts = ({title, tagname, productId}) => {
    **/
     const dispatch = useDispatch()
     let products;
-    const { data, isLoading, isSuccess, isError, error } = useGetProductQuery({
-      productId,
-      queries: `filters[${title.toLocaleLowerCase().replaceAll(" ", "_")}]=1`
-    })
+    const [getProduct,{ data, isLoading, isSuccess, isError, error }] = useLazyGetProductQuery()
     if (isLoading) {
       products = [{ type: "loading" }]
     } else if (isSuccess) {
@@ -94,6 +91,7 @@ const EmbeddedProducts = ({title, tagname, productId}) => {
       dispatch(createdToastMessage({ status: types.TOAST_VALID, text: { header: "Error", body: error.data.error }, type: types.TOAST_ERROR, id: "loading error" }))
       // console.log(error)
       products = false//[{ noProd: error.data.error }]
+
     }
     const handleScroll = (e, reverse) => {
       e.preventDefault();
@@ -126,6 +124,19 @@ const EmbeddedProducts = ({title, tagname, productId}) => {
         inline: "center"
       })
     }
+
+    useEffect(() => {
+      if(document.readyState === "complete" && productId && !products){
+        getProduct({
+          productId,
+          queries: `filters[${title.toLocaleLowerCase().replaceAll(" ", "_")}]=1`
+        }, true)
+      }
+      return () => {
+        ""
+      }
+    }, [products])
+    
     return (
       <>
         {
@@ -150,13 +161,15 @@ const EmbeddedProducts = ({title, tagname, productId}) => {
    **/
     const dispatch = useDispatch()
     let products;
-    const { data, isLoading, isSuccess, isError, error } = useGetEmbeddedProductsQuery("filters["+title.toLocaleLowerCase().replaceAll(" ", "_")+"]=1")
+    
+      const [getEmbeddedProducts, { data, isLoading, isSuccess, isError, error }] = useLazyGetEmbeddedProductsQuery()
+    
     if (isLoading) {
       products = [{ type: "loading" }]
     } else if (isSuccess) {
       console.log("", data)
       products = data
-    } else if (isError) {
+    } else if (isError && error?.name !== "AbortError") {
       console.log(error)
       dispatch(createdToastMessage({ 
         status: types.TOAST_VALID, 
@@ -197,6 +210,20 @@ const EmbeddedProducts = ({title, tagname, productId}) => {
         inline: "center"
       })
     }
+
+    useEffect(() => {
+      const t_out = setTimeout(() => {
+
+        getEmbeddedProducts(
+          "filters[" + title.toLocaleLowerCase().replaceAll(" ", "_") + "]=1", true)
+
+      }, 5000)
+    
+      return () => {
+       clearTimeout(t_out)
+      }
+    }, [])
+    
     return(
       <>
        { 

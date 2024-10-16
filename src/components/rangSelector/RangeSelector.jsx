@@ -28,6 +28,7 @@ const RangeSelector = ({ min, max, stateUpdaters, editableValues, onChange, rang
           }%`;
       }
     }
+    return ()=>{""}
   }, [minValue, maxValue, getPercent]);
 
   // useEffect for minValRef
@@ -41,11 +42,13 @@ const RangeSelector = ({ min, max, stateUpdaters, editableValues, onChange, rang
           }%`;
       }
     }
+    return () => { "" }
   }, [minValue, maxValue, getPercent]);
 
   // useEffect for onChange
   useEffect(() => {
     onChange({ min: stateUpdaters.min.val, max: stateUpdaters.max.val });
+    return () => { "" }
   }, [stateUpdaters.min.val, stateUpdaters.max.val, onChange]);
 
   const updateMinVal = (value) => {

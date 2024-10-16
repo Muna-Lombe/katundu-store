@@ -104,6 +104,7 @@ const Footer = ({}) => {
     useEffect(() => {
       // console.log("jsdhffdalfj")
       // toggleOnResize()
+      return()=>""
     }, [])
 
     return (

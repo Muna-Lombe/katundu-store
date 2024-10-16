@@ -8,7 +8,7 @@ import { useLazySearchForProductsQuery } from "../../js/middleware/queryHandler"
 
 const FilterSearchResults = ({searchFilters, queryText, hasProducts, children }) => {
 
-const [searchFor, state, {lastArg}] = useLazySearchForProductsQuery();
+  const [searchFor, state, {lastArg}] = useLazySearchForProductsQuery();
 
 
 
@@ -302,24 +302,36 @@ const [searchFor, state, {lastArg}] = useLazySearchForProductsQuery();
   }
 
   const ApplyFiltersBtn = ({applyFilters }) => (
-    <button
-      id="apply_filters_btn"
-      className={` py-[3px] px-8 w-max text-base h-max flex flex-row-reverse justify-center border-[#2967FF]  rounded-lg border-[1px] active:bg-[#2967FF] stroke-blue-500`}
-      onClick={(e) =>{ handleApplyFilters(e); handleToggleFilters(true)}}
-    >
-      <span className='px-1 md:flex lg:flex xl:flex   text-sm  text-[#2967FF]    active:text-[#ffffff] font-raleway lining-nums tabular-nums  font-[600] text-center'>
-        {tags.filterSearchResults.applyFiltersText}
-      </span>
-    </button>
+
+    <>
+      <button
+        id="apply_filters_btn"
+        className={` greater-than-sm:hidden py-[3px] px-8 w-max text-base h-max flex flex-row-reverse justify-center border-[#2967FF]  rounded-lg border-[1px] active:bg-[#2967FF] stroke-blue-500`}
+        onClick={(e) =>{ handleApplyFilters(e); handleToggleFilters(true)}}
+      >
+        <span className='px-1 md:flex lg:flex xl:flex   text-sm  text-[#2967FF]    active:text-[#ffffff] font-raleway lining-nums tabular-nums  font-[600] text-center'>
+          {tags.filterSearchResults.applyFiltersText}
+        </span>
+      </button>
+      <button
+        id="apply_filters_btn"
+        className={` greater-than-sm:flex py-[3px] px-8 w-max text-base h-max flex flex-row-reverse justify-center border-[#2967FF]  rounded-lg border-[1px] active:bg-[#2967FF] stroke-blue-500`}
+        onClick={(e) => { handleApplyFilters(e); handleToggleFilters(false) }}
+      >
+        <span className='px-1 md:flex lg:flex xl:flex   text-sm  text-[#2967FF]    active:text-[#ffffff] font-raleway lining-nums tabular-nums  font-[600] text-center'>
+          {tags.filterSearchResults.applyFiltersText}
+        </span>
+      </button>
+    </>
   )
   const FilterComponent = ({onClick}) => (
-    <div id="filter-search-results" className="filter-search-results   w-[90%] greater-than-sm:w-full  h-screen py-2 mx-1 hidden flex-col gap-6 bg-white font-raleway lining-nums tabular-nums  z-[5] overflow-y-clip scrollbar" >
+    <div id="filter-search-results" className="filter-search-results   min-w-[40%] greater-than-sm:w-fit  h-screen py-2 mx-1 hidden greater-than-sm:flex flex-col gap-6 bg-white font-raleway lining-nums tabular-nums  z-[5] overflow-y-clip scrollbar" >
       <h4 className="title w-max text-lg text-blue-500 font-raleway lining-nums tabular-nums  font-semibold underline underline-offset-1 greater-than-sm:pointer-events-none" onClick={(e)=>onClick(e)}>{"Filters"}</h4>
       
-      <div className="categories-input-wrapper w-full h-auto flex flex-row flex-wrap greater-than-md:flex-col gap-1">
+      <div className="categories-input-wrapper w-fit h-auto flex flex-col flex-wrap greater-than-md:flex-col gap-1">
         <Categories categories={searchFilters.header} />
         <div className="input-fields-wrapper less-than-sm:max-h-72 overflow-hidden">
-          <div className="input-fields-wrapper-scrollable w-full h-auto grid grid-flow-row  less-than-logo-min:flex flex-row auto-cols-max auto-rows-max gap-2 scroll-bar overflow-scroll">
+          <div className="input-fields-wrapper-scrollable w-fit h-auto grid grid-flow-row  less-than-logo-min:flex flex-row auto-cols-max auto-rows-max gap-2 scroll-bar overflow-scroll">
             {
               searchFilters.inputData.filter((i,x) => !i.data?.options ? i : i.data?.options.length ? i : false ).map((d, x) => <FilterInput key={x} inputType={d.type} data={d.data} />)
             }
@@ -334,9 +346,9 @@ const [searchFor, state, {lastArg}] = useLazySearchForProductsQuery();
 
   )
   return (
-    <div className={"filter-search-results-wrapper mx-1 w-full greater-than-md:max-w-[20rem] flex gap-1 overflow-x-hidden " + (hasProducts ? " h-auto " : "hidden   ") + " transition-height duration-200 ease-linear first:greater-than-sm:hidden  2n-child:greater-than-sm:flex"
+    <div className={"filter-search-results-wrapper mx-1 w-auto greater-than-md:max-w-[20rem] flex gap-1 overflow-x-hidden " + (hasProducts ? " h-auto " : "hidden   ") + " transition-height duration-200 ease-linear first:  2n-child:"
 }>
-      <span className="flex">
+      <span className="flex greater-than-sm:hidden">
         <FilterIco onClick={handleToggleFilters} />
       </span>
       <FilterComponent onClick={handleToggleFilters} />

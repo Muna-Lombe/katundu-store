@@ -73,12 +73,12 @@ const Search = () => {
 
                           : <div className="search-results">
                           
-                              <div id="search__content" className={"horizontal less-than-xs:hidden p-2 w-full flex flex-col overflow-x-clip scroll-smooth gap-[38px] justify-center  transition-all  tag"}>
+                              <div id="search__content" className={"horizontal less-than-xs:hidden greater-than-lg:hidden p-2 w-full flex flex-col overflow-x-clip scroll-smooth gap-[38px] justify-center  transition-all  tag"}>
                                   {products.map((i) => 
                                     <ProductCardHorizontal key={i.uuid}  product={i} isSearchOrMain/>
                                   )}
                               </div>
-                              <div id="search__content" className={"vertical hidden  less-than-xs:flex p-2 w-full flex-row overflow-x-clip scroll-smooth gap-[38px] justify-center  transition-all  tag"}>
+                              <div id="search__content" className={"vertical hidden  less-than-xs:flex greater-than-lg:flex p-2 w-full flex-row overflow-x-clip scroll-smooth gap-[38px] justify-center  transition-all  tag"}>
                                 {products.map((i) =>
                                   <ProductCardVertical key={i.uuid} product={i} isSearchOrMain />
                                 )}

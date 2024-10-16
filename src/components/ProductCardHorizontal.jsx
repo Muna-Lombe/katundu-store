@@ -14,7 +14,7 @@ import BuyBtns from './buttons/BuyBtns';
 import randomizer from '../js/utils/randomizer';
 
 
-const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
+const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW = 8, maxWH = "" }) => {
   
   let img = new IMG()
   const dispatch = useDispatch()
@@ -93,7 +93,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
   )
   const ProductHeader = ()=>(
     <div id="product_header" className=" px-1 w-[45%] flex justify-center items-center  ">
-      <Link to={"/products/" + product?.id} id="product_image" className="flex w-full justify-center items-end" >
+      <Link to={"/products/" + product?.name + "-" + product?.uuid} id="product_image" className="flex w-full justify-center items-end" >
         {
           noPrd
           ? <Image imagepath={no_product_img} />
@@ -116,7 +116,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
               isSearchOrMain
               ? <span className="price py-1 flex flex-row items-center justify-between font-medium">
                   <PriceTag product={product} />
-                  <span className="child:w-16 child:rounded-md">
+                  <span className="child:w-12 child:rounded-md">
                     <BuyBtns id={product.id} onlyBtn={"onlyBtn"}>     
                       <BasketIco />
                     </BuyBtns>
@@ -132,11 +132,11 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
 
   const NameStore = ()=>(
     <div id="name_store__wrapper" className="  h-max flex flex-col justify-between items-start gap-2">
-        <h4 id='product_name' className="w-full h-12 bg-white text-[#2D2D2F] text-ran text-sm greater-than-md:text-lg hover:text-orange-500 font-medium ">
+        <h4 id='product_name' className="w-full h-12 bg-white text-[#2D2D2F]  text-base greater-than-md:text-lg hover:text-orange-500 font-medium ">
           {
             noPrd
               ? <div className="no-prd-field w-[70%] h-6 border rounded-md bg-gradient-to-tr from-slate-400 to-slate-500 animate-pulse opacity-30"></div>
-              : <Link to={"/products/" + product?.id} style={textStyle} >
+            : <Link to={"/products/" + product?.name + "-" + product?.uuid} style={textStyle} >
                 {product?.name}
               </Link>
           }
@@ -167,7 +167,7 @@ const Product = ({ product, noPrd, isSearchOrMain, minW =8}) => {
   )
   return (
    
-    <div id={"product_card_horizontal_" + product?.id} className={(noPrd ? " " : " ")  + (isSearchOrMain ? " min-w[20rem] " : " min-w-\[12rem] " ) +"greater-than-md:min-w-\[20rem] greater-than-lg:min-w-\[20rem] w-full max-w-[40rem]  h-full max-h-[10rem] flex flex-nowrap  flex-row justify-start bg-white shadow-md border border-gray-200 rounded-md font-raleway lining-nums tabular-nums  overflow-y-hidden"}>
+    <div id={"product_card_horizontal_" + product?.id} className={(noPrd ? " " : " ")  + (isSearchOrMain ? " min-w[20rem] " : " min-w-\[12rem] " ) +"greater-than-md:min-w-[10rem] greater-than-lg:min-w-[20rem] w-full max-w-[30rem]  h-full max-h-[10rem] flex flex-nowrap  flex-row justify-start bg-white shadow-md border border-gray-200 rounded-md font-raleway lining-nums tabular-nums  overflow-y-hidden"}>
       <ProductHeader/>
       <ProductContent/>
         {

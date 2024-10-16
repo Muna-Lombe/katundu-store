@@ -197,7 +197,8 @@ export const addToProductData = (product, id) => {
   return newProduct
 }
 
-export {default as SearchIco } from './SearchIco';
+export { default as SearchIco } from './SearchIco';
+export { default as SearchHistoryIco } from './SearchHistoryIco';
 export {default as PinIco } from './PinIco';
 export {default as BasketIco } from './BasketIco';
 export {default as CartIco } from './CartIco';
@@ -226,3 +227,11 @@ export { default as FilterIco } from './FilterIco';
 export { default as CouponIco } from './CouponIco';
 export { default as NoStockIco } from './NoStockIco';
 export { default as EditIco } from './EditIco';
+export { BellIcon,
+  BriefcaseIcon,
+  ChatIcon,
+  CogIcon,
+  ReviewsIcon,
+  CheckedOutIcon,
+  HeartIcon,
+  UserIcon, QuestionIcon } from './otherIcons';

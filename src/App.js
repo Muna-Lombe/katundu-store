@@ -3,7 +3,7 @@ import './App.css';
 import React,{lazy} from 'react';
 import {Routes, Route, BrowserRouter } from "react-router-dom";
 import AppWrapper from './components/AppWrapper';
-import { Login } from './components';
+import { Login, ResetPassword } from './components';
 import { PrivateRoute } from './pages';
 import Signup from './components/forms/Signup';
 
@@ -18,12 +18,16 @@ function App() {
   const Basket = lazy(() => import("./pages/Basket"))
   const Checkout = lazy(() => import("./pages/Checkout"))
   const History = lazy(() => import("./pages/History"))
+  const Dashboard = lazy(() => import("./pages/UserDashboard"))
+  // const Dashboard = lazy(() => import("./pages/UserDashboard/UserDashboard"))
   const ShowProduct = lazy(() => import("./pages/ShowProduct"))
   const Categories = lazy(() => import("./pages/Categories"))
 
   // const PrivateRoute = lazy(()=> import("./pages/PrivateRoute"))
   
-  
+  // if(connectionRetries > 2){
+
+  // }
   return (
     <AppWrapper>
       <Routes>
@@ -40,8 +44,12 @@ function App() {
         <Route path="/history" exact element={
           <PrivateRoute component={History} />
         } />
+        <Route path="/me" exact element={
+          <PrivateRoute component={Dashboard} />
+        } />
         <Route path="/signup" exact element={<Signup /> } /> 
         <Route path="/signin" exact element={<Login /> } /> 
+        <Route path="/reset-password" exact element={<ResetPassword />}/>
         
         <Route
           path="*"

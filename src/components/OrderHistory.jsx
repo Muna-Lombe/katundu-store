@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { Children, useState } from 'react'
 
 // assets 
 import { CopyIco, ArrowDown, titleTagTypes as tags, OpenIco, ArrowLeft, ArrowRight} from './icons'
@@ -12,66 +12,14 @@ import { Link } from 'react-router-dom'
 import ToggleableField from './ToggleableField'
 import { useDispatch } from 'react-redux'
 import { createdOrderItem } from '../orm/models/OrderModel'
+import { handleLoadTest, handleRotateIco } from '../orm/utilities'
 
-const OrderHistory = ({ itemsOrdered}) => {
+const OrderHistory = ({ itemsOrdered, listStyle}) => {
   const dispatch = useDispatch()
-  // console.log("", itemsOrdered)
+  console.log("", itemsOrdered)
 
-  const handleLoadTest =()=>{
-    const finalOrderData = [{
-      "type": "orm/Order/CREATE",
-      "payload": { "id": "aqr5hr7e-1", "DateCreated": "2023-2-23,08:29:51 GMT+0300 (Moscow Standard Time)", "productIds": [2001, 2017, 2011], "OrderProps": { "quantity": [{ "productId": 2001, "price": "329", "quantity": 1 }, { "productId": 2017, "price": "44", "quantity": 1 }, { "productId": 2011, "price": "408", "quantity": 1 }], "deliveryDate": "2023-03-23", "deliveryTime": "11:33", "deliveryAddress": "Ylitsa Dement'yeva", "receiver": "Tony valeska", "receiverPhone": "+79656229755", "orderCost": 781, "deliveryCost": 200, "totalCost": 981, "storeName": "Davies' Store" }, "status": ["ordered", "complete"] }
-    },
-    {
-      "type": "orm/Order/CREATE",
-      "payload": { "id": "q1ndxo6p-2", "DateCreated": "2023-2-23,08:30:50 GMT+0300 (Moscow Standard Time)", "productIds": [2012], "OrderProps": { "quantity": [{ "productId": 2012, "price": "9", "quantity": 1 }], "deliveryDate": "2023-03-23", "deliveryTime": "09:32", "deliveryAddress": "Ylitsa Dement'yeva", "receiver": "Tony valeska", "receiverPhone": "+79656229755", "orderCost": 9, "deliveryCost": 200, "totalCost": 209, "storeName": "Clear fawn" }, "status": ["ordered", "complete"] }
-    },
-    {
-      "type": "orm/Order/CREATE",
-      "payload": { "id": "n3z6tjk7-3", "DateCreated": "2023-2-23,08:31:21 GMT+0300 (Moscow Standard Time)", "productIds": [2010], "OrderProps": { "quantity": [{ "productId": 2010, "price": 104, "quantity": 1 }], "deliveryDate": "2023-03-23", "deliveryTime": "11:33", "deliveryAddress": "Ylitsa Dement'yeva", "receiver": "Tony valeska", "receiverPhone": "+79656229755", "orderCost": 104, "deliveryCost": 200, "totalCost": 304, "storeName": "Avita" }, "status": ["ordered", "complete"] }
-    }]
-    finalOrderData.forEach(od=>dispatch(createdOrderItem(od.payload)))
-    
-  }
-  const handleRotateIco = (e, id) => {
-    const elem = e.target || e
-    // console.log(elem)
-    if (e.type === "click") e.preventDefault()
-    if (e.type === "click") e.stopPropagation()
-    const ordSum = document.getElementById("order-summary"+id)
-    const ordLst = document.getElementById("order-list"+id)
-    const ico = document.querySelector(".order-item-expand-ico")
-    const findNear=(child)=>{
-      return child.previousSibling || child.nextSibling
-    }
-    const toggleReplace=(classList,one, two)=>{
-      classList.replace(one, two) ||
-      classList.replace(two, one)
-    }
-    const clickedSvg = () => elem.tagName === "svg"
-    const clickedP = () => elem.tagName === "p"
-    let child;
-    if (clickedSvg()) child = elem
-    if (clickedP()) child = elem.firstChild
-    
-    if (ico.classList.contains("-rotate-180")) {
-      ico.classList.replace("-rotate-180", "rotate-180")
-      // const nearico = findNear(ico)
-      // if (nearico.tagName === "INPUT" && nearico.type === "checkbox" && nearico.id === "show-more-checkbox"){
-        //   nearico.checked=true
-        // }
-        toggleReplace(ordLst.classList,"visible","hidden" )
-        toggleReplace(ordSum.classList,"hidden", "visible")
-        
-      } else {
-        ico.classList.replace("rotate-180", "-rotate-180")
-        // optgrp().classList.replace("visible", "hidden")
-        toggleReplace(ordSum.classList,"visible", "hidden",)
-        toggleReplace(ordLst.classList,"hidden", "visible")
-        
-      }
-      
-    }
+  // handleLoadTest(dispatch, createdOrderItem)
+  // handleRotateIco()
     const handleReadMore=(e, itemId, setter)=>{
       e.preventDefault()
       
@@ -145,7 +93,37 @@ const OrderHistory = ({ itemsOrdered}) => {
       
       toggleActiveState()
     }
-    const Item = ({ idx, order})=>{
+  const ListItem = ({ idx, order })=>{
+    // need order number, order status, items ordered count, order cost
+    // make order number clickable to redirect to history page
+    const id = '#' + order.uuid
+    const status = order.orderStatus[0] + "/" + order.orderStatus[1]
+    
+    return(
+      // minmax(0, max-content) minmax(50%, 1fr) auto
+      <tr>
+        <td class="px-2 py-4 max-w-[8rem] truncate whitespace-nowrap ">
+            {idx+1}
+        </td>
+        <td class="px-2 py-4 max-w-[8rem] truncate whitespace-nowrap cursor-pointer">
+          <Link to={"/history"}>
+            {id}
+          </Link>
+        </td>
+        <td class="px-2 py-4 max-w-[8rem] truncate whitespace-nowrap">
+          {status}
+        </td>
+        <td class="px-2 py-4 max-w-[8rem] truncate whitespace-nowrap">
+          {order.orderQuantity} Qty
+        </td>
+        <td class="px-2 py-4 max-w-[8rem] truncate whitespace-nowrap">
+          K {order.orderCost}
+        </td>
+      </tr>
+      
+      )
+    }
+    const CardItem = ({ idx, order})=>{
       const [isDrawn, setIsDrawn] = useState(false)
       const id = '#'+ order.uuid
       let date = order.deliveryDate
@@ -169,7 +147,7 @@ const OrderHistory = ({ itemsOrdered}) => {
       
       const OrderList = ()=>{
         const contentType =  "toggle-ordered-items"
-        const contentArray = order.orderItems?.map(oi => ({ 
+        const contentArray = order?.orderItems?.map(oi => ({ 
             ...oi, 
             specificId: oi.uuid, 
             nameTag: { 
@@ -177,9 +155,10 @@ const OrderHistory = ({ itemsOrdered}) => {
               item: { id: oi.uuid, prop: "     x" + oi.productQuantity }
             }, 
             valuesArray: [tags.currencyType + Number.parseInt(oi.productPrice * oi.productQuantity)] 
-          }))  
+          })) || [] 
         const variations = order?.orderItems.map((o, x) => ({ uuid: o.uuid, text: x+1 }))
-      
+        console.log("order list", variations, contentArray)
+
           return (
             <div id={"order-list-"+order.uuid} className=" child:m-0 child:p-0 w-max child:gap-1 text-xs transition-transform ">
             <ToggleableField contentType={contentType}  contentArray={contentArray} variations={variations}/>
@@ -193,6 +172,7 @@ const OrderHistory = ({ itemsOrdered}) => {
           specificId: v.uuid,
           ChildElement: v.text === "list" ? OrderList : OrderSummary 
         }))
+        console.log("order details", variations, contentArray)
         return(
             <ToggleableField contentType={contentType}  contentArray={contentArray} variations={variations} hasChildElement={true}/>
         )
@@ -272,6 +252,64 @@ const OrderHistory = ({ itemsOrdered}) => {
     )
   }
 
+  const GridCards = ({listStyle})=>(
+    <div id="content_wrapper" className="w-full grid  grid-flow-cols grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-2">
+      {
+        itemsOrdered.length
+          ? itemsOrdered?.map((item, x) => <CardItem listStyle={listStyle} key={x} idx={x} order={item} />)
+          : <NoItems subText={"🙅 looks like you have no orders yet 👀"} mainText={<span> {"😃 "} <Link to={"/"} className='text-blue-500 hover:underline'>{"Buy something"} </Link>  {" to start your shopping journey 😃"} </span>} />
+      }
+    </div>
+  )
+  
+  const ListItems = ({listStyle})=>(
+    
+    <div id="content_wrapper" className="bg-white shadow w-full overflow-hidden sm:rounded-lg">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th scope="col" className="px-2 py-3 max-w-[7rem] truncate text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              
+            </th>
+            <th scope="col" className="px-2 py-3 max-w-[7rem] truncate text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Order Number
+            </th>
+            <th scope="col" className="px-2 py-3 max-w-[7rem] truncate text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Order Status
+            </th>
+            <th scope="col" className="px-2 py-3 max-w-[7rem] truncate text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Order Count
+            </th>
+            <th scope="col" className="px-2 py-3 max-w-[7rem] truncate text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Total Cost
+            </th>
+          </tr>
+        </thead>
+        <tbody className="bg-white divide-y divide-gray-200">
+        
+          
+          {
+            itemsOrdered.length
+              ? itemsOrdered?.map((item, x) => <ListItem listStyle={listStyle} key={x} idx={x} order={item} />)
+              : <></>
+          }
+      
+        </tbody>
+      </table>
+    </div>
+  )
+  const OrdersWrapper = ()=>{
+    switch (listStyle) {
+      case "grid":
+        return <GridCards listStyle={listStyle} />
+        
+      case "list":
+        return <ListItems listStyle={listStyle} />
+        
+      default:
+        return <></>
+    }
+  }
   return (
     <div id="order_history__container" className="w-full px-2 flex flex-col justify-center gap-2  ">
       <div id="order_history__header" className="text-xl text-black dark:text-white  font-arial lining-nums tabular-nums  font-semibold">
@@ -282,14 +320,7 @@ const OrderHistory = ({ itemsOrdered}) => {
       </div>
       <div id="order_history__content" className="w-full py-4">
         <div id='shadow-div' className="shadow-div"></div>
-        <div id="content_wrapper" className="w-full grid  grid-flow-cols grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-2">
-         {
-          itemsOrdered.length
-          ? itemsOrdered?.map((item,x) => <Item key={x} idx={x} order={item}/>) 
-              : <NoItems subText={"🙅 looks like you have no orders yet 👀"} mainText={<span> {"😃 "} <Link to={"/"} className='text-blue-500 hover:underline'>{"Buy something"} </Link>  {" to start your shopping journey 😃"} </span>} />
-        } 
-          
-        </div>
+        <OrdersWrapper/>
       </div>
 
     </div>

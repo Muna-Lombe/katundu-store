@@ -69,7 +69,8 @@ const ProductMinified = ({children, productItem})=> {
 
     useEffect(() => {
       changeOnScroll()
-    })
+      return ()=>""
+    },[])
 
     return (
       <>

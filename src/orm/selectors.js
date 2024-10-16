@@ -190,4 +190,12 @@ export const filteredProductsFromModel = (ex)=> createSelector(
           })
         }
       )
+      
+      export const connectionRetries = createSelector(
+        ormSelector(session.schema),
+        (state) =>{
+          return state.ConnectionRetriesMonitor.last()
+        }
+      )
+
           

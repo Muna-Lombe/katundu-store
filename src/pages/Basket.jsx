@@ -1,36 +1,35 @@
-import React, { Suspense, useCallback, useEffect, useRef } from 'react'
+import React, { Suspense, memo, useCallback, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Cart, NoItems } from '../components'
+// import { titleTagTypes as tags } from "./icons";
 
 import { filteredCartItemsFromModel } from '../orm/selectors'
 import types from '../orm/actions/actionTypes'
 import { useGetShoppingCartQuery } from '../js/middleware/queryHandler'
 import { createdToastMessage } from '../orm/models/ToastMessageModel'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { titleTagTypes as tags } from '../components/icons'
+import { AttributeWatcher, ClassWatcher } from '../orm/utilities/classWatcher'
 
 
 const Basket = () => {
   const goto = useNavigate()
   // recieve the state
   const cartItems = useSelector(filteredCartItemsFromModel()) 
-  // let cartItem; //= useSelector(filteredProductsFromModel([]))
-  // const dispatch = useDispatch()
+  // console.log("acwfdf", cartItems)
 
-  // if(cartItems.some((e)=> !e.product)){
-  //   cartItems = []
-
-  // }
  
   // filter it by store
   const filterByStore = (ordItm) =>{
     const filteredStoreObject = Object.create(null)
       // console.log("test ordItm",  ordItm)
-      ordItm.forEach((fp)=>{
-      if(filteredStoreObject[fp.product?.store.name]){
+    ordItm.forEach((fp)=>{
+      const storeName = fp.product?.store.name+"-"+fp.product?.store.uuid;
+      if(filteredStoreObject[storeName]){
 
-        filteredStoreObject[fp.product?.store.name].push(fp) 
+        filteredStoreObject[storeName].push(fp) 
       }else{
-          filteredStoreObject[fp.product?.store.name] = [fp]
+          filteredStoreObject[storeName] = [fp]
       }
       
     })
@@ -40,10 +39,11 @@ const Basket = () => {
   // seperate it by ordered and not ordered status
 
   const addTotalCost = (store)=>{
-    // console.log('test store', store)
+    console.log('test store', store)
     if(Object.keys(store).length < 1) return []
     return Object.keys(store).map(storeName => (
-          { storeName:storeName, 
+          { storeName:storeName.split("-")[0], 
+            uuid: storeName.split("-")[1],
             orders: store[storeName],
         currentCummulativeTotal: store[storeName].map((orderItem) => {
                             return (orderItem.product?.price * orderItem.productCount )
@@ -102,36 +102,39 @@ const Basket = () => {
     };
     
     const [getCheckedItem, setCheckedItem] = useVariable([])
+    
+    const addCheckedItems=({setter=(i)=>"", item, rootElement})=>{
+      rootElement ||= document.getElementById("cart_container")
 
-    const handleSetCheckedItems = (e) => {
-      // e.preventDefault()
-      const cart = document.getElementById("cart_container")
-
-      const checkedItems = cart.querySelectorAll('input[type="checkbox"]:checked.select-item')
+      const checkedItems = item ? [item] : rootElement.querySelectorAll('input[type="checkbox"]:not(:disabled):checked.select-item')
       const cartItemIds = []
       checkedItems.forEach((item) => {
         cartItemIds.push(item.id.split('_')[2])
       })
-      setCheckedItem(cartItemIds) //[cartItems.filter(ci => cartItemIds.includes(ci.uuid)).map(uo => (
-        // uo.uuid
-        //   { 
-          //     uuid: uo.uuid, 
-          //     price: uo.product.price 
-          //   }
-          // ))]
-      console.log('test cartItemIds', getCheckedItem(), cartItemIds)
-    }
-    const handleCheckedItems = (e) => {
-      e.preventDefault()
-      const cart = document.getElementById("cart_container")
+      // console.log("cartItemIds", cartItemIds);
+      setter(cartItemIds)
+      setCheckedItem(cartItemIds)
 
-      const checkedItems = cart.querySelectorAll('input[type="checkbox"]:not(:disabled):checked.select-item')
-      const cartItemIds = []
-      checkedItems.forEach((item) => {
-        cartItemIds.push(item.id)
-      })
-      setCheckedItem( checkedItems)
-      goto("/checkout", { from: "/cart", cartItemIds: getCheckedItem() })
+    }
+    const handleSetCheckedItems = (e) => {
+      e?.preventDefault()
+     
+      addCheckedItems({setter:setCheckedItem});
+      // console.log('test cartItemIds', getCheckedItem())
+
+    }
+    const handleCheckedItems = (e,singleCheckedItemId) => {
+      e.preventDefault()
+      // const cart = document.getElementById("cart_container")
+
+      // const checkedItems = cart.querySelectorAll('input[type="checkbox"]:not(:disabled):checked.select-item')
+      // const cartItemIds = []
+      // checkedItems.forEach((item) => {
+      //   cartItemIds.push(item.id)
+      // })
+      // setCheckedItem( checkedItems)
+      console.log("getSods", getCheckedItem());
+      goto("/checkout", { state: { from: "/cart", cartItemIds: (singleCheckedItemId ? [singleCheckedItemId] : getCheckedItem()) } })
     }
 
     const handleSelectStore = (e, id) => {
@@ -139,11 +142,13 @@ const Basket = () => {
 
       const cart = document.getElementById("cart_container")
 
-      const storeItems = cart.querySelector("#" + id).parentElement.querySelectorAll('input[type="checkbox"]:not(:disabled).select-item')
+      
+      const storeItems = cart.querySelector("#" + id).parentElement.querySelectorAll('input[type="checkbox"]:not(:disabled).select-item');
+      e.target.checked ? e.target.setAttribute("checked", "") : e.target.removeAttribute("checked");
       storeItems.forEach((item) => {
         item.checked = e.target.checked
-      })
-      handleSetCheckedItems(e)
+      });
+      // handleSetCheckedItems(e)
 
     }
 
@@ -152,51 +157,149 @@ const Basket = () => {
 
       const cart = document.getElementById("cart_container")
 
-      const allItems = cart.querySelectorAll('input[type="checkbox"]:not(:disabled)')
+      const allItems = cart.querySelectorAll('input[type="checkbox"]:not(:disabled)');
+      e.target.checked ? e.target.setAttribute("checked","") : e.target.removeAttribute("checked");
       allItems.forEach((item) => {
         item.checked = e.target.checked
-      })
-      handleSetCheckedItems(e)
+      });
+      // handleSetCheckedItems(e)
 
     }
     
-
-    const TotalBuy = ({list, forwardRef})=>{
-
-      const checkedItems = useRef(list?.filter(store => store.orders.some(oi => forwardRef().includes(oi.uuid)))
-      )
+     
+    const TotalBuy = ({list, exclude})=>{
+      const [idList, setIdList] = useState([])
+     
+      // console.log("idList", idList);
+      const checkedItems = {
+        current: list?.filter(store => store.orders.some(oi => idList?.includes(oi.uuid)))?.map(store => ({ ...store, orders: store.orders.filter(oi => idList.includes(oi.uuid)) })) || ["empty"]
+      }//useRef()
+     
+      const addUp = (x) => x.map((orderItem) => {
+        return (orderItem.product?.price * orderItem.productCount)
+      }).reduce((a, b) => parseFloat(a) + parseFloat(b))
       const checkoutTotal = (list) => {
-        if (!list.length || !forwardRef().length) return 0
-
-        return checkedItems.current?.map((store, x) => (store.currentCummulativeTotal))?.reduce((a, b) => parseFloat(a) + parseFloat(b))//.toFixed(1)
+        if (!list.length || !idList.length) return 0
+        
+        return checkedItems.current?.map((store, x) => {
+          store.currentCummulativeTotal = addUp(store.orders)
+          return store.currentCummulativeTotal
+        })?.reduce((a, b) => parseFloat(a) + parseFloat(b))//.toFixed(1)
       }
-      // useEffect(() => {
-      //   first
+
+      useEffect(() => {
+        if (document.readyState === "complete") {
+          const selectAllInput = document.querySelector("input#select_all");
+          const selectStoreInputs = document.querySelectorAll(".select-store input");
+          const selectSingleInputs = document.querySelectorAll(".select-item");
+
+          const singleWatchers = []
+          selectSingleInputs.forEach((singleInput) => {
+            const localParent = document.getElementById(singleInput.id.split("_")[2]);
+            
+            const singleWatcher = new AttributeWatcher(
+              singleInput,
+              "checked",
+              () => {
+                // console.log("addCallback called")
+                addCheckedItems({
+                  setter:(arr)=>(
+                    setIdList((prev) => [...prev, ...arr])
+                  ),
+                  item: singleInput,
+                  rootElement: localParent.parentElement
+                })
+              },
+              () => {
+                // console.log("removeCallback called")
+                setIdList((prev) => prev.filter((id) => id !== singleInput.id.split('_')[2]));
+              }
+            );
+            singleWatchers.push(singleWatcher)
+          })
+          const storeWatchers = []
+          selectStoreInputs.forEach((storeInput) => {
+            const storeId = storeInput.id;
+            const storeItemsIds = Array.from(storeInput.parentElement.parentElement.parentElement.querySelectorAll('input[type="checkbox"]:not(:disabled).select-item')).map(inp => inp.id.split('_')[2]);
+            
+            const storeWatcher = new AttributeWatcher(
+              storeInput,
+              "checked",
+              () => {
+                // console.log("addCallback called")
+                addCheckedItems({
+                  setter:(arr)=>(
+                    setIdList((prev) => [...prev, ...arr])
+                  ),
+                  rootElement: document.getElementById("store_" + storeInput.nextElementSibling.innerText)
+                })
+              },
+              () => {
+                // console.log("removeCallback called")
+                setIdList((prev) => prev.filter((id) => !storeItemsIds.includes(id)));
+              }
+            );
+            storeWatchers.push(storeWatcher)
+            
+          })
+          // console.log("watching", selectAllInput);
+          const allWatcher = new AttributeWatcher(
+            selectAllInput,
+            "checked",
+            () => {
+              // console.log("addCallback called")
+              addCheckedItems({setter:setIdList})
+              // console.log("idList", idList)
+            },
+            () => {
+              // console.log("removeCallback called")
+              setIdList([])
+            }
+          );
+
+          return () => {
+            allWatcher?.disconnect();
+            storeWatchers.forEach((storeWatcher) => {
+              storeWatcher?.disconnect();
+            })
+            singleWatchers.forEach((singleWatcher) => {
+              singleWatcher?.disconnect();
+            })
+          }
+        }
+      }, [])
       
-      //   return () => {
-      //     second
-      //   }
-      // }, [third])
-      
-    console.log('test checkedItems', checkedItems)
+    // console.log('test checkedItems', checkedItems)
     const CheckoutBtn = () => (
       <button id="Checkout_btn"
-        onClick={(e) => "handleCheckedItems(e)"}
-
-        className={" less-than-xs:w-[5rem] less-than-xs:h-[1rem] w-[7rem] h-[2.1rem] md:w-[10rem] md:h-[2.5rem] lg:w-[10rem] lg:h-[2.5rem] xl:w-[10rem] xl:h-[2.5rem] px-8 py-3 bg-orange-600 active:bg-orange-500 border-[1px] border-orange-600  flex justify-center items-center rounded-lg text-base greater-than-md:text-xl text-white dark:text-black  font-medium"}
+        onClick={(e) => handleCheckedItems(e)}
+        disabled={!checkedItems.current.length}
+        className={" less-than-xs:w-[5rem] less-than-xs:h-[1rem] w-[7rem] h-[2.1rem] md:w-[10rem] md:h-[2.5rem] lg:w-[10rem] lg:h-[2.5rem] xl:w-[10rem] xl:h-[2.5rem] px-8 py-3 disabled:bg-slate-400 bg-orange-600 active:bg-orange-500 disabled:border-none disabled:opacity-90 disabled:pointer-events-none border-[1px] border-orange-600  flex justify-center items-center rounded-lg text-base greater-than-md:text-xl text-white dark:text-black  font-medium"}
       >
         {"Checkout"}
 
       </button>
     )
-    return(
-      
-      checkedItems.length ? 
-          <div className="hidden w-full max-w-sm h-max mt-10 p-2 greater-than-sm:flex flex-col justify-between items-end gap-1 border rounded-lg bg-orange-400">
-          
-          {
-          checkedItems.map((store, x) => (
-            <div key={x} className="w-full flex flex-col">
+    const CartHeaderTotal = () => (
+      <div className='w-full greater-than-md:hidden flex gap-4 items-baseline'>
+        <p
+          className=" less-than-xs:text-base text-lg whitespace-nowrap">
+          {tags.cart.totalInCartTag}:
+        </p>
+        <p
+          className=" text-orange-600 less-than-xs:text-base text-lg font-bold">
+          {tags.currencyType + checkoutTotal(list)}
+        </p>
+
+        <CheckoutBtn  />
+      </div>
+    )
+    const CartTotalCard = () =>(
+      <div className="hidden w-full max-w-sm h-max mt-10 p-2 greater-than-md:flex flex-col justify-between items-end gap-1 border rounded-lg bg-orange-400">
+
+        {
+          checkedItems.current.map((store, x) => (
+            <div key={x} className="total-buy w-full flex flex-col">
               {/* <h2 className="text-2xl font-bold">{store.storeName}</h2> */}
               <div className="flex flex-col">
                 {
@@ -208,36 +311,57 @@ const Basket = () => {
                   ))
                 }
                 <div className="flex flex-row justify-end">
-                 
+
                   <p>{store.currentCummulativeTotal}</p>
                 </div>
               </div>
-              
-            </div>
-            
-          )) 
-          }
-          <div className="w-full flex flex-row justify-between border-t-4 border-dashed">
-            <p> Total </p>
-            <p>{checkoutTotal(list)}</p>
-          </div>
-          <CheckoutBtn />
 
+            </div>
+
+          ))
+        }
+        <div className="w-full flex flex-row justify-between border-t-4 border-dashed">
+          <p> Total </p>
+          <p>{checkoutTotal(list)}</p>
         </div>
-      : <></>
+        <CheckoutBtn />
+
+      </div>
     )
+    if(exclude.header){
+      return(
+        <div className={"total-buy-card hidden greater-than-md:flex w-full max-w-sm  flex-col items-center"}>
+          <CartTotalCard />
+        </div>
+      )
+    }
+    if(exclude.card){
+      return (
+        <div className={"total-buy-header greater-than-md:hidden w-full max-w-sm  flex flex-col items-center"}>
+          <CartHeaderTotal />
+        </div>
+      )
+    }
+    
   }
-  // console.log('test cartItems',unOrd,'\n',ord)
-    return (
-      <>
-        <Suspense fallback={<NoItems />}>
-          <div className="Basket-wrapper flex flex-row gap-x-2 ">
-            <Cart unOrd={unOrd} ord={ord} handleCheckedItems={handleCheckedItems} handleSelectAll={handleSelectAll} handleSelectStore={handleSelectStore} setRef={handleSetCheckedItems}/> 
-            <TotalBuy list={unOrd} forwardRef={getCheckedItem} />
-          </div>
-        </Suspense>
-      </>
-    )
+
+  return (
+    <>
+      <Suspense fallback={<NoItems />}>
+        <div className="Basket-wrapper flex flex-row gap-x-2 ">
+          
+          <Cart
+            unOrd={unOrd} ord={ord} handleCheckedItems={handleCheckedItems} 
+            handleSelectAll={handleSelectAll} 
+            handleSelectStore={handleSelectStore} 
+            setRef={handleSetCheckedItems} 
+            TotalBuy={<TotalBuy list={unOrd}  exclude={{"card":true}} />}
+          /> 
+          <TotalBuy exclude={{"header":true}} list={unOrd}  />
+        </div>
+      </Suspense>
+    </>
+  )
 }
 
 export default Basket

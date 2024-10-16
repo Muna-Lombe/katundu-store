@@ -16,6 +16,7 @@ import { titleTagTypes as tags } from "../icons";
 import { useBeginItemCheckoutQuery, useCompleteItemCheckoutMutation } from '../../js/middleware/queryHandler'
 import { createdToastMessage } from '../../orm/models/ToastMessageModel'
 import { createdCheckout, updatedCheckout } from '../../orm/models/CheckoutModel'
+import LoadingStateComponent from '../LoadingStateComponent'
 
 
 const CheckoutForm = ({ location}) => {
@@ -27,10 +28,11 @@ const CheckoutForm = ({ location}) => {
 
   const dispatch = useDispatch()
   // returnOnReload()
-  const cartId = location.state?.cartItemIds?.[0];
+  const cartIds = location.state?.cartItemIds;
 
   const checkouts = useSelector(checkoutSelector)
-  const { data, isLoading, isError, error, isSuccess, refetch } = useBeginItemCheckoutQuery({ cartId: cartId })//, { refetchOnMountOrArgChange: true })
+  console.log("echeo", cartIds)
+  const { data, isLoading, isError, error, isSuccess, refetch } = useBeginItemCheckoutQuery({ cartIds: cartIds }, { refetchOnMountOrArgChange: true, forceRefetch:true })
   const [completeCheckout,{isLoading:isCompleteCheckoutLoading, isSuccess:isCompleteCheckoutSuccess, isError:isCompleteCheckoutError, isUninitialized:isCompleteCheckoutUninitialized} ] = useCompleteItemCheckoutMutation()
   const formRef = useRef(<div></div>)
   
@@ -47,7 +49,10 @@ const CheckoutForm = ({ location}) => {
       wrapper ||= document.getElementById("checkout_wrapper")
       wrapper.firstElementChild.innerHTML = data
       
-      
+      document.getElementById("checkout_btn")?.classList.toggle("max-w-[40rem]")
+      document.getElementById("order_details")?.classList.toggle("max-w-[45rem]")
+      // document.getElementById("order_details")?.parentElement.classList.toggle("items-center")
+      document.getElementById("order_details")?.parentElement.classList.toggle("greater-than-lg:max-w-max")
       const form = document.getElementById('checkout_form');
       const beginCheckoutComponent = document.querySelector("[data-component-name=BeginCheckout]")
       // console.log("beginCheckoutComponent", beginCheckoutComponent)
@@ -81,7 +86,7 @@ const CheckoutForm = ({ location}) => {
       
     }
     if(isError){
-      // console.log("err", error)
+      console.log("err", error)
       dispatch(createdToastMessage(
         {text: 
           {
@@ -247,28 +252,20 @@ const CheckoutForm = ({ location}) => {
       <input type="submit" form="checkout_form" id="checkout_btn" value={tags.checkout.checkoutBtnText} className="w-auto p-3 flex justify-center  items-center border-[1px] border-orange-600 bg-orange-600 active:bg-orange-400 rounded-3xl active: text-2xl text-white dark:text-black  font-raleway lining-nums tabular-nums  font-normal cursor-pointer" required/>
     </div>
   )
+  if(isLoading){
+    return (
+      <div className="w-full h-full mt-4 p-4 flex flex-col justify-center items-center">
+        <div className="text-lg text-orange-400 ">
+          Getting your order ready...
+        </div>
+        <LoadingStateComponent/>
+      </div>
+    )
+  
+  }
   return (
     <div id="checkout_wrapper" className="w-full px-2">
       <div className="hot_swappable"></div>
-      
-      {/* <div id="checkout_header" className="text-xl text-black dark:text-white  font-raleway lining-nums tabular-nums  font-bold">
-        <p>
-        {tags.checkout.checkoutText}
-        </p>
-      </div>
-      <form id="checkout_form" name="checkout_form" action="/#" method='POST'  onSubmit={(e)=>handleSubmit(e)} >
-        <div id="checkout_content" className="w-auto flex flex-col flex-wrap justify-center items-center sm:flex-col md:flex-row lg:flex lg:flex-row lg:justify-start lg:gap-8">
-          
-          <div id="checkout_form__wrapper" className="py-4 w-full lg:w-[33%] max-w-[30rem]  flex flex-col justify-center align-middle gap-3 ">
-              <CheckoutForm />
-            </div>
-            <div id="checkout_order__wrapper" className="w-full max-w-[30rem] flex-grow    flex flex-col justify-center items-center gap-2">
-              <CheckoutOrder />
-            </div>
-          
-        </div>
-      </form> */}
-
     </div>
   )
 }

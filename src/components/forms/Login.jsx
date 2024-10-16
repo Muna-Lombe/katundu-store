@@ -13,15 +13,17 @@ import { apiSlice, useGetShoppingCartQuery, useLoginUserMutation, useSignupUserM
 import { createdToastMessage } from "../../orm/models/ToastMessageModel";
 import { removedAllCartItems } from "../../orm/models/CartModel";
 import { removedAllOrderItems } from "../../orm/models/OrderModel";
+import Toast from "../banners/Toast";
+import ToggleVisibleIco from "../icons/ToggleVisibleIco.jsx";
 
 export default function Login({userId}) {
 
   const dispatch = useDispatch()
   const location = useLocation()
   const goto = useNavigate()
-  const [signupUser, { isLoading: signupIsLoading }] = useSignupUserMutation()
+  // const [signupUser, { isLoading: signupIsLoading }] = useSignupUserMutation()
 
-  const [loginUser, { isLoading: loginIsLoading }] = useLoginUserMutation()
+  const [loginUser, {isSuccess, isLoading: loginIsLoading, isError, error:loginError, data }] = useLoginUserMutation()
   const sess = sessionStorage;
   const performAuthedActions = async (asyncAxns) =>{
     asyncAxns.forEach(ax=>dispatch(ax()))
@@ -55,7 +57,7 @@ export default function Login({userId}) {
         // () => dispatch(preloadCartItems),
 
       ])
-      location.state.pathname ||= "/";
+      location.state.pathname = location.state.pathname ? ["/reset-password", "/signup"].includes(location.state.pathname) ? "/" : location.state.pathname : "/";
       goto(location.state,{state:{from: location.pathname}});
       
     } catch (error) {
@@ -98,6 +100,16 @@ export default function Login({userId}) {
               
             </p>
           </div>
+          <div id="signin-toast" className="showtoast hidden">
+            {
+              isError &&
+              <Toast error={isError || false} message={data?.message || loginError?.data?.error} onOpen={() => {
+                document.getElementById("signin-toast").classList.toggle("hidden", false)
+              }} onClose={() => {
+                document.getElementById("signin-toast").classList.toggle("hidden", true)
+              }} />
+            }
+          </div>
           <form id="Signin-form" name="Signin-form" className="mt-8 space-y-6" action="#" method="POST" onSubmit={(e) => handleSignin(e)}>
             <input form="Signin-form" type="hidden" name="remember" defaultValue="true" />
             <div className="-space-y-px rounded-md shadow-sm">
@@ -108,7 +120,7 @@ export default function Login({userId}) {
                 <input form="Signin-form"
                   id="email-address"
                   name="email"
-
+                  pattern="\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z"
                   type="email"
                   autoComplete="email"
                   required
@@ -120,15 +132,20 @@ export default function Login({userId}) {
                 <label htmlFor="password" className="sr-only">
                   Password
                 </label>
-                <input form="Signin-form"
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="relative block w-full rounded-b-md border-0 py-1.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-orange-600 indent-2 sm:text-sm sm:leading-6"
-                  placeholder="Password"
-                />
+                <div className="viewable-password-field h-[36px] relative flex flex-flex-nowrap w-full rounded-b-md border-0 p-0.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 outline-none focus:z-10 focus:ring-2 focus:ring-inset focus:ring-orange-600 indent-2 sm:text-sm sm:leading-6">
+                  <input form="Signup-form"
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    className="w-full px-2 "
+                    placeholder="Password"
+                    // onChange={(e) => validatePasswordComplexity(e.target.value)}
+                  />
+                  <ToggleVisibleIco targetComponentId={"password"} />
+
+                </div>
               </div>
             </div>
 
@@ -146,7 +163,7 @@ export default function Login({userId}) {
               </div>
 
               <div className="text-sm">
-                <a href="/#" className="font-medium text-orange-600 hover:text-orange-500">
+                <a href="/reset-password" className="font-medium text-orange-600 hover:text-orange-500">
                   Forgot your password?
                 </a>
               </div>
@@ -161,7 +178,7 @@ export default function Login({userId}) {
               >
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                   {/* <LockClosedIcon className="h-5 w-5 text-orange-500 group-hover:text-orange-400" aria-hidden="true" /> */}
-                  <InfoIco/>
+                  {/* <InfoIco/> */}
                 </span>
                 Sign in
               </button>

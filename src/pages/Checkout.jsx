@@ -8,13 +8,13 @@ const Checkout = () => {
   const goto = useNavigate()
 
   useEffect(() => {
-    // console.log("path", location)
+    console.log("path", location)
     if (location?.state?.from !== "/cart") {
       goto("/cart")
     }
 
     return () => {
-
+      ""
     }
   }, [])
 

@@ -1,5 +1,5 @@
 // Import the RTK Query methods from the React-specific entry point
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react'
 import axios from 'axios'
 import { addedProduct } from '../../orm/models/ProductModel';
 import { createdCatalog, toggledCategory } from '../../orm/models/ProductCategoryModel';
@@ -7,6 +7,9 @@ import { setActiveUrl, isIterable } from '../../orm/utilities';
 import {  addedCartItem, removedCartItem, updatedCartItem } from '../../orm/models/CartModel';
 import { addedOrderItem } from '../../orm/models/OrderModel';
 import { object } from 'prop-types';
+import { createdConnectionRetriesMonitor, upsertedConnectionRetriesMonitor } from '../../orm/models/ConnectionRetriesMonitorModel';
+import types from '../../orm/actions/actionTypes';
+import { useId } from 'react';
 
 
 // const base = 'https://leech-giving-seal.ngrok-free.app/api/v1'
@@ -18,7 +21,7 @@ const setJwt = (headers) => {
   const authorizationHeader = headers["authorization"];
 
   // Remove the "Bearer " text from the authorization header
-  const jwtToken = authorizationHeader.replace("Bearer ", "");
+  const jwtToken = authorizationHeader?.replace("Bearer ", "");
 
   // Update the jwt-auth variable in the collection parent with the JWT token
   sess.setItem("jwt", jwtToken);
@@ -69,7 +72,6 @@ const objectToCamel = (o) => {
 }
 
 const configObject=(object)=>{
-  
   if(isIterable(object)){
     return object.map(prop=>({uuid:prop.id, ...objectToCamel(prop.attributes)}))
   }else{
@@ -111,7 +113,7 @@ const axiosQuery =
       }).then((response) => {
         // Access headers from the response
         // console.log("res", response)
-        result["data"] = {...response?.data?.data}
+        result["data"] = {...(response?.data?.data||response?.data)}
         const headers = response.headers;
         
         // Do something with the headers
@@ -121,7 +123,10 @@ const axiosQuery =
         }
 
       })
-      // console.log(await result)
+      // console.log(url, result)
+      if(["/resetpassword", "/signin", "/signup"].includes(url)){
+        return { data: ((await result?.data )||{}) }
+      }
       return { data: (configObject(await result?.data )||{}) }
     } catch (axiosError) {
       console.log(axiosError)
@@ -135,6 +140,47 @@ const axiosQuery =
     }
   }
 
+const staggeredBaseQuery = fetchBaseQuery({
+  baseUrl: base,
+  // timeout: 5000,
+  
+  async responseHandler (res) {
+    // if(res.data.errors){
+    //   res['errors']= res.data.errors
+    //   return res
+    // }
+    // if(res.data.data){
+    //   res['data']= res.data.data
+    //   return res
+    // }
+    // console.log("c-type", res.headers.get('content-type'))
+    if (res.headers.get('content-type').includes('text/html; charset=utf-8')) {
+      return await res.text()
+    }
+    if (
+      res.headers
+        .get('content-type')
+        .includes('application/json; charset=utf-8') ||
+      res.headers.get('content-type').includes('application/vnd.api+json')
+    ) {
+      const resp = await res.json()
+
+      // console.log("res",resp)
+      return resp
+    }
+  },
+  prepareHeaders (headers) {
+    if (base.includes('leech-giving-seal.ngrok-free')) {
+      headers.set('Access-Control-Allow-Origin', '*')
+      headers.set('ngrok-skip-browser-warning', '69420')
+    }
+
+    return headers
+  }
+})
+
+const max = 5
+
 // Define our single API slice object
 export const apiSlice = createApi({
 
@@ -142,41 +188,35 @@ export const apiSlice = createApi({
   // The cache reducer expects to be added at `state.api` (already default - this is optional)
   reducerPath: 'api',
   // All of our requests will have URLs starting with '/fakeApi'
-  baseQuery: fetchBaseQuery({
-    baseUrl: base,
-    
-    async responseHandler(res){
-      // if(res.data.errors){
-      //   res['errors']= res.data.errors
-      //   return res 
-      // }
-      // if(res.data.data){
-      //   res['data']= res.data.data
-      //   return res
-      // }
-      // console.log("c-type", res.headers.get('content-type'))
-      if(res.headers.get("content-type").includes("text/html; charset=utf-8")){
-        return await res.text()
-      }
-      if((res.headers.get("content-type").includes("application/json; charset=utf-8"))||(res.headers.get("content-type").includes("application/vnd.api+json"))){
-        const resp = await res.json()
+  baseQuery: retry(
+    staggeredBaseQuery, 
+    {
+      maxRetries:max,
+      retryCondition : (error, args, extraArgs) => {
+        // console.log("error3", error, args, extraArgs, extraArgs?.baseQueryApi.getState())
+        if( error.status === 401 || error.status === 'FETCH_ERROR'){
+         
+          // console.log("conn", extraArgs?.baseQueryApi.getState().orm.ConnectionRetriesMonitor)
+          sess.setItem("connectionRetry", parseInt(sess.getItem("connectionRetry"))+1)
+          extraArgs?.baseQueryApi.dispatch(
+            upsertedConnectionRetriesMonitor({
+              attempt:(extraArgs?.baseQueryApi.getState().orm.ConnectionRetriesMonitor.itemsById?.["1"]?.attempt + 1) || 1,
+              uuid: 1,
+              status: extraArgs?.baseQueryApi.getState().orm.ConnectionRetriesMonitor.itemsById?.["1"]?.attempt > max ? types.DO_NOT_RETRY_CONNECTION : types.RETRY_CONNECTION,
+              
+            })
+          )
+          extraArgs?.baseQueryApi.abort("endpoint not alive")
+          if(extraArgs.attempt > 3){
+            return false
 
-        // console.log("res",resp)
-        return resp
-      }
-    },
-    prepareHeaders(headers){
-      if(base.includes("leech-giving-seal.ngrok-free")){
-        headers.set("Access-Control-Allow-Origin", "*")
-        headers.set('ngrok-skip-browser-warning','69420')
+          }
 
-      } 
-
-      return headers;
+        }
+        return true
+      }   
     }
-    
-  
-  }),
+  ),
    tagTypes:['ShoppingCart', "ShoppingCartItem", 'Checkout','ProductReviews'],
   // The "endpoints" represent operations and requests for this server
   endpoints: builder => ({
@@ -187,7 +227,7 @@ export const apiSlice = createApi({
         
         url: `/signup`,
         method: 'POST',
-        // headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
         body: initialCred,
         
       }),
@@ -210,13 +250,73 @@ export const apiSlice = createApi({
           await queryFulfilled;
           
         } catch (errorRes) {
-          console.log("error", errorRes) 
+          // console.log(errorRes) 
           if(errorRes.error.data.error === "nil user") {
             sess.removeItem('jwt')
           }
         }
       },
       invalidatesTags: ["ProductReviews", "ShoppingCart", "Checkout"]
+    }),
+    logoutUser: builder.mutation({
+      queryFn: () => axiosQuery({
+        url: `/logout`,
+        method: 'POST',
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+      
+      }),
+      async onQueryStarted (arg, { dispatch, queryFulfilled }){
+
+        try {
+          await queryFulfilled;
+          sess.removeItem('jwt')
+        } catch (error) {
+          console.log( error)
+        }
+      },
+      invalidatesTags: ["ProductReviews", "ShoppingCart", "Checkout"]
+
+    }),
+    resetPassword: builder.mutation({
+      queryFn: ({email}) => axiosQuery({
+          url: `/resetpassword`,
+        method: 'POST',
+        body: {email},
+      }),
+      async onQueryStarted (arg, { dispatch, queryFulfilled }){
+        try {
+           await queryFulfilled;
+          // console.log("data", data)
+          
+          // if(error){
+          //   dispatch(createdToastMessage({status:types.TOAST_VALID, text:error.data.error, type: types.TOAST_ERROR}))
+          // }
+          // if(data){
+          //   dispatch(createdToastMessage({status:types.TOAST_VALID, text:data.message, type: types.TOAST_SUCCESS}))
+          // }
+
+
+        } catch (error) {
+          console.log( error)
+        }
+      }
+    }),
+    recoverAccount: builder.mutation({
+      queryFn: ({email}) => axiosQuery({
+        url: `/recover-account`,
+        method: 'POST',
+        body: {email},
+      }),
+    }),
+    getUser: builder.query({
+      // The URL for the request is '/fakeApi/posts'
+      query: ({uuid}) => ({
+        url:'/users/'+uuid,
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+      }),
+      transformResponse(res){ return [res.data].map(configObject)[0]},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
+      
     }),
     getStores: builder.query({
       // The URL for the request is '/fakeApi/posts'
@@ -231,7 +331,7 @@ export const apiSlice = createApi({
       // The URL for the request is '/fakeApi/posts'
       query: (query) => query ? '/products' + '?' + query : '/products',
       transformResponse(res){ return res.data?.map(configObject)},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
         // console.log("arg", arg)
         // console.log("dispatch", dispatch)
@@ -247,7 +347,7 @@ export const apiSlice = createApi({
           }
           return;
         } catch (error) {
-          console.log("error", error)
+          console.log( error)
         }
       }
     }),
@@ -255,34 +355,42 @@ export const apiSlice = createApi({
       // The URL for the request is '/fakeApi/posts'
       query: (query) => query ? '/products' + '?' + query : '/products',
       transformResponse(res){ return res?.data},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){  return err ? err.data?.errors : "unknown error"},
+      async onQueryStarted (arg, { dispatch,signal, queryFulfilled  }, ){
+        try {
+          const {data, meta} = await queryFulfilled;
+          
+         } 
+        
+        catch (error) {
+          console.log( error)
+
+         }
+        
+      }
     }),
     getEmbeddedProducts: builder.query({
       // The URL for the request is '/fakeApi/posts'
       query: (query) => query ? '/products' + '?' + query : '/products',
       transformResponse(res){return res.data?.map(configObject)},
-      transformErrorResponse(err){return err.data.errors},
-      // async onQueryStarted (arg, { dispatch, queryFulfilled }){
-      //   // console.log("arg", arg)
-      //   // console.log("dispatch", dispatch)
-      //   // console.log("queryFulfilled", queryFulfilled)
-
-      //   try {
-      //     // const {data} = await queryFulfilled
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
+      async onQueryStarted (arg, { dispatch,signal, queryFulfilled  }, ){
+         try {
+          const {data, meta} = await queryFulfilled;
           
-      //     const {data:products} = await queryFulfilled;
-      //     // console.log("data", data, "=>",products)
-      //     dispatch(addedProduct(products))
-      //   } catch (error) {
-      //     console.log("error", error)
-      //   }
-      // }
+         } 
+        
+        catch (error) {
+          console.log( error)
+         }
+        
+      }
     }),
     getProduct: builder.query({
       // The URL for the request is '/fakeApi/posts'
       query: ({productId,queries}) => `/products/${productId}${queries? '?'+queries:''}`,
       transformResponse(res){return configObject(res.data)},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
 
       
     }),
@@ -291,7 +399,7 @@ export const apiSlice = createApi({
       // The URL for the request is '/fakeApi/posts'
       query: () => '/product_categories/catalog',
       transformResponse(res){return res.data},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
         try {
@@ -306,7 +414,7 @@ export const apiSlice = createApi({
           // apiSlice.endpoints.getCatalogItem.initiate()
 
         } catch (error) {
-          console.log("error", error)
+          console.log(error)
         }
       }
     }),
@@ -314,7 +422,7 @@ export const apiSlice = createApi({
       // The URL for the request is '/fakeApi/posts'
       query: (catId) => `/product_categories/catalog?id=${catId}`,
       transformResponse(res){return configObject(res.data)},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
@@ -326,7 +434,7 @@ export const apiSlice = createApi({
           // console.log(catalogItem)
           dispatch(toggledCategory({uuid:catalogItem.uuid,active:true }))
         } catch (error) {
-          console.log("error", error)
+          console.log( error)
         }
       }
     }),
@@ -338,7 +446,7 @@ export const apiSlice = createApi({
         
       }),
       transformResponse(res){return configObject(res.data)},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, getState, queryFulfilled }){
 
         try {
@@ -362,7 +470,7 @@ export const apiSlice = createApi({
          }
           
         } catch (error) {
-          console.log("error", error)
+          console.log( error)
         }
       },
 
@@ -377,18 +485,24 @@ export const apiSlice = createApi({
         
       }),
       transformResponse(res){return configObject(res.data)},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       providesTags: ['ShoppingCartItem']
     }),
     beginItemCheckout: builder.query({
       // The URL for the request is '/fakeApi/posts'
-      query: ({cartId}) => ({
-        url:`/shopping-cart/begin_checkout?ids[]=${cartId}`,
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
-         
-      }),
+      query: ({cartIds}) => {
+          if(cartIds.length > 0){
+            return {
+              url:`/shopping-cart/begin_checkout?${cartIds?.map(id=> `ids[]=${id}`).join("&")}`,
+              headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+              
+            }
+        }
+      },
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       
       async onCacheEntryAdded(id, { dispatch, getState, extra, requestId, cacheEntryRemoved, cacheDataLoaded, getCacheEntry, updateCachedData }) {
+          
           // console.log(
           //   "Cache entry added:",
           //    "id:", id, "\n",
@@ -416,9 +530,12 @@ export const apiSlice = createApi({
           //   apiSlice.util.updateQueryData('getPosts', cartId, (checkout) => data)
           // )
         } catch (error) {
-          console.log("error", error)
+          console.log( error)
         }
       },
+      extraOptions:{
+        maxRetries:1
+      }
       
     }),
     searchForProducts: builder.query({
@@ -501,7 +618,7 @@ export const apiSlice = createApi({
           return {searchFilters:configObject(search_filters.data), searchResults:configObject(search_results.data)}
         }
       },
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
     }),
     getCheckout: builder.query({
       // The URL for the request is '/fakeApi/posts'
@@ -511,7 +628,7 @@ export const apiSlice = createApi({
         
       }),
       transformResponse(res){return configObject(res.data)},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
         try {
@@ -544,7 +661,7 @@ export const apiSlice = createApi({
          }
           
         } catch (error) {
-          console.log("error", error)
+          console.log( error)
         }
       },
       
@@ -559,7 +676,7 @@ export const apiSlice = createApi({
 
       }),
       transformResponse(res){return configObject(res.data)},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       // providesTags: ['Checkout']
     }),
     
@@ -573,7 +690,7 @@ export const apiSlice = createApi({
         
       }),
       // transformResponse(res){return configObject(res.data)},
-      // transformErrorResponse(err){return err.data.errors},
+      // transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       // async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
       //   try {
@@ -587,7 +704,7 @@ export const apiSlice = createApi({
       //     //   ItemStatus: itemInCart.item_status
       //     // }))
       //   } catch (error) {
-      //     console.log("error", error)
+      //     console.log(error)
       //   }
       // },
       invalidatesTags: ['ShoppingCart','Checkout']
@@ -603,7 +720,7 @@ export const apiSlice = createApi({
         
       }),
       transformResponse(res){return configObject(res.data)},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
         try {
@@ -617,7 +734,7 @@ export const apiSlice = createApi({
           //   ItemStatus: itemInCart.item_status
           // }))
         } catch (error) {
-          console.log("error", error)
+          console.log( error)
         }
       },
       invalidatesTags: ['ShoppingCart']
@@ -633,7 +750,7 @@ export const apiSlice = createApi({
       transformResponse(res){
         return configObject(res.data)
       },
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
        
         try {
@@ -648,7 +765,7 @@ export const apiSlice = createApi({
             ItemStatus: updatedItem.itemStatus
           }))
         } catch (error) {
-          console.log("error", error)
+          console.log( error)
         }
 
       },
@@ -664,7 +781,7 @@ export const apiSlice = createApi({
       // transformResponse(res){
       //   return configObject(res.data)
       // },
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
         try {
@@ -675,7 +792,7 @@ export const apiSlice = createApi({
             uuid:arg.cartId,
           }))
         } catch (error) {
-          console.log("error", error)
+          console.log(error)
         }
       },
       invalidatesTags: ['ShoppingCart']
@@ -685,7 +802,7 @@ export const apiSlice = createApi({
       query: ({productId}) => `/products/${productId}/product-reviews`,
       transformResponse(res){return configObject(res.data);
       },
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted(arg, { dispatch, queryFulfilled }){
 
         try {
@@ -697,7 +814,7 @@ export const apiSlice = createApi({
           //   uuid:arg.cartId,
           // }))
         } catch (error) {
-          console.log("error", error);
+          console.log(error);
         }
       },
       providesTags: ["ProductReviews"]   
@@ -711,7 +828,7 @@ export const apiSlice = createApi({
         
       }),
       transformResponse(res){return configObject(res.data)},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
         try {
@@ -725,7 +842,7 @@ export const apiSlice = createApi({
           //   ItemStatus: itemInCart.item_status
           // }))
         } catch (error) {
-          console.log("error", error)
+          console.log(error)
         }
       },
       invalidatesTags: ['ProductReviews']
@@ -741,7 +858,7 @@ export const apiSlice = createApi({
       transformResponse(res){
         return configObject(res.data)
       },
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       // invalidatesTags: ['ShoppingCart']
     }),
     removeReview: builder.mutation({
@@ -754,7 +871,7 @@ export const apiSlice = createApi({
       // transformResponse(res){
       //   return configObject(res.data)
       // },
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
         try {
@@ -765,7 +882,7 @@ export const apiSlice = createApi({
           //   uuid:arg.cartId,
           // }))
         } catch (error) {
-          console.log("error", error)
+          console.log(error)
         }
       },
       invalidatesTags: ['ProductReviews']
@@ -780,7 +897,7 @@ export const apiSlice = createApi({
         
       }),
       transformResponse(res){return configObject(res.data)},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
         try {
@@ -794,7 +911,7 @@ export const apiSlice = createApi({
           //   ItemStatus: itemInCart.item_status
           // }))
         } catch (error) {
-          console.log("error", error)
+          console.log(error)
         }
       },
       invalidatesTags: ['ProductQuestionAnswers']
@@ -810,7 +927,7 @@ export const apiSlice = createApi({
       transformResponse(res){
         return configObject(res.data)
       },
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       // invalidatesTags: ['ShoppingCart']
     }),
     removeQuestion: builder.mutation({
@@ -823,7 +940,7 @@ export const apiSlice = createApi({
       // transformResponse(res){
       //   return configObject(res.data)
       // },
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
         try {
@@ -834,7 +951,7 @@ export const apiSlice = createApi({
           //   uuid:arg.cartId,
           // }))
         } catch (error) {
-          console.log("error", error)
+          console.log(error)
         }
       },
       invalidatesTags: ['ProductReviews']
@@ -849,7 +966,7 @@ export const apiSlice = createApi({
         
       }),
       transformResponse(res){return configObject(res.data)},
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
         try {
@@ -863,7 +980,7 @@ export const apiSlice = createApi({
           //   ItemStatus: itemInCart.item_status
           // }))
         } catch (error) {
-          console.log("error", error)
+          console.log(error)
         }
       },
       invalidatesTags: ['ProductQuestionAnswers']
@@ -879,7 +996,7 @@ export const apiSlice = createApi({
       transformResponse(res){
         return configObject(res.data)
       },
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       // invalidatesTags: ['ShoppingCart']
     }),
     removeAnswer: builder.mutation({
@@ -892,7 +1009,7 @@ export const apiSlice = createApi({
       // transformResponse(res){
       //   return configObject(res.data)
       // },
-      transformErrorResponse(err){return err.data.errors},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
         try {
@@ -903,7 +1020,7 @@ export const apiSlice = createApi({
           //   uuid:arg.cartId,
           // }))
         } catch (error) {
-          console.log("error", error)
+          console.log(error)
         }
       },
       invalidatesTags: ['ProductReviews']
@@ -917,15 +1034,22 @@ export const apiSlice = createApi({
 
 // Export the auto-generated hook for each endpoint
 export const {
-  useSignupUserMutation,
+   useSignupUserMutation,
    useLoginUserMutation,
+   useLogoutUserMutation,
+   useRecoverAccountMutation, 
+   useResetPasswordMutation,
+   useGetUserQuery,
    useGetStoresQuery,
    useGetStoreQuery,
    useGetProductsQuery,
    useLazyGetProductsQuery,
    useGetPopularSearchesQuery,
+   useLazyGetPopularSearchesQuery,
    useGetEmbeddedProductsQuery,
+   useLazyGetEmbeddedProductsQuery,
    useGetProductQuery,
+   useLazyGetProductQuery,
    useGetCatalogQuery,
    useGetCatalogItemQuery,
    useGetShoppingCartQuery,

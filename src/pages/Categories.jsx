@@ -80,7 +80,7 @@ const Categories = () => {
     // console.log(products)
 
     return(
-      <div id={"product-section-"+category?.uuid} className="category_product_section w-full h-full max-h-min">
+      <section id={"product-section-"+category?.uuid} className="category_product_section w-full h-full max-h-min">
         <div className={"section_products w-full h-full  p-2 grid grid-flow-row-dense  grid-cols-[repeat(auto-fit,minmax(auto,8rem))] greater-than-md:grid-cols-[repeat(auto-fit,minmax(auto,14rem))]  greater-than-lg:grid-cols-[repeat(5,minmax(auto,14rem))] justify-center  transition-all  tag gap-3 greater-than-xs:gap-6"}>
           {
 
@@ -98,7 +98,7 @@ const Categories = () => {
 
           }
         </div>
-      </div>
+      </section>
     )
   }
   const ProductContent = ()=>(
