@@ -1,5 +1,5 @@
 import { ArrowRight, titleTagTypes as tags } from "./icons";
-import randomizer from "../js/utils/randomizer";
+import randomizer from "../utilities/randomizer";
 
 const PinLocation = ({  }) => {
   const r= randomizer

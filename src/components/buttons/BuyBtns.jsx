@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from "react-redux";
 import types from "../../orm/actions/actionTypes";
-import { momentDate } from "../../orm/utilities";
+import { momentDate } from "../../utilities";
 import { authenticatedUsers, isAuthedUser, isInCart } from "../../orm/selectors";
 import { createdCartItem } from "../../orm/models/CartModel";
 import { NoStockIco, titleTagTypes as tags } from "../icons";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ClassWatcher } from "../../orm/utilities/classWatcher";
+import { ClassWatcher } from "../../utilities/classWatcher";
 import { useAddCartItemMutation } from "../../js/middleware/queryHandler";
 
 const BuyBtns = ({ id, deliveryInfo, onlyBtn, children, prodVars }) => {

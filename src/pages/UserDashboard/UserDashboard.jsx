@@ -2,21 +2,24 @@ import React, { lazy, useState, useEffect, Suspense } from 'react'
 import { LoadingStateComponent, Sidebar } from '../../components';
 import { AvatarIco } from '../../components/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { authenticatedUsers } from '../../orm/selectors';
-import { useGetUserQuery } from '../../js/middleware/queryHandler';
+import { useGetUserQuery, useLogoutUserMutation } from '../../js/middleware/queryHandler';
+import { createdToastMessage } from '../../orm/models/ToastMessageModel';
+import types from '../../orm/actions/actionTypes';
 
 // Lazy load components
 const Overview = lazy(() => import('../../components/Overview'));
-const MyOrders = lazy(() => import('./MyOrders'));
-const MyFavorites = lazy(() => import('./MyFavorites'));
-const MyReviews = lazy(() => import('./MyReviews'));
-const Settings = lazy(() => import('./Settings'));
-const Help = lazy(() => import('./Help'));
+// const MyOrders = lazy(() => import('./MyOrders'));
+// const MyFavorites = lazy(() => import('./MyFavorites'));
+// const MyReviews = lazy(() => import('./MyReviews'));
+// const Settings = lazy(() => import('./Settings'));
+// const Help = lazy(() => import('./Help'));
 
 const UserDashboard = ({ navigation, secondaryNavigation }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState('#overview');
 
   useEffect(() => {
@@ -25,9 +28,10 @@ const UserDashboard = ({ navigation, secondaryNavigation }) => {
   }, [location]);
 
   const authId = useSelector(authenticatedUsers)[0]?.uuid;
-  const { data: user, isLoading, isError, error } = useGetUserQuery({ uuid: authId });
+  // const { data: user, isLoading, isError, error } = useGetUserQuery({ uuid: authId });
+  const [logoutUser, {isLoading: logoutIsLoading, isError: logoutIsError, error: logoutError, isSuccess: logoutIsSuccess}] = useLogoutUserMutation();
 
-  const allTabs = [...navigation, ...secondaryNavigation];
+  const allTabs = [...navigation, {name: "divider"}, ...secondaryNavigation];
 
   const renderContent = () => {
     const ActiveComponent = allTabs.find(tab => tab.href === activeTab)?.component || Overview;
@@ -37,13 +41,23 @@ const UserDashboard = ({ navigation, secondaryNavigation }) => {
       </Suspense>
     );
   };
+  
+  const handleLogout = () => {
+    logoutUser();
+    navigate("/");
+  }
 
   const handleTabClick = (tabHref) => {
-    setActiveTab(tabHref);
-    navigate(`/me${tabHref}`);
+    if(tabHref === "#logout"){
+      handleLogout();
+    }else{
+      setActiveTab(tabHref);
+      navigate(`/me${tabHref}`);
+    }
   };
 
   const sidebarTabs = allTabs.map((item) => (
+    item.name === "divider" ? <div key={item.id} className="w-full my-2 h-[1px] bg-gray-200" /> :
     <button
       key={item.id}
       onClick={() => handleTabClick(item.href)}
@@ -55,6 +69,25 @@ const UserDashboard = ({ navigation, secondaryNavigation }) => {
       {item.name}
     </button>
   ));
+  
+  if(logoutIsLoading){
+    return <LoadingStateComponent />
+  }
+  if(logoutIsError){
+    dispatch(createdToastMessage({
+      status: types.TOAST_VALID,
+      text: {
+        header: "Error",
+        body: logoutError.message
+      },
+      type: types.TOAST_ERROR,
+      id: "logout error"
+    }));
+  }
+
+  if(logoutIsSuccess){
+    navigate("/");
+  }
 
   return (
     <div className='user-dashboard-wrapper flex flex-row'>

@@ -11,7 +11,7 @@ import { authenticatedUsers, isAuthedUser, orderedByUser } from '../orm/selector
 import types from '../orm/actions/actionTypes'
 import { useAddAnswerMutation, useAddQuestionMutation, useRemoveAnswerMutation, useRemoveQuestionMutation, useUpdateAnswerMutation, useUpdateQuestionMutation } from '../js/middleware/queryHandler'
 import { renderToString } from 'react-dom/server'
-import randomizer from '../js/utils/randomizer'
+import randomizer from '../utilities/randomizer'
 import PostCreatorTag from './PostCreatorTag'
 
 const QAs = ({ qas, productReviewId , productId}) => {

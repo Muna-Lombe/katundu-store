@@ -1,15 +1,20 @@
-import React from 'react'
+import React, { useState } from 'react'
+import CancelIco from './CancelIco'
 
-const EditIco = () => {
+const EditIco = ({toggle=()=>""}) => {
+  const [edit, setEdit] = useState(false)
+
+  const Edit = () =>(
+    <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M16.2929 2.29289C16.6834 1.90237 17.3166 1.90237 17.7071 2.29289L21.7071 6.29289C22.0976 6.68342 22.0976 7.31658 21.7071 7.70711L8.70711 20.7071C8.51957 20.8946 8.26522 21 8 21H4C3.44772 21 3 20.5523 3 20V16C3 15.7348 3.10536 15.4804 3.29289 15.2929L13.2927 5.2931L16.2929 2.29289ZM14 7.41421L5 16.4142V19H7.58579L16.5858 10L14 7.41421ZM18 8.58579L15.4142 6L17 4.41421L19.5858 7L18 8.58579Z" /></svg>
+  )
+  
   return (
-    <div>
-      <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 512 512"> 
-        <g> 
-          <rect x="178.8" y="92.1" transform="matrix(-0.7071 -0.7071 0.7071 -0.7071 224.3476 631.1498)" className="st0" width="128.1" height="354"/> 
-          <path className="st0" d="M471.7,88.4l-48.1-48.1c-11.7-11.7-31.6-10.9-44.3,1.8l-45.2,45.2l90.6,90.6l45.2-45.2 C482.6,120,483.4,100.1,471.7,88.4z"/> 
-          <polygon className="st0" points="46.4,431.1 80.9,465.6 148.7,448 64,363.3 "/> <polygon className="st0" points="32,480 64,470.7 41.3,448 "/> 
-        </g>
-      </svg>
+    <div onClick={(e)=> {toggle(); setEdit(ps=>!ps); }} className='cursor-pointer'>
+      {
+        edit ?
+        <CancelIco/>
+        : <Edit />
+      }
     </div>
   )
 }

@@ -5,7 +5,7 @@ import { filteredProductsFromModel, categories } from '../orm/selectors';
 import { popularTags, titleTagTypes as tags } from '../components/icons';
 import { useDispatch } from 'react-redux';
 import { addedProduct } from '../orm/models/ProductModel';
-import { load } from '../orm/utilities/StateLoader';
+import { load } from '../utilities/StateLoader';
 import { Link, useNavigate } from 'react-router-dom';
 import {useLazyGetProductsQuery } from '../js/middleware/queryHandler';
 import { createdToastMessage } from '../orm/models/ToastMessageModel';

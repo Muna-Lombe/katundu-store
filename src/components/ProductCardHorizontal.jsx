@@ -6,12 +6,12 @@ import IMG, { imagepath } from '../assets/images';
 import no_product_img from '../assets/tests/jsonServer/img/placeholders/no_product_img.png'
 // assets
 import { createdOrder } from '../orm/models/OrderModel';
-import { momentDate } from '../orm/utilities';
+import { momentDate } from '../utilities';
 import types from '../orm/actions/actionTypes';
 import { authenticatedUsers, isAlreadyOrdered, isAuthedUser, isInCart } from '../orm/selectors';
 import { addedCartItem, createdCartItem } from '../orm/models/CartModel';
 import BuyBtns from './buttons/BuyBtns';
-import randomizer from '../js/utils/randomizer';
+import randomizer from '../utilities/randomizer';
 
 
 const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW = 8, maxWH = "" }) => {

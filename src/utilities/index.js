@@ -1,5 +1,5 @@
 import moment from "moment"
-import { apiSlice } from "../../js/middleware/queryHandler"
+import { apiSlice } from "../js/middleware/queryHandler"
 import { Sha256 } from "@aws-crypto/sha256-browser"
 
 
@@ -157,8 +157,22 @@ export function isIterable(obj) {
   return obj && typeof obj[Symbol.iterator] === 'function';
 }
 
+export const encodeUrlWWWFormComponent = (str)=>{
+  return str.replace(/\s+/g, '+')
+};
 
-export async function sha256(message) {
+export function generateNonce() {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+export async function createAuthKey(password, nonce) {
+  // remove whitespaces from password
+  const hashedPassword = await sha256(password.replace(/\s+/g, ''));
+  // 
+  return `${nonce}:${hashedPassword}`;
+}
+
+async function sha256(message) {
+  
   // encode as UTF-8
   const msgBuffer = new TextEncoder('utf-8').encode(message);
 

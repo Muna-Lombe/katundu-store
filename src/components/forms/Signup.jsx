@@ -5,41 +5,23 @@ import Logo from "../Logo";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { createdAuth } from "../../orm/models/AuthModel";
-import { momentDate, sha256 } from "../../orm/utilities";
+import { createAuthKey, generateNonce, momentDate, sha256 } from "../../utilities";
 import types from "../../orm/actions/actionTypes";
 import { useEffect, useState } from "react";
 import { authenticatedUsers, isAuthedUser } from "../../orm/selectors";
 import { useSignupUserMutation } from "../../js/middleware/queryHandler";
 import Toast from "../banners/Toast";
 import ToggleVisibleIco from "../icons/ToggleVisibleIco.jsx";
+import PasswordComplexity from "../PasswordComplexity";
+import useValidatePasswordComplexity from "../../hooks/useValidatePasswordComplexity";
 
 export default function Signup({userId}) {
 
   const dispatch = useDispatch()
   const location = useLocation()
   const goto = useNavigate()
-  const [pwComplexity, setPwComplexity] = useState({
-    length:{
-      valid:false,
-      message:"Password must be at least 8 characters long"
-    },
-    upperCase:{
-      valid:false,
-      message:"Password must contain an uppercase letter"
-    },
-    lowerCase:{
-      valid:false,
-      message:"Password must contain a lowercase letter"
-    },
-    number:{
-      valid:false,
-      message:"Password must contain a number"
-    },
-    specialChar:{
-      valid:false,
-      message:"Password must contain a special"
-    }
-  })
+  const { pwComplexity, validatePasswordComplexity } = useValidatePasswordComplexity()
+      
   const [signupUser, { isLoading: signupIsLoading, isError, error: signupError, data, isSuccess }] = useSignupUserMutation()
 
   const sess = sessionStorage;
@@ -53,41 +35,7 @@ export default function Signup({userId}) {
   //   // Update the jwt-auth variable in the collection parent with the JWT token
   //   sess.setItem("jwt", jwtToken);
   // }
-  const validatePasswordComplexity = (pw) => {
-    const password = pw
-    const upperCase = new RegExp('[A-Z]')
-    const lowerCase = new RegExp('[a-z]')
-    const number = new RegExp('[0-9]')
-    const specialChar = new RegExp('[!@#$%^&*(),.?":{}|<>]')
-    const length = password.length >= 8
-    setPwComplexity(ps => ({
-      ...ps,
-      length: {
-        valid: length,
-        message: "Password must be at least 8 characters long"
-      },
-      upperCase: {
-        valid: upperCase.test(password),
-        message: "Password must contain an uppercase letter"
-      },
-      lowerCase: {
-        valid: lowerCase.test(password),
-        message: "Password must contain a lowercase letter"
-      },
-      number: {
-        valid: number.test(password),
-        message: "Password must contain a number"
-      },
-      specialChar: {
-        valid: specialChar.test(password),
-        message: "Password must contain a special"
-      }
-
-    }))
-
-
-
-  }
+ 
   const handleSignup = async(e)=>{
     try {
       e.preventDefault()
@@ -103,13 +51,13 @@ export default function Signup({userId}) {
       }
       
       data['email'] = data.email
-      const npw = [...(await Promise.all([sha256(data.password)]))][0]
-      // console.log(data, npw)
-      data['password'] = npw
+      const nonce = generateNonce();
+      const authKey = await createAuthKey(data.password, nonce);
+      data['auth_key'] = authKey;
       if(!Object.values(pwComplexity).every(v=> v.valid === true)){
         return ;
       }
-      const response = await signupUser({ initialCred: {user:data} })
+      const response = await signupUser({ initialCred: {user:{email:data.email, auth_key:data.auth_key, name:data.name}} })
       // console.log(data)
       // dispatch(createdAuth({dateCreated:momentDate().shortDate, timeCreated:new Date().toString(),  authStatus:types.AUTH_VALID}))
       location.state.pathname = "/signin"
@@ -122,30 +70,7 @@ export default function Signup({userId}) {
       console.log(error)
     }
   }
-  const PasswordComplexity = ()=>{
-    const ComplexityItem = ({item})=>(
-      <div className="flex flex-row gap-1">
-        <div className="flex flex-row gap-1">
-          <div className="flex flex-row gap-1">
-            <div className="flex items-center justify-center">
-              <div className={`w-3 h-3 rounded-full ${item.valid ? "bg-green-500" : "bg-red-500"}`}></div>
-            </div>
-            <div className="flex items-center justify-center">
-              <p>{item.message}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-    return(
-      <div className="p-2 flex flex-col gap-1 bg-slate-200 border border-gray-400 rounded-md">
-        {
-          Object.keys(pwComplexity).map((key, index) => (<ComplexityItem item={pwComplexity[key]}/>))
-        }
-      </div>
-    )
-        
-  }
+  
   
   return (
     <>
@@ -163,7 +88,7 @@ export default function Signup({userId}) {
             </h2>
             
           </div>
-          <PasswordComplexity/>
+          <PasswordComplexity pwComplexity={pwComplexity}/>
           <div id="signup-toast" className="showtoast hidden">
             {
               isError &&

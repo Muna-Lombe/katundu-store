@@ -5,7 +5,7 @@ import types from "./actions/actionTypes";
 import {  useSelector } from "react-redux";
 import { addToProductData, calcDisc } from "../components/icons";
 import Store from "../js/store";
-import { momentDate } from "./utilities";
+import { momentDate } from "../utilities";
 import { updatedAuth } from "./models/AuthModel";
 // console.log(session, orm)
 

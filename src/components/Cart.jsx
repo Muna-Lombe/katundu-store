@@ -8,10 +8,10 @@ import  { imagepath, no_img_path } from '../assets/images';
 import { checkedOutCartItem, removedCartItem, updatedCartItem } from '../orm/models/CartModel';
 
 import { titleTagTypes as tags } from "./icons";
-import randomizer from '../js/utils/randomizer';
+import randomizer from '../utilities/randomizer';
 import { useRemoveCartItemMutation, useUpdateCartItemMutation, useBeginItemCheckoutQuery } from '../js/middleware/queryHandler';
 import Logo from './Logo';
-import { ClassWatcher } from '../orm/utilities/classWatcher';
+import { ClassWatcher } from '../utilities/classWatcher';
 
 
 

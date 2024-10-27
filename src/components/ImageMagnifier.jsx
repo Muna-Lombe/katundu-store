@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { imagepath } from '../assets/images'
 import no_img_path from '../assets/tests/jsonServer/img/placeholders/no_product_img.png'
-import randomizer from '../js/utils/randomizer'
+import randomizer from '../utilities/randomizer'
 
 const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
   // const [activeImage, setActiveImage] = useState(false)

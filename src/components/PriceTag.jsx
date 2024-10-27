@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { InfoIco, calcDisc, titleTagTypes as tags } from "./icons"
-import { ClassWatcher } from "../orm/utilities/classWatcher"
+import { ClassWatcher } from "../utilities/classWatcher"
 
 const PriceTag = ({ tagFor, original, discount = false, onlyPrice, prodVars}) => {
   

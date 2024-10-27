@@ -1,6 +1,6 @@
 import types from "../actions/actionTypes";
-import { mapper } from "../utilities";
-import { fromType } from "../utilities/StateLoader";
+import { mapper } from "../../utilities";
+import { fromType } from "../../utilities/StateLoader";
 
 export default function customReducer({session, model,action }) {
   // console.log("acrion", model.modelName, action)

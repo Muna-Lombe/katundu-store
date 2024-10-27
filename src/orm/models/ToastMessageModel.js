@@ -2,7 +2,7 @@ import { attr,Model} from "redux-orm";
 
 import {actionCreator } from "../actions/actionTypes";
 import customReducer from "./reducer";
-import { isIterable, momentDate } from "../utilities";
+import { isIterable, momentDate } from "../../utilities";
 
 // import { createStore, combineReducers } from "redux";
 // import { createReducer } from "redux-orm";

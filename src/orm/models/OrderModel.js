@@ -2,7 +2,7 @@ import { attr,fk, many, Model, oneToOne } from "redux-orm";
 
 import { actionCreator } from "../actions/actionTypes";
 import customReducer from "./reducer";
-import { isIterable } from "../utilities";
+import { isIterable } from "../../utilities";
 // import { getPropTypesMixin } from "redux-orm-proptypes";
 import PropTypes from 'prop-types';
 // import { createStore, combineReducers } from "redux";

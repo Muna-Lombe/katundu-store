@@ -1,7 +1,7 @@
 import { attr, Model } from "redux-orm";
 import {actionCreator } from "../actions/actionTypes";
 import customReducer from "./reducer";
-import { isIterable } from "../utilities";
+import { isIterable } from "../../utilities";
 import PropTypes from 'prop-types';
 
 

@@ -1,7 +1,7 @@
 
 import React from 'react'
 
-const ArrowDown = ({size=20, defaultPos, handleClick}) => {
+const ArrowDown = ({size=20, defaultPos, handleClick=()=>{}}) => {
   const rotate =()=>{
     switch (defaultPos) {
       case "down":

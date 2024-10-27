@@ -3,8 +3,8 @@ import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react'
 import axios from 'axios'
 import { addedProduct } from '../../orm/models/ProductModel';
 import { createdCatalog, toggledCategory } from '../../orm/models/ProductCategoryModel';
-import { setActiveUrl, isIterable } from '../../orm/utilities';
-import {  addedCartItem, removedCartItem, updatedCartItem } from '../../orm/models/CartModel';
+import { setActiveUrl, isIterable } from '../../utilities';
+import {  addedCartItems, removedCartItem, updatedCartItem } from '../../orm/models/CartModel';
 import { addedOrderItem } from '../../orm/models/OrderModel';
 import { object } from 'prop-types';
 import { createdConnectionRetriesMonitor, upsertedConnectionRetriesMonitor } from '../../orm/models/ConnectionRetriesMonitorModel';
@@ -34,6 +34,7 @@ const snakeToCamel = (s) => {
 
 }
 
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const objectToCamel = (o) => {
   let newO, origKey, newKey, value
   if (o instanceof Array) {
@@ -181,6 +182,9 @@ const staggeredBaseQuery = fetchBaseQuery({
 
 const max = 5
 
+// Add this helper function at the top of your file
+const isAuthenticated = () => !!sess.getItem('jwt');
+
 // Define our single API slice object
 export const apiSlice = createApi({
 
@@ -217,7 +221,7 @@ export const apiSlice = createApi({
       }   
     }
   ),
-   tagTypes:['ShoppingCart', "ShoppingCartItem", 'Checkout','ProductReviews'],
+   tagTypes:['ShoppingCart', "ShoppingCartItem", 'Checkout','ProductReviews', 'UserReviews', 'User', 'ProfileOverview', 'UserSettings'],
   // The "endpoints" represent operations and requests for this server
   endpoints: builder => ({
     // The `getPosts` endpoint is a "query" operation that returns data
@@ -237,12 +241,12 @@ export const apiSlice = createApi({
         url: `/login`,
         method: 'POST',
         body: initialCred,
-        headers: (sess.getItem('jwt')
-           ? {"Authorization":  `Bearer ${sess.getItem('jwt')}`} 
-           : ""), 
+        // headers: (sess.getItem('jwt')
+        //    ? ""/{"Authorization":  `Bearer ${sess.getItem('jwt')}`} 
+        //    : ""), 
         
       }),
-      
+        
       
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
@@ -256,26 +260,31 @@ export const apiSlice = createApi({
           }
         }
       },
-      invalidatesTags: ["ProductReviews", "ShoppingCart", "Checkout"]
+      invalidatesTags: ["UserReviews", "ShoppingCart", "Checkout", "User", "ProfileOverview", "UserSettings"]
     }),
     logoutUser: builder.mutation({
       queryFn: () => axiosQuery({
         url: `/logout`,
-        method: 'POST',
+        method: 'GET',
         headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
-      
       }),
-      async onQueryStarted (arg, { dispatch, queryFulfilled }){
-
+      async onQueryStarted(arg, { dispatch, queryFulfilled, getState }) {
         try {
           await queryFulfilled;
-          sess.removeItem('jwt')
+          sess.removeItem('jwt');
+          
+          // Clear specific cache entries without refetching
+          const tags = ["UserReviews", "ShoppingCart", "Checkout", "User", "ProfileOverview", "UserSettings"];
+          tags.forEach(tag => {
+            dispatch(apiSlice.util.invalidateTags([tag]));
+          });
+
+          // Reset the entire cache
+          dispatch(apiSlice.util.resetApiState());
         } catch (error) {
-          console.log( error)
+          console.log(error);
         }
       },
-      invalidatesTags: ["ProductReviews", "ShoppingCart", "Checkout"]
-
     }),
     resetPassword: builder.mutation({
       queryFn: ({email}) => axiosQuery({
@@ -285,7 +294,8 @@ export const apiSlice = createApi({
       }),
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
         try {
-           await queryFulfilled;
+              await queryFulfilled;
+              sess.removeItem('jwt')
           // console.log("data", data)
           
           // if(error){
@@ -299,7 +309,8 @@ export const apiSlice = createApi({
         } catch (error) {
           console.log( error)
         }
-      }
+      },
+      invalidatesTags: ["User", "ProfileOverview", "UserSettings"]
     }),
     recoverAccount: builder.mutation({
       queryFn: ({email}) => axiosQuery({
@@ -307,6 +318,25 @@ export const apiSlice = createApi({
         method: 'POST',
         body: {email},
       }),
+      async onQueryStarted (arg, { dispatch, queryFulfilled }){
+        try {
+              await queryFulfilled;
+              sess.removeItem('jwt')
+          // console.log("data", data)
+          
+          // if(error){
+          //   dispatch(createdToastMessage({status:types.TOAST_VALID, text:error.data.error, type: types.TOAST_ERROR}))
+          // }
+          // if(data){
+          //   dispatch(createdToastMessage({status:types.TOAST_VALID, text:data.message, type: types.TOAST_SUCCESS}))
+          // }
+
+
+        } catch (error) {
+          console.log( error)
+        }
+      },
+      invalidatesTags: ["User", "ProfileOverview", "UserSettings"]
     }),
     getUser: builder.query({
     
@@ -316,17 +346,98 @@ export const apiSlice = createApi({
       }),
       transformResponse(res){ return [res.data].map(configObject)[0]},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
-      
+      // Add this condition
+      skip: () => !isAuthenticated(),
+    }),
+    getUserProfileOverview: builder.query({
+      // query: ({uuid}) => `/users/${uuid}/profile_overview`,
+      query: ({uuid}) => ({
+        url:`/users/${uuid}/profile_overview`,
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+      }),
+      async transformResponse(res){
+        console.log("res", res)
+        const recentlyViewedProducts = 
+        res.data.attributes.recentlyViewedProducts 
+        // || [
+        //     { id: 'd7b3b937944dfb8bb4e808b4ee95378b', attributes:{name: "Ultra Clean Vacuum", image: "https://placehold.co/40x40/orange/black"} },
+        //     { id: '07e5aa4184b21f706b4458ea108de136', attributes:{name: "Comfy Armchair", image: "https://placehold.co/40x40/orange/black"} },
+        //     { id: 'e3a713b96d5c5c1cb1e20dade5e81561', attributes:{name: "Yoga Mat", image: "https://placehold.co/40x40/orange/black"} },
+        //   ];
+
+          const recentOrders = 
+          res.data.attributes.recentOrders 
+          // || [
+          //   { id: '7128e42d23c9942029870f3d986fa6f6', attributes:{date: '2023-05-01'} },
+          //   { id: '7128e42d23c9942029870f3d986fa6f7', attributes:{date: '2023-04-28'} },
+          //   { id: '7128e42d23c9942029870f3d986fa6f8', attributes:{date: '2023-04-25'} },
+          // ];
+
+          const recentReturns = 
+          res.data.attributes.recentReturns 
+          // || [
+          //   { id: '7128e42d23c9942029870f3d986fa6f9', attributes:{status: 'Pending'} },
+          //   { id: '7128e42d23c9942029870f3d986fa6f5', attributes:{status: 'Approved'} },
+          // ];
+
+          const bonuses = 
+          res.data.attributes.bonuses 
+          // || [
+          //   { id: 1, attributes:{name: 'Loyalty Points', value: '500 pts'} },
+          //   { id: 2, attributes:{name: 'Birthday Discount', value: '10% off'} },
+          // ];
+          const cleanData = {
+            data:{
+              recentlyViewedProducts:recentlyViewedProducts?.map(configObject) || [], 
+              recentOrders:recentOrders?.map(configObject) || [], 
+              recentReturns:recentReturns?.map(configObject) || [], 
+              bonuses:bonuses?.map(configObject) || []
+            }
+          }
+
+        await sleep(1000);
+        return cleanData.data
+      },
+      providesTags: ["ProfileOverview"],
+      // Add this condition
+      skip: () => !isAuthenticated(),
+    }),
+    getUserReviews: builder.query({
+      query: (uuid) => ({
+        url: `/users/${uuid}/reviews`,
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+      }),
+      transformResponse(res){return res.data?.map(configObject)},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
+      providesTags: ["UserReviews"],
+      // Add this condition
+      skip: () => !isAuthenticated(),
     }),
     getUserSettings: builder.query({
-      query: () => '/user_settings',
+      query: (uuid) =>({
+        url:`/users/${uuid}/user_settings`,
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+      }),
       transformResponse(res) {
-        return res.data.map(configObject)[0];
+        return configObject(res.data);
       },
       transformErrorResponse(err) {
         return err ? err.data?.errors : "unknown error";
       },
+      providesTags: ["UserSettings"],
+      // Add this condition
+      skip: () => !isAuthenticated(),
+    }),
+
+    updateUserSettings: builder.mutation({
+      queryFn:({update, uuid}) => ({
+        url: `/users/${uuid}/user_settings`,
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        method: 'PUT',
+        body: {update},
       }),
+      invalidatesTags: ["UserSettings"]
+    }),
     getStores: builder.query({
     
       query: () => '/stores'
@@ -417,7 +528,9 @@ export const apiSlice = createApi({
           
           // console.log("data", data)
          
-          const catalog = data?.map(configObject);
+          const catalog = data
+                            ?.map((d, x)=>({...d, attributes:{...d.attributes, active:x===0}}))
+                            ?.map(configObject);
           catalog[0].active = true;
           dispatch(createdCatalog(catalog))
           // apiSlice.endpoints.getCatalogItem.initiate()
@@ -447,6 +560,12 @@ export const apiSlice = createApi({
         }
       }
     }),
+    getCatalogItemProducts: builder.query({
+      query: (catId) => `/product_categories/${catId}/products`,
+      transformResponse(res){return res.data?.map(configObject)},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
+
+    }),
     getShoppingCart: builder.query({
     
       query: () => ({
@@ -461,18 +580,19 @@ export const apiSlice = createApi({
         try {
           const {data} = await queryFulfilled;
           
-          const itemsInCart = data; //data?.map(configObject);
-          // console.log("itemInCart", itemsInCart)
+          const shoppingCart = data; //data?.map(configObject);
+          console.log("itemInCart", shoppingCart)
           
-         if( itemsInCart.length){
+
+         if( shoppingCart.uuid){
       
-           dispatch(addedCartItem(itemsInCart?.map(item=>{
+           dispatch(addedCartItems(shoppingCart.cartItems.map(item=>{
             const {product, ...rest} = item
             
             upsertProduct(dispatch, getState, product)
 
             // return {product:product.uuid, ...product.priceVariation, ...rest}
-            return {product:product.uuid, uuid:rest.uuid, productCount:rest.productCount, itemStatus:rest.itemStatus}
+            return {product:product.uuid, uuid:rest.uuid, productCount:rest.itemCount, itemStatus:rest.itemStatus}
            })))
             
            
@@ -483,7 +603,12 @@ export const apiSlice = createApi({
         }
       },
 
-      providesTags: ["ShoppingCart"]
+      providesTags: (result, error, arg) =>
+        result
+          ? [...result.cartItems.map(({ uuid }) => ({ type: 'ShoppingCart', uuid })), 'ShoppingCart']
+          : ['ShoppingCart'],
+      // Add this condition
+      skip: () => !isAuthenticated(),
     }),
 
     getShoppingCartItem: builder.query({
@@ -674,7 +799,9 @@ export const apiSlice = createApi({
         }
       },
       
-      providesTags: ['Checkout']
+      providesTags: ['Checkout'],
+      // Add this condition
+      skip: () => !isAuthenticated(),
     }),
     getCheckoutItem: builder.query({
     
@@ -1049,8 +1176,16 @@ export const {
    useRecoverAccountMutation, 
    useResetPasswordMutation,
    useGetUserQuery,
+   useLazyGetUserQuery,
+   useGetUserProfileOverviewQuery,
+   useLazyGetUserProfileOverviewQuery,
+   useGetUserSettingsQuery,
+   useLazyGetUserSettingsQuery,
+   useUpdateUserSettingsMutation,
    useGetStoresQuery,
+   useLazyGetStoresQuery,
    useGetStoreQuery,
+   useLazyGetStoreQuery,
    useGetProductsQuery,
    useLazyGetProductsQuery,
    useGetPopularSearchesQuery,
@@ -1061,10 +1196,15 @@ export const {
    useLazyGetProductQuery,
    useGetCatalogQuery,
    useGetCatalogItemQuery,
+   useGetCatalogItemProductsQuery,
+   useLazyGetCatalogItemProductsQuery,
    useGetShoppingCartQuery,
+   useLazyGetShoppingCartQuery,
    useGetShoppingCartItemQuery,
    useGetCheckoutQuery,
+   useLazyGetCheckoutQuery,
    useGetCheckoutItemQuery,
+   useLazyGetCheckoutItemQuery,
    useSearchForProductsQuery,
    useLazySearchForProductsQuery,
    useGetProductReviewsQuery,
@@ -1084,3 +1224,4 @@ export const {
    useRemoveAnswerMutation,
    
   } = apiSlice
+

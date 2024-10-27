@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react'
-import { copyToClipboard } from '../../orm/utilities'
+import { copyToClipboard } from '../../utilities'
 
 const CopyIco = ({text, size=13}) => {
   const [isCopied, setIsCopied] = useState(false)

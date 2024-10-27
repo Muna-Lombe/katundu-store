@@ -6,11 +6,11 @@ import IMG, { imagepath } from '../assets/images';
 import no_product_img from '../assets/tests/jsonServer/img/placeholders/no_product_img.png'
 // assets
 import { createdOrder } from '../orm/models/OrderModel';
-import { momentDate } from '../orm/utilities';
+import { encodeUrlWWWFormComponent, momentDate } from '../utilities';
 import types from '../orm/actions/actionTypes';
 import { authenticatedUsers, isAlreadyOrdered, isAuthedUser, isInCart } from '../orm/selectors';
 import { createdCartItem } from '../orm/models/CartModel';
-import randomizer from '../js/utils/randomizer';
+import randomizer from '../utilities/randomizer';
 
 
 const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW =8, maxWH=""}) => {
@@ -92,11 +92,16 @@ const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW =8, maxWH=""
   
     )
   
+  // encode uri to produce this: /products/Ultra+Clean+Vacuum-024997c0550d336d42efa6b96c2510b3
+
+
+
+
   return (
    
     <div id={"product_card_" + product?.uuid} ref={forwardRef} className={(noPrd ? " " : " ") + (isSearchOrMain ? " min-w-[6rem] " : " min-w-[8rem] ") + (maxWH ? maxWH : "  max-w-[15rem] max-h-[20rem] ") + "w-auto h-full  flex flex-nowrap shrink flex-col justify-start bg-white shadow-md border border-gray-200 rounded-md font-raleway lining-nums tabular-nums  overflow-y-hidden"}>
       <div id="product_header" className="relative px-1 w-[100%] h-[100%]  justify-center items-end  ">
-        <Link state={{ uuid: product?.uuid }} to={"/products/" + product?.name + "-" + product?.uuid} id="product_image" className="flex  justify-center items-end" >
+        <Link state={{ uuid: product?.uuid }} to={encodeUrlWWWFormComponent("/products/" + product?.name + "-" + product?.uuid)} id="product_image" className="flex  justify-center items-end" >
           {
             noPrd
               ? <Image imagepath={no_product_img}/>

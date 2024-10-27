@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SwitcheableGroup from '../SwitcheableGroup';
 
-const PrivacySettings = ({ classFn }) => {
+const PrivacySettings = ({updatePrivacySettings, data, classFn }) => {
   const [makeProfilePublic, setMakeProfilePublic] = useState(false);
   const [showOnlineStatus, setShowOnlineStatus] = useState(true);
   const [allowDataCollectionForPersonalizedAds, setAllowDataCollectionForPersonalizedAds] = useState(false);
@@ -16,9 +16,16 @@ const PrivacySettings = ({ classFn }) => {
     </div>
     <div className="mt-6">
       <dl className="divide-y divide-gray-200">
-        <SwitcheableGroup label="Make profile public" setter={setMakeProfilePublic} getter={makeProfilePublic} classFn={classFn} />
-        <SwitcheableGroup label="Show online status" setter={setShowOnlineStatus} getter={showOnlineStatus} classFn={classFn} />
-        <SwitcheableGroup label="Allow data collection for personalized ads" setter={setAllowDataCollectionForPersonalizedAds} getter={allowDataCollectionForPersonalizedAds} classFn={classFn} />
+        <form id="privacy-update-form" name="privacy-update-form" onSubmit={(e)=> updatePrivacySettings(e)}>
+          <span className="mt-4 w-full flex flex-shrink-0 justify-end">
+            <button type="submit" className="bg-white rounded-md font-medium text-orange-600 hover:text-orange-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+              Update
+            </button>
+          </span>
+          <SwitcheableGroup form={"privacy-update-form"} label="Make profile public" setter={setMakeProfilePublic} getter={makeProfilePublic} classFn={classFn} />
+          <SwitcheableGroup form={"privacy-update-form"} label="Show online status" setter={setShowOnlineStatus} getter={showOnlineStatus} classFn={classFn} />
+          <SwitcheableGroup form={"privacy-update-form"} label="Allow data collection for personalized ads" setter={setAllowDataCollectionForPersonalizedAds} getter={allowDataCollectionForPersonalizedAds} classFn={classFn} />
+        </form>
       </dl>
     </div>
   </div>

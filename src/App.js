@@ -15,7 +15,7 @@ function App() {
   const Main = lazy(() => import("./pages/Main"))
   const Search = lazy(() => import("./pages/Search"))
   const NoRoute = lazy(() => import("./pages/404"))
-  const Basket = lazy(() => import("./pages/Basket"))
+  const ShoppingCart = lazy(() => import("./pages/ShoppingCart"))
   const Checkout = lazy(() => import("./pages/Checkout"))
   const History = lazy(() => import("./pages/History"))
   const Dashboard = lazy(() => import("./pages/UserDashboard"))
@@ -36,7 +36,7 @@ function App() {
         <Route path="/search" exact element={<Search />} />
         <Route path="/categories" exact element={<Categories />} />
         <Route path="/cart" exact element={
-          <PrivateRoute component={Basket} />
+          <PrivateRoute component={ShoppingCart} />
         } />
         <Route path="/checkout" exact element={
           <PrivateRoute component={Checkout} />

@@ -6,7 +6,7 @@ import { BasketIco } from "./icons"
 import { useParams, useLocation } from "react-router-dom"
 import { filteredProductsFromModel } from "../orm/selectors"
 import { useSelector } from "react-redux"
-import randomizer from "../js/utils/randomizer"
+import randomizer from "../utilities/randomizer"
 
 const ProductMinified = ({children, productItem})=> {
   const idFromLoc = useLocation().pathname?.split("/")?.at(-1)

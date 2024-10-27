@@ -227,6 +227,7 @@ export { default as FilterIco } from './FilterIco';
 export { default as CouponIco } from './CouponIco';
 export { default as NoStockIco } from './NoStockIco';
 export { default as EditIco } from './EditIco';
+export { default as RotatingArrow } from './RotatingArrow';
 export { BellIcon,
   BriefcaseIcon,
   ChatIcon,

@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom'
 import ToggleableField from './ToggleableField'
 import { useDispatch } from 'react-redux'
 import { createdOrderItem } from '../orm/models/OrderModel'
-import { handleLoadTest, handleRotateIco } from '../orm/utilities'
+import { handleLoadTest, handleRotateIco } from '../utilities'
 
 const OrderHistory = ({ itemsOrdered, listStyle}) => {
   const dispatch = useDispatch()

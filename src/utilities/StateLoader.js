@@ -1,8 +1,8 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import db from "../../assets/tests/jsonServer/db"
-import { ThunkTypes } from "../actions/thunkTypes";
+import db from "../assets/tests/jsonServer/db"
+import { ThunkTypes } from "../orm/actions/thunkTypes";
 import { mapper } from ".";
-import {actionCreator } from "../actions/actionTypes";
+import {actionCreator } from "../orm/actions/actionTypes";
 // import { Map } from ".";
 
 

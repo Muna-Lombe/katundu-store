@@ -9,10 +9,10 @@ import { useGetShoppingCartQuery } from '../js/middleware/queryHandler'
 import { createdToastMessage } from '../orm/models/ToastMessageModel'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { titleTagTypes as tags } from '../components/icons'
-import { AttributeWatcher, ClassWatcher } from '../orm/utilities/classWatcher'
+import { AttributeWatcher, ClassWatcher } from '../utilities/classWatcher'
 
 
-const Basket = () => {
+const ShoppingCart = () => {
   const goto = useNavigate()
   // recieve the state
   const cartItems = useSelector(filteredCartItemsFromModel()) 
@@ -167,7 +167,7 @@ const Basket = () => {
     }
     
      
-    const TotalBuy = ({list, exclude})=>{
+  const TotalBuy = ({list, exclude})=>{
       const [idList, setIdList] = useState([])
      
       // console.log("idList", idList);
@@ -348,7 +348,7 @@ const Basket = () => {
   return (
     <>
       <Suspense fallback={<NoItems />}>
-        <div className="Basket-wrapper flex flex-row gap-x-2 ">
+        <div className="ShoppingCart-wrapper flex flex-row gap-x-2 ">
           
           <Cart
             unOrd={unOrd} ord={ord} handleCheckedItems={handleCheckedItems} 
@@ -364,4 +364,4 @@ const Basket = () => {
   )
 }
 
-export default Basket
+export default ShoppingCart

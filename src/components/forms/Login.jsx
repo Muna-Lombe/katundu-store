@@ -5,11 +5,11 @@ import Logo from "../Logo";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { createdAuth } from "../../orm/models/AuthModel";
-import { momentDate, preloadCartItems, preloadOrderHistory, sha256 } from "../../orm/utilities";
+import { createAuthKey, generateNonce, momentDate, preloadCartItems, preloadOrderHistory, } from "../../utilities";
 import types from "../../orm/actions/actionTypes";
 import { useEffect } from "react";
 import { authenticatedUsers, isAuthedUser } from "../../orm/selectors";
-import { apiSlice, useGetShoppingCartQuery, useLoginUserMutation, useSignupUserMutation } from "../../js/middleware/queryHandler";
+import {  useLoginUserMutation, useSignupUserMutation } from "../../js/middleware/queryHandler";
 import { createdToastMessage } from "../../orm/models/ToastMessageModel";
 import { removedAllCartItems } from "../../orm/models/CartModel";
 import { removedAllOrderItems } from "../../orm/models/OrderModel";
@@ -40,14 +40,19 @@ export default function Login({userId}) {
      
       for (const form of forms) {
         new FormData(form).forEach((k, v, x) => {
-          let target = v.split("-")[0]
+          // console.log("k", k, "v", v);
+          
+          let target = v.includes("password") ? "password" : v.split("-")[0]
           data[target] =  k 
         });
       }
       data['email'] = data.email
-      data['password'] = [...(await Promise.all([sha256(data.password)]))][0]
+      const nonce = generateNonce();
+      console.log("pw", data);
       
-      const res = await loginUser({ initialCred: {user:{email:data.email, password:data.password}} })
+      const authKey = await createAuthKey(data.password, nonce);
+      // data['auth_key'] = authKey;
+      const res = await loginUser({ initialCred: {user:{email:data.email, auth_key:authKey}} })
       if(res.error) throw new Error(JSON.stringify(res.error.data.error))
       //  console.log(res)
       dispatch(createdAuth({uuid:res.data.uuid, dateCreated:momentDate().shortDate, timeCreated:new Date().toString(),  authStatus:types.AUTH_VALID}))
@@ -57,8 +62,12 @@ export default function Login({userId}) {
         // () => dispatch(preloadCartItems),
 
       ])
-      location.state.pathname = location.state.pathname ? ["/reset-password", "/signup"].includes(location.state.pathname) ? "/" : location.state.pathname : "/";
-      goto(location.state,{state:{from: location.pathname}});
+      if(location?.state?.pathname){
+        location.state.pathname ||= ["/reset-password", "/signup"].includes(location?.state?.pathname) ? "/" : location?.state?.pathname;
+        goto(location?.state,{state:{from: location?.pathname||"/"}});
+      }else{
+        goto("/");
+      }
       
     } catch (error) {
       const msg = error.message.toString().split("\"")
@@ -133,7 +142,8 @@ export default function Login({userId}) {
                   Password
                 </label>
                 <div className="viewable-password-field h-[36px] relative flex flex-flex-nowrap w-full rounded-b-md border-0 p-0.5 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 outline-none focus:z-10 focus:ring-2 focus:ring-inset focus:ring-orange-600 indent-2 sm:text-sm sm:leading-6">
-                  <input form="Signup-form"
+                  <input 
+                    form="Signin-form"
                     id="password"
                     name="password"
                     type="password"

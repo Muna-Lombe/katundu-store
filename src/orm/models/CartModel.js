@@ -2,7 +2,7 @@ import { attr,fk, Model } from "redux-orm";
 
 import { actionCreator } from "../actions/actionTypes";
 import customReducer from "./reducer";
-import { isIterable } from "../utilities";
+import { isIterable } from "../../utilities";
 import PropTypes from 'prop-types';
 // import { createStore, combineReducers } from "redux";
 // import { createReducer } from "redux-orm";
@@ -74,5 +74,5 @@ CartItem.options={
     
 }
 
-export const { UPDATE: updatedCartItem, UPDATE: checkedOutCartItem, UPDATE: orderedCartItem, REMOVE:removedCartItem, REMOVE_ALL:removedAllCartItems, ADD:addedCartItem ,  CREATE:createdCartItem, REMOVE_FROM:removedCartItemFrom} = actionCreator().createDefaultFor('CartItem')
+export const { UPDATE: updatedCartItem, UPDATE: checkedOutCartItem, UPDATE: orderedCartItem, REMOVE:removedCartItem, REMOVE_ALL:removedAllCartItems, ADD:addedCartItems, ADD:addedCartItem ,  CREATE:createdCartItem, REMOVE_FROM:removedCartItemFrom} = actionCreator().createDefaultFor('CartItem')
 export default CartItem;

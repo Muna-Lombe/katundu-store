@@ -1,7 +1,7 @@
 import { Label, Switch, SwitchGroup } from '@headlessui/react'
 import React from 'react'
 
-const SwitcheableGroup = ({ label, setter, getter, classFn }) => {
+const SwitcheableGroup = ({ form,label, setter, getter, classFn }) => {
   return (
     <SwitchGroup as="div" className="py-4 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:pt-5">
       <Label as="dt" className="text-sm font-medium text-gray-500" passive>
@@ -9,6 +9,7 @@ const SwitcheableGroup = ({ label, setter, getter, classFn }) => {
       </Label>
       <dd className="mt-1 flex text-sm text-gray-900 sm:mt-0 sm:col-span-2">
         <Switch
+          form={form}
           checked={getter}
           onChange={setter}
           className={classFn(
