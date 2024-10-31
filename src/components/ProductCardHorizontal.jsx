@@ -38,7 +38,7 @@ const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW = 8, maxWH =
     dispatch(addedCartItem({
       DateCreated: momentDate().full,
       product: id,
-      productCount:1,
+      itemCount:1,
       ItemStatus:types.IN_CART
     }))
     

@@ -56,7 +56,7 @@ CartItem.modelName = 'CartItem';
 CartItem.propTypes = {
     uuid: PropTypes.string.isRequired,
     product: PropTypes.object.isRequired,
-    productCount: PropTypes.number.isRequired,
+    itemCount: PropTypes.number.isRequired,
     itemStatus: PropTypes.string.isRequired
 }
 
@@ -64,10 +64,12 @@ CartItem.propTypes = {
 CartItem.fields = {
     uuid: attr(),
     // DateCreated: attr(),
-    product: fk({to:'Product', as:'product', through:"ProductCartItem", relatedName: 'cartItems'}),
+    // product: fk({to:'Product', as:'product', through:"ProductCartItem", relatedName: 'cartItems'}),
     // productVariationId: fk({ to: 'ProductVariation', as: 'productVariation', through: "VariationCartItem", relatedName: 'cartItems' }),
-    productCount:attr(),
-    itemStatus: attr()
+    itemCount:attr(),
+    itemStatus: attr(),
+    serializedProduct: attr(),
+    shoppingCartUuid: attr()
 };
 CartItem.options={
     idAttribute:'uuid',

@@ -48,7 +48,7 @@ export default function Login({userId}) {
       }
       data['email'] = data.email
       const nonce = generateNonce();
-      console.log("pw", data);
+      // console.log("pw", data);
       
       const authKey = await createAuthKey(data.password, nonce);
       // data['auth_key'] = authKey;

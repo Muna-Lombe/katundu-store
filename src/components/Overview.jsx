@@ -21,6 +21,8 @@ const Overview = () => {
 
   if (isLoading || isProfileOverviewLoading) return <div><LoadingStateComponent /></div>;
   if (isError || isProfileOverviewError) return <div><BrokenConnection/></div>;
+
+  console.log("profileOverview", profileOverview)
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Account Overview</h1>

@@ -10,90 +10,17 @@ import { createdToastMessage } from '../orm/models/ToastMessageModel'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { titleTagTypes as tags } from '../components/icons'
 import { AttributeWatcher, ClassWatcher } from '../utilities/classWatcher'
+import { getUnorderedCartItems, getOrderedCartItems } from '../orm/selectors'
+
+
 
 
 const ShoppingCart = () => {
-  const goto = useNavigate()
-  // recieve the state
-  const cartItems = useSelector(filteredCartItemsFromModel()) 
-  // console.log("acwfdf", cartItems)
-
- 
-  // filter it by store
-  const filterByStore = (ordItm) =>{
-    const filteredStoreObject = Object.create(null)
-      // console.log("test ordItm",  ordItm)
-    ordItm.forEach((fp)=>{
-      const storeName = fp.product?.store.name+"-"+fp.product?.store.uuid;
-      if(filteredStoreObject[storeName]){
-
-        filteredStoreObject[storeName].push(fp) 
-      }else{
-          filteredStoreObject[storeName] = [fp]
-      }
-      
-    })
-    return filteredStoreObject
-  }
-
-  // seperate it by ordered and not ordered status
-
-  const addTotalCost = (store)=>{
-    console.log('test store', store)
-    if(Object.keys(store).length < 1) return []
-    return Object.keys(store).map(storeName => (
-          { storeName:storeName.split("-")[0], 
-            uuid: storeName.split("-")[1],
-            orders: store[storeName],
-        currentCummulativeTotal: store[storeName].map((orderItem) => {
-                            return (orderItem.product?.price * orderItem.productCount )
-            }).reduce((a, b) => a + b).toFixed(1)
-          })
-    )
-    // return { ...store, totalPrice: totalPrice }
-  }
-
-  const sortBy = (cartItems, orderStatuses) => {
-    // console.log('test cartItems',cartItems,'\n',orderStatuses, )
-    const matchingStatus = (i) =>{ 
-      return orderStatuses.some(os => {
-        // console.log("match",os.includes(i.itemStatus.toString()))
-        return os.includes(i.itemStatus.toString())
-      })
-    }
-    const filterByStatus =([k,v])=>{
-      const itm = v.filter(matchingStatus)
-      if (itm.length) return [k,itm]
-    } 
-    const noUndefined = i => i!==undefined
-    return Object.entries(cartItems).map(filterByStatus).filter(noUndefined) 
-  } 
-
-  const unOrd = cartItems.length ? 
-                  addTotalCost(
-                    Object.fromEntries(
-                      sortBy(
-                        filterByStore(
-                          Object.values(cartItems)
-                        ), [types.IN_CART, types.ORDERED_PENDING]
-                      )
-                    )
-                  )
-                  : []
-    const ord = cartItems.length ? 
-                  addTotalCost(
-                    Object.fromEntries(
-                        sortBy(
-                          filterByStore(
-                            Object.values(cartItems)
-                          ),[types.OUT_CART,types.ORDERED_COMPLETE]
-                        )
-                    )
-                  )
-                  : []
-    
-    
-     
+    const goto = useNavigate()
+    // recieve the state
+  
+    const unOrderedItems = useSelector(getUnorderedCartItems);
+    const orderedItems = useSelector(getOrderedCartItems);
     const useVariable = (initialValue) => {
       const ref = useRef(initialValue);
       const get = useCallback(() => ref.current, []);
@@ -112,14 +39,13 @@ const ShoppingCart = () => {
         cartItemIds.push(item.id.split('_')[2])
       })
       // console.log("cartItemIds", cartItemIds);
-      setter(cartItemIds)
-      setCheckedItem(cartItemIds)
+      setter ? setter(cartItemIds) : setCheckedItem(cartItemIds)
 
     }
-    const handleSetCheckedItems = (e) => {
+    const handleSetCheckedItems = (e, rootElement) => {
       e?.preventDefault()
      
-      addCheckedItems({setter:setCheckedItem});
+      addCheckedItems({setter:setCheckedItem, rootElement});
       // console.log('test cartItemIds', getCheckedItem())
 
     }
@@ -142,13 +68,14 @@ const ShoppingCart = () => {
 
       const cart = document.getElementById("cart_container")
 
-      
-      const storeItems = cart.querySelector("#" + id).parentElement.querySelectorAll('input[type="checkbox"]:not(:disabled).select-item');
+
+      const store = cart.querySelector("#" + id).parentElement
+      const storeItems = store.querySelectorAll('input[type="checkbox"]:not(:disabled).select-item');
       e.target.checked ? e.target.setAttribute("checked", "") : e.target.removeAttribute("checked");
       storeItems.forEach((item) => {
         item.checked = e.target.checked
       });
-      // handleSetCheckedItems(e)
+      // handleSetCheckedItems(e, store)
 
     }
 
@@ -176,7 +103,7 @@ const ShoppingCart = () => {
       }//useRef()
      
       const addUp = (x) => x.map((orderItem) => {
-        return (orderItem.product?.price * orderItem.productCount)
+        return (orderItem.product?.price * orderItem.itemCount)
       }).reduce((a, b) => parseFloat(a) + parseFloat(b))
       const checkoutTotal = (list) => {
         if (!list.length || !idList.length) return 0
@@ -306,7 +233,7 @@ const ShoppingCart = () => {
                   store.orders.map((order, x) => (
                     <div key={x} className="flex flex-row justify-between ">
                       <p className='first:text-lg first:font-medium'>{order.product?.name}</p>
-                      <p>{order.productCount} x {order.product?.price}</p>
+                      <p>{order.itemCount} x {order.product?.price}</p>
                     </div>
                   ))
                 }
@@ -351,13 +278,13 @@ const ShoppingCart = () => {
         <div className="ShoppingCart-wrapper flex flex-row gap-x-2 ">
           
           <Cart
-            unOrd={unOrd} ord={ord} handleCheckedItems={handleCheckedItems} 
+            unOrd={unOrderedItems} ord={orderedItems} handleCheckedItems={handleCheckedItems} 
             handleSelectAll={handleSelectAll} 
-            handleSelectStore={handleSelectStore} 
+            handleSelectStore={handleSelectStore}
             setRef={handleSetCheckedItems} 
-            TotalBuy={<TotalBuy list={unOrd}  exclude={{"card":true}} />}
+            TotalBuy={<TotalBuy list={unOrderedItems}  exclude={{"card":true}} />}
           /> 
-          <TotalBuy exclude={{"header":true}} list={unOrd}  />
+          <TotalBuy exclude={{"header":true}} list={unOrderedItems}  />
         </div>
       </Suspense>
     </>

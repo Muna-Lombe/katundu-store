@@ -3,23 +3,25 @@ import { ArrowLeft,  ArrowRight,  BasketIco,  CartIco,  PinIco, popularTags } fr
 import { categories, filteredProductsFromModel } from "../orm/selectors";
 import { useDispatch, useSelector } from "react-redux";
 import { Link,useParams, useLocation, createSearchParams, } from "react-router-dom";
-import { BuyBtns, ContentDescription, ContentDetails, ContentPayment, ContentSpecification, ContentViewer, Courier, DiscountInfo, EmbeddedProducts, Faqs, FullProductCharacteristics, FullProductDescription, Logo, NoItems, OrderInfo,  PaymentType, PickupPoints, PinLocation, PriceTag, ProductDescriptor, ProductImageViewer, ProductMinified, ProductSpecificationDetail, ProductTags,  ReviewsAndQuestions } from "../components";
+import { BuyBtns, ContentDescription, ContentDetails, ContentPayment, ContentSpecification, ContentViewer, Courier, DiscountInfo, EmbeddedProducts, Faqs, FullProductCharacteristics, FullProductDescription, LoadingStateComponent, Logo, NoItems, OrderInfo,  PaymentType, PickupPoints, PinLocation, PriceTag, ProductDescriptor, ProductImageViewer, ProductMinified, ProductSpecificationDetail, ProductTags,  ReviewsAndQuestions } from "../components";
 import { useGetProductQuery } from "../js/middleware/queryHandler";
 import { createdToastMessage } from "../orm/models/ToastMessageModel";
 import types from "../orm/actions/actionTypes";
 
 
+// Somewhere inside, something is causing 6 rerenders
 
 const ShowProduct = ()=>{
   // console.log("", useParams())
-  const location = useLocation()
-  const  id = useParams().id || 2001
+  // const location = useLocation()
+  const  id = useParams().id
 
   const dispatch = useDispatch()
   let productItem;// = useSelector(filteredProductsFromModel([])).find(i=> i.id.toString() === id.toString())
   const { data, isLoading, isSuccess, isError, error } = useGetProductQuery({productId:id})
   if (isLoading) {
     productItem = false
+    return <LoadingStateComponent />
   } else if (isSuccess) {
     productItem = data //{ id:data.uuid, ...data.attributes }
   } else if (isError) {
@@ -125,9 +127,20 @@ const ShowProduct = ()=>{
       <BreadCrumbs/>
     </div>
   )
+  
+  function NoShowProduct() {
+    return (
+      <div className="show-product-page relative dark:text-white">
+        <NavBack />
+      <MiddleSection>
+        <NoItems />
+      </MiddleSection>
+      </div>
+    )
+  }
   return(
     <>
-      <Suspense fallback={<NoItems />} >
+      <Suspense fallback={<NoShowProduct />} >
           {
             productItem ?
             <div className="show-product-page relative dark:text-white">
@@ -171,7 +184,7 @@ const ShowProduct = ()=>{
                         />
                         <DiscountInfo/>
                         <BuyBtns 
-                          deliveryInfo={productItem?.deliveryOptions[0]} id={productItem?.uuid}
+                          deliveryInfo={productItem?.deliveryOptions[0]} id={productItem.uuid}
                           prodVars={productItem?.variations.map(v=>({id:v.uuid, stock:v.stock}))}
                           
                         />

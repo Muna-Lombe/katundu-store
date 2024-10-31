@@ -29,6 +29,7 @@ const QAs = ({ qas, productReviewId , productId}) => {
   const [updateAnswer, { data: updatedAnswerData, isLoading: updateAnswerLoading, isError: updateAnswerError, isSuccess: updateAnswerSuccess } ] = useUpdateAnswerMutation();
   const [removeAnswer, { data: removedAnswerData, isLoading: removeAnswerLoading, isError: removeAnswerError, isSuccess: removeAnswerSuccess }] = useRemoveAnswerMutation();
   
+  console.log("qas", qas)
   useEffect(() => {
     if (addQuestionSuccess && addedQuestionData) {
       const {questionAnswerId:qandas_id, ...rest} = addedQuestionData
@@ -84,6 +85,11 @@ const QAs = ({ qas, productReviewId , productId}) => {
       // Get form data
       const formData = new FormData(form);
       
+      // if form is empty, return
+      // console.log("formData.values().length", formData);
+      
+      
+
       for (let [name, value] of formData) {
         // console.log(name, value);
         post["product_review"] = {
@@ -93,16 +99,17 @@ const QAs = ({ qas, productReviewId , productId}) => {
           poster_uuid: authSessions[0].uuid
         }
       }
-
+      
       // console.log("updateFn", typeof updateFn)
       // return
-
+      if (post.product_review?.[type]?.text.length === 0) return
       if (edit) {
         console.log(editMode)
         updateFn(post)
       } else {
-
-        updateFn({ initialPost: post, productReviewId, productId })
+        const {product_review, ...rest} = post
+        const initialPost = {product_review: {...rest, ...product_review}}
+        updateFn({ initialPost, productReviewId, productId })
       }
       document.getElementById("add-"+type+"-input").value = "";
     };
@@ -129,7 +136,7 @@ const QAs = ({ qas, productReviewId , productId}) => {
         </p>
       </>
     )
-    const Componentbody = () => (
+    const ComponentBody = () => (
       <form id={type+"_post"} name={type+"_post"} action="" onSubmit={() => ""} className="flex flex-col gap-3">
         {
           editMode?.value ?
@@ -148,16 +155,16 @@ const QAs = ({ qas, productReviewId , productId}) => {
         </div>
       </form>
     )
-    const Component = () => (
+    // const Component = () => (
     
-        <Componentbody />
+    //     <Componentbody />
         
-    )
+    // )
     return (
       <>
 
         <Tooltip />
-        <Component />
+        <ComponentBody />
 
       </>
 
@@ -258,23 +265,26 @@ const QAs = ({ qas, productReviewId , productId}) => {
   const HelpfulQuestionVotes = ({ question, qandas_id }) => {
 
     const upvotes = updateQuestionSuccess ?
-      (updatedQuestionData.uuid === question.uuid) && (updatedQuestionData.rating.upvotes !== question?.rating.upvotes) ?
-        updatedQuestionData.rating.upvotes
-        : question?.rating.upvotes
-      : question?.rating.upvotes
+      (updatedQuestionData.uuid === question.uuid) && (updatedQuestionData.rating?.upvotes !== question?.rating?.upvotes) ?
+        updatedQuestionData.rating?.upvotes
+        : question?.rating?.upvotes
+      : question?.rating?.upvotes
     const downvotes = updateQuestionSuccess ?
-      (updatedQuestionData.uuid === question.uuid) && (updatedQuestionData.rating.downvotes !== question?.rating.downvotes) ?
-        updatedQuestionData.rating.downvotes
-        : question?.rating.downvotes
-      : question?.rating.downvotes
+      (updatedQuestionData.uuid === question.uuid) && (updatedQuestionData.rating?.downvotes !== question?.rating?.downvotes) ?
+        updatedQuestionData.rating?.downvotes
+        : question?.rating?.downvotes
+      : question?.rating?.downvotes
 
     const handleUpvote = (e) => {
       e.preventDefault()
-      updateQuestion({ postUpdate: { type: "update_question_votes", product_review: { question: { upvotes: 1 }, poster_uuid: authSessions[0].uuid } }, productId, productReviewId, questionAnswerId: qandas_id, questionId: question.uuid })
+      updateQuestion({ postUpdate:{product_review: { type: "update_question_votes", question: { upvotes: 1 }, poster_uuid: authSessions[0].uuid}}, productId, productReviewId, questionAnswerId: qandas_id, questionId: question.uuid })
     }
     const handleDownvote = (e) => {
       e.preventDefault()
-      updateQuestion({ postUpdate: { type: "update_question_votes", product_review: { question: { downvotes: 1 }, poster_uuid: authSessions[0].uuid } }, productId, productReviewId, questionAnswerId: qandas_id, questionId: question.uuid })
+      if(!isAuthed()){
+        return goto("/signin", { state: { ...location } })
+      }
+      updateQuestion({ postUpdate:{product_review: { type: "update_question_votes", question: { downvotes: 1 }, poster_uuid: authSessions[0].uuid}}, productId, productReviewId, questionAnswerId: qandas_id, questionId: question.uuid })
     }
 
     return (
@@ -337,12 +347,17 @@ const QAs = ({ qas, productReviewId , productId}) => {
       value: text,
       type: "update_question_text",
       toggleEditMode: setEditQuestion,
-      updateFn: (questionBody) => updateQuestion({
-        postUpdate: questionBody,
-        questionId: question.uuid,
-        questionAnswerId: qandas_id,
-        productId, productReviewId,
-      })
+      updateFn: (questionBody) => {
+        const {product_review, ...rest} = questionBody
+        const postUpdate = {}
+        postUpdate["product_review"] = {...rest, ...product_review}
+        return updateQuestion({
+          postUpdate,
+          questionId: question.uuid,
+          questionAnswerId: qandas_id,
+          productId, productReviewId,
+        })
+      }
     }
 
 
@@ -361,31 +376,37 @@ const QAs = ({ qas, productReviewId , productId}) => {
     )
   }
   const Question =({question,qandas_id,children})=>{
-    
+    const [maxShowResponseLimit, setMaxShowResponseLimit] = useState(5)
+
+    const QuestionTimeStamps =({question})=>{
+      return(
+        <div className="question-timestamp py-1 flex less-than-xs:flex-row flex-col justify-self-end  self-start child:py-0">
+
+          {
+            (userAuthed && (question?.poster?.canUpdate === authSessions[0]?.uuid)) ?
+              <MoreActions>
+                <>
+                  <div id={"edit-question" + question?.uuid} className="edit-question flex flex-row items-baseline gap-1 text-slate-400 hover:text-blue-500 text-base">
+                    <EditIco />
+                    <p className="less-than-sm:hidden ">{"Edit"}</p>
+                  </div>
+                  <div id={"delete-question" + question?.uuid} className="delete-question flex flex-row items-baseline gap-1  text-red-600  text-base hover:text-red-500">
+                    <DeleteIco size={16} />
+                    <p className="less-than-sm:hidden">{"Delete"}</p>
+                  </div>
+                </>
+              </MoreActions>
+              : <></>
+          }
+        </div>
+      )
+    }
     return(
       <div className="question-wrapper flex flex-col gap-3">
         <div className="question-description my-2 h-max flex less-than-xs:flex-col flex-row less-than-xs:items-start justify-between gap-2 ">
           
           <PostCreatorTag posterName={question?.poster?.name} avtr_url={question?.poster?.avtr_url} postTimestamp={question?.datePosted} />
-          <div className="question-timestamp py-1 flex less-than-xs:flex-row flex-col justify-self-end  self-start child:py-0">
-            
-              {
-                (userAuthed && (question?.poster.canUpdate === authSessions[0]?.uuid)) ?
-                <MoreActions>
-                  <>
-                    <div id={"edit-question" + question?.uuid} className="edit-question flex flex-row items-baseline gap-1 text-slate-400 hover:text-blue-500 text-base">
-                      <EditIco />
-                      <p className="less-than-sm:hidden ">{"Edit"}</p>
-                    </div>
-                    <div id={"delete-question" + question?.uuid} className="delete-question flex flex-row items-baseline gap-1  text-red-600  text-base hover:text-red-500">
-                      <DeleteIco size={16} />
-                      <p className="less-than-sm:hidden">{"Delete"}</p>
-                    </div>
-                  </>
-                </MoreActions>
-                  : <></>
-              }
-          </div>
+          <QuestionTimeStamps question={question}/>
         </div>
         <div className="question-answer-details w-full flex flex-col gap-5 child:ml-2">
           <div className="question-content my-2 px-2 flex flex-col gap-6 ">
@@ -399,14 +420,16 @@ const QAs = ({ qas, productReviewId , productId}) => {
           <Respond qandas_id={qandas_id} />
             
           <div className="children-wrapper w-auto flex flex-col gap-6 pl-9 less-than-xs:pl-2 ">
-            {children}
+            {children?.slice(0, maxShowResponseLimit)}
             <div className="has-more-responses p-4">
               {
-                question?.responseCount > 3
-                  ? <p className="response-count text-sm text-blue-500 font-raleway lining-nums tabular-nums  font-semibold cursor-pointer">
-                      {"+ "+question?.responseCount+" more answer"}
+                question?.responseCount > maxShowResponseLimit
+                  ? <p className="response-count text-sm text-blue-500 font-raleway lining-nums tabular-nums  font-semibold cursor-pointer" onClick={(e) => setMaxShowResponseLimit(prev => children?.length >= (prev + 3) ? prev + 3 : children.length)}>
+                      {"+ "+(question?.responseCount-maxShowResponseLimit)+" more answer"}
                     </p>
-                : ""
+                  : <p className="response-count text-sm text-blue-500 font-raleway lining-nums tabular-nums  font-semibold cursor-pointer" onClick={(e) => setMaxShowResponseLimit(prev => 5)}>
+                    {"Show less"}
+                  </p>
               }
             </div>
           </div>
@@ -518,14 +541,19 @@ const QAs = ({ qas, productReviewId , productId}) => {
       value: text,
       type: "update_answer_text",
       toggleEditMode: setEditAnswer,
-      updateFn: (answerBody) => updateAnswer({
-        postUpdate: answerBody,
-        answerId: answer.uuid,
-        questionAnswerId: qandas_id,
-        productId, productReviewId,
-      })
+      updateFn: (answerBody) => {
+        const { product_review, ...rest } = answerBody
+        const postUpdate = {}
+        postUpdate["product_review"] = { ...rest, ...product_review }
+        return updateQuestion({
+          postUpdate,
+          answerId: answer.uuid,
+          questionAnswerId: qandas_id,
+          productId, productReviewId,
+        })
+      }
     }
-
+  
 
     return (
       <div className="reviewer-answer">
@@ -592,12 +620,17 @@ const QAs = ({ qas, productReviewId , productId}) => {
       type: "add_answer",
       value: "  ",
       toggleEditMode: setToggleRespond,
-      updateFn: (postBody) => addAnswer({
-        initialPost: postBody,
-        questionAnswerId: qandas_id,
-        productId, 
-        productReviewId
-      })
+      updateFn: (postBody) => {
+        const { product_review, ...rest } = postBody
+        const initialPost = {}
+        initialPost["product_review"] = { ...rest, ...product_review }
+        return updateQuestion({
+          initialPost,
+          questionAnswerId: qandas_id,
+          productId, 
+          productReviewId
+        })
+      }
     }
     const ReplyBtn = () =>(
       <p onClick={(e) => { e.preventDefault(); setToggleRespond(true) }} className="reply-btn  p-1 w-max min-w-[80px] bg-inherit rounded-md text-inherit text-base font-raleway lining-nums tabular-nums font-semibold cursor-pointer"> {"Reply"} </p>

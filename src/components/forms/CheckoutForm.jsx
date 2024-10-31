@@ -11,7 +11,7 @@ import { momentDate, returnOnReload } from '../../utilities'
 import types from '../../orm/actions/actionTypes'
 import NameTag from '../NameTag'
 import { orderedCartItem } from '../../orm/models/CartModel'
-import { checkouts as checkoutSelector, getNextId } from '../../orm/selectors'
+import { checkouts as checkoutSelector, getCartUuid, getNextId } from '../../orm/selectors'
 import { titleTagTypes as tags } from "../icons";
 import { useBeginItemCheckoutQuery, useCompleteItemCheckoutMutation } from '../../js/middleware/queryHandler'
 import { createdToastMessage } from '../../orm/models/ToastMessageModel'
@@ -28,11 +28,12 @@ const CheckoutForm = ({ location}) => {
 
   const dispatch = useDispatch()
   // returnOnReload()
-  const cartIds = location.state?.cartItemIds;
+  const cartItemIds = location.state?.cartItemIds;
 
   const checkouts = useSelector(checkoutSelector)
-  console.log("echeo", cartIds)
-  const { data, isLoading, isError, error, isSuccess, refetch } = useBeginItemCheckoutQuery({ cartIds: cartIds }, { refetchOnMountOrArgChange: true, forceRefetch:true })
+  // console.log("echeo", cartIds)
+  const cartUuid = useSelector(getCartUuid) || sessionStorage.getItem("shoppingCartUuid");
+  const { data, isLoading, isError, error, isSuccess, refetch } = useBeginItemCheckoutQuery({ cartItemIds: cartItemIds, uuid: cartUuid }, { refetchOnMountOrArgChange: true, forceRefetch:true })
   const [completeCheckout,{isLoading:isCompleteCheckoutLoading, isSuccess:isCompleteCheckoutSuccess, isError:isCompleteCheckoutError, isUninitialized:isCompleteCheckoutUninitialized} ] = useCompleteItemCheckoutMutation()
   const formRef = useRef(<div></div>)
   
@@ -45,46 +46,46 @@ const CheckoutForm = ({ location}) => {
   useEffect(() => { 
     if ((!(isCompleteCheckoutLoading || isCompleteCheckoutSuccess || isCompleteCheckoutError) && isCompleteCheckoutUninitialized) && (isSuccess && document.readyState === "complete")){
       
-
+      // console.log("beginCheckoutData", data)
       wrapper ||= document.getElementById("checkout_wrapper")
       wrapper.firstElementChild.innerHTML = data
-      
-      document.getElementById("checkout_btn")?.classList.toggle("max-w-[40rem]")
-      document.getElementById("order_details")?.classList.toggle("max-w-[45rem]")
-      // document.getElementById("order_details")?.parentElement.classList.toggle("items-center")
-      document.getElementById("order_details")?.parentElement.classList.toggle("greater-than-lg:max-w-max")
-      const form = document.getElementById('checkout_form');
-      const beginCheckoutComponent = document.querySelector("[data-component-name=BeginCheckout]")
-      // console.log("beginCheckoutComponent", beginCheckoutComponent)
-      const {checkoutData} = JSON.parse(beginCheckoutComponent.innerText)
-      
-      
-      
-      if (checkouts?.some((c) => c.uuid === checkoutData.orders[0].cid.split("_")[2].split("-")[1])){
-        dispatch(updatedCheckout({ 
-          uuid: checkoutData.orders[0].cid.split("_")[2].split("-")[1], 
-          status: "CHECKED_OUT_EXPIRED"
-         }))
-        // console.log("refetching")
-        refetch()
-      }else{
-        dispatch(createdCheckout({
-          uuid: checkoutData.orders[0].cid.split("_")[2].split("-")[1], 
-          status:"CHECKED_OUT_PENDING"
-        }))
-
-      }
-      const orderId = checkoutData.orders[0].cid.split("_")[2].split("-")[1]
-      const cartIds = checkoutData.orders.map((oi, x, a) => oi.cid.split("_")[1].split("-")[1]) 
-      // console.log("order_id", orderId, "\ncart_ids" , cartIds)
-      if (form) {
-        // console.log("form loaded", orderId, cartIds)
-        
-        form.addEventListener('submit', (e) => handleSubmit(e, orderId, cartIds));
-      }
-        
-      
     }
+    //   document.getElementById("checkout_btn")?.classList.toggle("max-w-[40rem]")
+    //   document.getElementById("order_details")?.classList.toggle("max-w-[45rem]")
+    //   // document.getElementById("order_details")?.parentElement.classList.toggle("items-center")
+    //   document.getElementById("order_details")?.parentElement.classList.toggle("greater-than-lg:max-w-max")
+    //   const form = document.getElementById('checkout_form');
+    //   const beginCheckoutComponent = document.querySelector("[data-component-name=BeginCheckout]")
+    //   // console.log("beginCheckoutComponent", beginCheckoutComponent)
+    //   const {checkoutData} = JSON.parse(beginCheckoutComponent.innerText)
+      
+      
+      
+    //   if (checkouts?.some((c) => c.uuid === checkoutData?.orders[0].cid.split("_")[2].split("-")[1])){
+    //     dispatch(updatedCheckout({ 
+    //       uuid: checkoutData.orders[0].cid.split("_")[2].split("-")[1], 
+    //       status: "CHECKED_OUT_EXPIRED"
+    //      }))
+    //     // console.log("refetching")
+    //     refetch()
+    //   }else{
+    //     dispatch(createdCheckout({
+    //       uuid: checkoutData.orders[0].cid.split("_")[2].split("-")[1], 
+    //       status:"CHECKED_OUT_PENDING"
+    //     }))
+
+    //   }
+    //   const orderId = checkoutData.orders[0].cid.split("_")[2].split("-")[1]
+    //   const cartIds = checkoutData.orders.map((oi, x, a) => oi.cid.split("_")[1].split("-")[1]) 
+    //   // console.log("order_id", orderId, "\ncart_ids" , cartIds)
+    //   if (form) {
+    //     // console.log("form loaded", orderId, cartIds)
+        
+    //     form.addEventListener('submit', (e) => handleSubmit(e, orderId, cartIds));
+    //   }
+        
+      
+    // }
     if(isError){
       console.log("err", error)
       dispatch(createdToastMessage(
@@ -169,89 +170,90 @@ const CheckoutForm = ({ location}) => {
   };
  
   
-  const CheckoutForm = ({})=> (
-    <>
-      <div id="date_time" className="py-2 text-lg font-raleway lining-nums tabular-nums " >
-        <p className="text-md font-semibold ">{tags.checkout.orderWhenText}</p> 
-      </div>
-      <div id="delivery_date_time__wrapper" className="w-auto  flex less-than-xs:flex-wrap  gap-4">
-        <div id="date" className="max-w-[9rem] flex flex-col justify-center border-b-[1px] border-b-gray-300">
-          <label htmlFor="delivery_date" className="w-0 h-0"></label>
-          <input id="d_date" className=" appearance-none focus:outline-none " form="checkout_form" type="text" name="delivery_date" placeholder="Выберите дату"  ref={dateRef} onFocus={() => (dateRef.current.type = "date")} onBlur={() => (dateRef.current.type = "text")} required  ></input>
-        </div>
-        <div id="time" className="max-w-[9rem] flex flex-col justify-center border-b-[1px] border-b-gray-300 ">
-          <label htmlFor="delivery_time" className="w-0 h-0"></label>
-          <input id="d_time" className="  w-full  px-2 focus:outline-none"  form="checkout_form"  type="text" name="delivery_time" placeholder="Выберите время" ref={timeRef} onFocus={() => (timeRef.current.type = "time")} onBlur={() => (timeRef.current.type = "text")} required ></input>
-        </div>
-      </div>
-      <div id="address__wrapper" className="less-than-xs:min-w-[8rem] min-w-[15rem] py-2 flex flex-col justify-center font-raleway lining-nums tabular-nums ">
-        <label htmlFor="delivery_address" className="text-md font-semibold">{tags.checkout.orderToWhereText+"?"}</label>
-        <div className="h-[2.5rem] px-2 flex items-center gap-1 border-[1px] border-gray-300 rounded-3xl">
-          <LocationIco />
-          <input id="d_addr" className=" max-w-[314px] w-full  px-2 focus:outline-none" form="checkout_form" type="text" name="delivery_address"  placeholder="Выберите адрес доставки" required />
-        </div>
-      </div>
-      <div id="name__wrapper" className="less-than-xs:min-w-[8rem] min-w-[15rem]  py-2 flex flex-col justify-center font-raleway lining-nums tabular-nums ">
-        <label htmlFor="receiver_name" className="text-md font-semibold">{tags.checkout.receiverNameText}</label>
-        <div className="h-[2.5rem] px-2 flex items-center gap-1 border-[1px] border-gray-300 rounded-3xl">
-          <input id="rcv_name" className=" max-w-[314px] w-full  px-2 focus:outline-none" form="checkout_form" type="text" name="receiver" required />
-        </div>
-      </div>
-      <div id="phone__wrapper" className="less-than-xs:min-w-[8rem] min-w-[15rem] py-2 flex flex-col justify-center font-raleway lining-nums tabular-nums ">
-        <label htmlFor="receiver_phone" className=" text-md font-semibold">{tags.checkout.phoneText}</label>
-        <div className="h-[2.5rem] px-2 flex items-center gap-1 border-[1px] border-gray-300 rounded-3xl">
-          <input id="rcv_phone" className=" max-w-[314px] w-full  px-2 focus:outline-none" form="checkout_form" type="text" name="receiver_phone" required />
-        </div>
-      </div>
-    </>
-  )
+  // const CheckoutForm = ({})=> (
+  //   <>
+  //     <div id="date_time" className="py-2 text-lg font-raleway lining-nums tabular-nums " >
+  //       <p className="text-md font-semibold ">{tags.checkout.orderWhenText}</p> 
+  //     </div>
+  //     <div id="delivery_date_time__wrapper" className="w-auto  flex less-than-xs:flex-wrap  gap-4">
+  //       <div id="date" className="max-w-[9rem] flex flex-col justify-center border-b-[1px] border-b-gray-300">
+  //         <label htmlFor="delivery_date" className="w-0 h-0"></label>
+  //         <input id="d_date" className=" appearance-none focus:outline-none " form="checkout_form" type="text" name="delivery_date" placeholder="Выберите дату"  ref={dateRef} onFocus={() => (dateRef.current.type = "date")} onBlur={() => (dateRef.current.type = "text")} required  ></input>
+  //       </div>
+  //       <div id="time" className="max-w-[9rem] flex flex-col justify-center border-b-[1px] border-b-gray-300 ">
+  //         <label htmlFor="delivery_time" className="w-0 h-0"></label>
+  //         <input id="d_time" className="  w-full  px-2 focus:outline-none"  form="checkout_form"  type="text" name="delivery_time" placeholder="Выберите время" ref={timeRef} onFocus={() => (timeRef.current.type = "time")} onBlur={() => (timeRef.current.type = "text")} required ></input>
+  //       </div>
+  //     </div>
+  //     <div id="address__wrapper" className="less-than-xs:min-w-[8rem] min-w-[15rem] py-2 flex flex-col justify-center font-raleway lining-nums tabular-nums ">
+  //       <label htmlFor="delivery_address" className="text-md font-semibold">{tags.checkout.orderToWhereText+"?"}</label>
+  //       <div className="h-[2.5rem] px-2 flex items-center gap-1 border-[1px] border-gray-300 rounded-3xl">
+  //         <LocationIco />
+  //         <input id="d_addr" className=" max-w-[314px] w-full  px-2 focus:outline-none" form="checkout_form" type="text" name="delivery_address"  placeholder="Выберите адрес доставки" required />
+  //       </div>
+  //     </div>
+  //     <div id="name__wrapper" className="less-than-xs:min-w-[8rem] min-w-[15rem]  py-2 flex flex-col justify-center font-raleway lining-nums tabular-nums ">
+  //       <label htmlFor="receiver_name" className="text-md font-semibold">{tags.checkout.receiverNameText}</label>
+  //       <div className="h-[2.5rem] px-2 flex items-center gap-1 border-[1px] border-gray-300 rounded-3xl">
+  //         <input id="rcv_name" className=" max-w-[314px] w-full  px-2 focus:outline-none" form="checkout_form" type="text" name="receiver" required />
+  //       </div>
+  //     </div>
+  //     <div id="phone__wrapper" className="less-than-xs:min-w-[8rem] min-w-[15rem] py-2 flex flex-col justify-center font-raleway lining-nums tabular-nums ">
+  //       <label htmlFor="receiver_phone" className=" text-md font-semibold">{tags.checkout.phoneText}</label>
+  //       <div className="h-[2.5rem] px-2 flex items-center gap-1 border-[1px] border-gray-300 rounded-3xl">
+  //         <input id="rcv_phone" className=" max-w-[314px] w-full  px-2 focus:outline-none" form="checkout_form" type="text" name="receiver_phone" required />
+  //       </div>
+  //     </div>
+  //   </>
+  // )
   
-  const CheckoutOrder = ({ children}) =>(
-    <div className=" mt-14 w-full flex flex-col justify-center gap-6 lg:p-4 lining-nums tabular-nums">
-      <div id="order_details" className="w-auto p-2 lg:p-4 flex flex-col justify-start md:justify-center lg:justify-center xl:justify-center items-center gap-4 border-[1px] border-[#F0F4FB] bg-[#F0F4FB] rounded-3xl">
+  // const CheckoutOrder = ({ children}) =>(
+  //   <div className=" mt-14 w-full flex flex-col justify-center gap-6 lg:p-4 lining-nums tabular-nums">
+  //     <div id="order_details" className="w-auto p-2 lg:p-4 flex flex-col justify-start md:justify-center lg:justify-center xl:justify-center items-center gap-4 border-[1px] border-[#F0F4FB] bg-[#F0F4FB] rounded-3xl">
         
-        <div id="order_items" className="w-full flex flex-col items-start text-black dark:text-white  text-base">
-          <p className="p-2 w-full flex flex-start text-lg text-[#727280]">
-            {"Ordered Items:"}
-          </p>
-          {orderedItems?.map((oi,x)=>
-            <div key={x} className="w-full less-than-xs:child:max-w-full  less-than-xs:child:justify-between">
-              <ProductDescriptor id={`${oi.productId}${x}`} label={<NameTag modelName={"Product"} item={{ id: oi.productId, prop: "     x" + oi.quantity }} />} values={[tags.currencyType + Number.parseInt(oi.price*oi.quantity)]} />
+  //       <div id="order_items" className="w-full flex flex-col items-start text-black dark:text-white  text-base">
+  //         <p className="p-2 w-full flex flex-start text-lg text-[#727280]">
+  //           {"Ordered Items:"}
+  //         </p>
+  //         {orderedItems?.map((oi,x)=>
+  //           <div key={x} className="w-full less-than-xs:child:max-w-full  less-than-xs:child:justify-between">
+  //             <ProductDescriptor id={`${oi.productId}${x}`} label={<NameTag modelName={"Product"} item={{ id: oi.productId, prop: "     x" + oi.quantity }} />} values={[tags.currencyType + Number.parseInt(oi.price*oi.quantity)]} />
 
-            </div>
-            )
-          }
-          <span className={"dotted-div my-2 px-2 w-full h-[1px] text-slate-400 overflow-hidden clear-right text-clip bg-repeat-x"} style={setTextBg(".")} >
-          </span>
-        </div>
+  //           </div>
+  //           )
+  //         }
+  //         <span className={"dotted-div my-2 px-2 w-full h-[1px] text-slate-400 overflow-hidden clear-right text-clip bg-repeat-x"} style={setTextBg(".")} >
+  //         </span>
+  //       </div>
         
-        <div id="order_cost__wrapper" className="w-full   py-1 px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between  items-center text-lg text-[#727280]  font-raleway lining-nums tabular-nums  ">
-          <label htmlFor="order_cost">
-            {tags.checkout.totalPriceText+":"}
-          </label>
-          <input id="o_cost" className=" w-auto max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end text-xl bg-transparent text-end lining-nums tabular-nums" name="order_cost" form="checkout_form" type="text" value={tags.currencyType + (total || 0)} readOnly required  />
-        </div>
+  //       <div id="order_cost__wrapper" className="w-full   py-1 px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between  items-center text-lg text-[#727280]  font-raleway lining-nums tabular-nums  ">
+  //         <label htmlFor="order_cost">
+  //           {tags.checkout.totalPriceText+":"}
+  //         </label>
+  //         <input id="o_cost" className=" w-auto max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end text-xl bg-transparent text-end lining-nums tabular-nums" name="order_cost" form="checkout_form" type="text" value={tags.currencyType + (total || 0)} readOnly required  />
+  //       </div>
 
-        <div id="delivery_cost__wrapper" className="w-full  py-1 px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between items-center text-lg text-[#727280] font-raleway lining-nums tabular-nums  ">
-          <label className="" htmlFor="delivery_cost">
-            {tags.checkout.deliveryCostText+":"}
-          </label>
-          <input id="d_cost" className="max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end  bg-transparent text-end lining-nums tabular-nums" name="delivery_cost" form="checkout_form" type="text" value={tags.currencyType + (deliveryPrice || 0)} readOnly required />
-        </div>
+  //       <div id="delivery_cost__wrapper" className="w-full  py-1 px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between items-center text-lg text-[#727280] font-raleway lining-nums tabular-nums  ">
+  //         <label className="" htmlFor="delivery_cost">
+  //           {tags.checkout.deliveryCostText+":"}
+  //         </label>
+  //         <input id="d_cost" className="max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end  bg-transparent text-end lining-nums tabular-nums" name="delivery_cost" form="checkout_form" type="text" value={tags.currencyType + (deliveryPrice || 0)} readOnly required />
+  //       </div>
 
-        <div id="total_cost__wrapper" className="w-full  px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between items-center text-xl text-[#727280] font-raleway lining-nums tabular-nums  font-medium ">
-          <label className="bg-transparent" htmlFor="total_cost">
-            {tags.checkout.sumTotalText+":"}
-          </label>
-          <input id="t_cost" className="max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end  bg-transparent text-black dark:text-white  font-bold text-end lining-nums tabular-nums" name="total_cost" form="checkout_form" type="text" value={tags.currencyType + (total 
-          + deliveryPrice)} readOnly required />
-        </div>
+  //       <div id="total_cost__wrapper" className="w-full  px-2 flex  sm:flex-row  md:flex-row  lg:flex-row xl:flex-row justify-between md:justify-between lg:justify-between xl:justify-between items-center text-xl text-[#727280] font-raleway lining-nums tabular-nums  font-medium ">
+  //         <label className="bg-transparent" htmlFor="total_cost">
+  //           {tags.checkout.sumTotalText+":"}
+  //         </label>
+  //         <input id="t_cost" className="max-w-[8rem] flex justify-start  md:justify-end lg:justify-end xl:justify-end  bg-transparent text-black dark:text-white  font-bold text-end lining-nums tabular-nums" name="total_cost" form="checkout_form" type="text" value={tags.currencyType + (total 
+  //         + deliveryPrice)} readOnly required />
+  //       </div>
 
-      </div>
+  //     </div>
       
-      <input type="submit" form="checkout_form" id="checkout_btn" value={tags.checkout.checkoutBtnText} className="w-auto p-3 flex justify-center  items-center border-[1px] border-orange-600 bg-orange-600 active:bg-orange-400 rounded-3xl active: text-2xl text-white dark:text-black  font-raleway lining-nums tabular-nums  font-normal cursor-pointer" required/>
-    </div>
-  )
+  //     <input type="submit" form="checkout_form" id="checkout_btn" value={tags.checkout.checkoutBtnText} className="w-auto p-3 flex justify-center  items-center border-[1px] border-orange-600 bg-orange-600 active:bg-orange-400 rounded-3xl active: text-2xl text-white dark:text-black  font-raleway lining-nums tabular-nums  font-normal cursor-pointer" required/>
+  //   </div>
+  // )
+
   if(isLoading){
     return (
       <div className="w-full h-full mt-4 p-4 flex flex-col justify-center items-center">

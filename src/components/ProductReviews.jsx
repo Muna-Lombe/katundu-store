@@ -21,116 +21,283 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
   const [updateReview, {data:updatedData, isLoading:updateLoading, isError:updateError, isSuccess:updateSuccess}] = useUpdateReviewMutation();
   const [removeReview, { data: removedData, isLoading: removeLoading, isError: removeError, isSuccess: removeSuccess }] = useRemoveReviewMutation();
   
-  const AddReview = ({editMode }) => {
-    const isAuthed = () => (authSessions.length || authSessions?.some(as => as.authStatus !== types.AUTH_EXPIRED || userAuthed))
+  // const AddReview = ({editMode }) => {
+  //   const isAuthed = () => (authSessions.length || authSessions?.some(as => as.authStatus !== types.AUTH_EXPIRED || userAuthed))
     
-    console.log("editMode", editMode)
+  //   console.log("editMode", editMode)
+
+  //   const handlePost = async (e, edit, updateFn) => {
+  //     e.preventDefault();
+  //     if (!isAuthed()) return goto("/signin", { state: { ...location } });
+      
+  //     if (!hasOrdered) {
+  //       const tooltip = document.getElementById("tooltip");
+  //       tooltip.classList.replace("hidden", "flex");
+
+  //       setTimeout(() => {
+  //         tooltip.classList.replace("flex", "hidden");
+  //       }, 3000);
+  //       return;
+  //     }
+  //     const form = document.forms["review_post"];
+
+  //     const reviewPost = { "product_review" :{}, type:editMode? editMode.type  :"add_review"}
+  //     // Get form data
+  //     const formData = new FormData(form);
+  //     // reviewPost["product_review_id"] = productReviewId
+  //     for (let [name, value] of formData) {
+  //       // console.log(name, value);
+  //       reviewPost["product_review"] = {
+  //         review:{
+  //           comment: value,           
+  //         }, 
+  //         poster_uuid: authSessions[0].uuid
+  //       }
+  //     }
+
+  //     // console.log("updateFn", typeof updateFn)
+  //     // return
+  //     if (reviewPost.product_review?.review?.comment.length === 0) return
+  //     if(edit){
+  //       console.log(editMode)
+
+  //       updateFn(reviewPost)
+  //     }else{
+  //       const { product_review, ...rest } = reviewPost
+  //       const initialReviewPost = { product_review: { ...rest, ...product_review } }
+  //       updateFn({ initialReviewPost, productReviewId, productId })
+  //     }
+  //     // console.log("something", reviewPost);
+  //     document.getElementById("add-review-input").value = "";
+  //     // createReviewPost({text: "post a review"})
+  //   };
+   
+    
+  //   const Tooltip = () =>{
+      
+  //     return(
+        
+  //       <div id="auth-tooltip" className="tooltip-wrapper max-w-[75%] max-h-[40px]  justify-center flex-wrap whitespace-normal transition-transform ease-linear delay-700">
+  //         <div id="tooltip" className="tooltip hidden justify-center text-center ">
+  //           {tags.noReviews.noOrderText}
+  //         </div>
+  //       </div>
+  //     )
+  //   }
+  //   const Componentheader =()=>(
+  //     <>
+  //       <p className="main-title text-lg font-raleway lining-nums tabular-nums  font-medium">
+  //         {isAuthed() ? tags.addReview.mainText : "Sign in before you can post a review"}
+  //       </p>
+  //       <p className="sub-title h-[27px] text-sm font-raleway lining-nums tabular-nums  font-normal">
+  //         {isAuthed() ? tags.addReview.subText : ""}
+  //       </p>
+  //     </>
+  //   )
+  //   const Componentbody = ()=>(
+  //     <form id="review_post" name="review_post" action="" onSubmit={()=> ""} className="flex flex-col gap-3">
+  //       {
+  //         editMode?.value ?
+  //           <input form="review_post" id="add-review-input" type="text" name="add-review-input" placeholder='Post a review' defaultValue={editMode?.value || null} className="p-3 max-w-md border-2 border-slate-400 rounded-lg caret-black text-black" />
+  //           : <textarea form="review_post" name="add-review-input" id="add-review-input" cols="10" rows="3" placeholder="Post a review"  className="p-3 max-w-2xl border-2 border-slate-400 rounded-lg caret-black text-black"></textarea>
+  //       }
+        
+  //       <div className="update-btns flex flex-row gap-2">
+  //         <input form="review_post" type="button" onClick={(e) => handlePost(e, editMode?.value,  (arg) => editMode?.updateFn(arg) || addReview(arg))} value={editMode?.value ?"Save" : isAuthed() ? " Add Review " : "Sign In"} className="  p-1 w-max min-w-[80px] bg-orange-500 rounded-md text-white text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer" />
+  //         {
+  //           editMode?.value ?
+  //             <input form="review_post" type="button" onClick={(e) => {e.preventDefault(); editMode.toggleEditMode(false)}} value={"Cancel"} className="  p-1 w-max min-w-[80px] bg-inherit rounded-md text-slate-300 border border-transparent hover:border-slate-300  text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer" />
+  //             : <></>
+  //         }
+
+  //       </div>
+  //     </form>
+  //   )
+  //   const Component  = () => (
+  //     editMode?.value ? 
+  //     <Componentbody/>
+  //     : <div className="add-review max-w-2xl p-6  flex flex-col gap-2 dark:bg-slate-600 bg-slate-200 border dark:border-slate-500 rounded-lg">
+  //         <Componentheader/>
+          
+  //         <Componentbody/>
+  //       </div>
+  //   )
+  //   return (
+  //     <>
+        
+  //         <Tooltip/>
+  //         <Component />
+        
+  //     </>
+      
+  //   )
+  // }
+  const AddReview = ({ editMode }) => {
+    const [ratings, setRatings] = useState({
+      satisfaction: editMode?.value?.quantifiers?.[0]?.value || 'Medium',
+      recommend: editMode?.value?.quantifiers?.[1]?.value || 'Medium',
+      quality: editMode?.value?.quantifiers?.[2]?.value || 'Medium'
+    });
+    const isAuthed = () => (authSessions.length || authSessions?.some(as => as.authStatus !== types.AUTH_EXPIRED || userAuthed))
+
+    const RatingInput = ({ label, name, value }) => {
+      const getStarCount = (rating) => {
+        switch (rating) {
+          case 'Low': return 1;
+          case 'Medium': return 3;
+          case 'High': return 5;
+          default: return 3;
+        }
+      };
+
+      const handleRatingClick = (newRating) => {
+        setRatings(prev => ({
+          ...prev,
+          [name.toLowerCase()]: newRating
+        }));
+      };
+
+      return (
+        <div className="rating-input flex flex-row items-center gap-4">
+          <label className="w-32 text-sm font-medium text-gray-700">{label}</label>
+          <div className="stars flex flex-row gap-1">
+            {['Low', 'Medium', 'High'].map((rating) => (
+              <button
+                key={rating}
+                type="button"
+                onClick={() => handleRatingClick(rating)}
+                className={`flex flex-row items-center gap-1 px-2 py-1 rounded-md ${value === rating
+                    ? 'bg-orange-100 text-orange-700'
+                    : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
+                  }`}
+              >
+                <Stars count={getStarCount(rating)} />
+                <span className="text-sm">{rating}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    };
 
     const handlePost = async (e, edit, updateFn) => {
       e.preventDefault();
       if (!isAuthed()) return goto("/signin", { state: { ...location } });
-      
+
       if (!hasOrdered) {
         const tooltip = document.getElementById("tooltip");
         tooltip.classList.replace("hidden", "flex");
-
         setTimeout(() => {
           tooltip.classList.replace("flex", "hidden");
         }, 3000);
         return;
       }
+
       const form = document.forms["review_post"];
-
-      const reviewPost = { "product_review" :{}, type:editMode? editMode.type  :"add_review"}
-      // Get form data
       const formData = new FormData(form);
-      // reviewPost["product_review_id"] = productReviewId
-      for (let [name, value] of formData) {
-        // console.log(name, value);
-        reviewPost["product_review"] = {
-          review:{
-            comment: value,           
-          }, 
+
+      const reviewPost = {
+        "product_review": {
+          review: {
+            comment: formData.get("add-review-input"),
+            quantifiers: [
+              {
+                quantifier: "Satisfaction",
+                value: ratings.satisfaction
+              },
+              {
+                quantifier: "Likely to recommend",
+                value: ratings.recommend
+              },
+              {
+                quantifier: "Quality",
+                value: ratings.quality
+              }
+            ]
+          },
           poster_uuid: authSessions[0].uuid
-        }
+        },
+        type: editMode ? editMode.type : "add_review"
+      };
+
+      if (reviewPost.product_review?.review?.comment.length === 0) return;
+
+      if (edit) {
+        updateFn(reviewPost);
+      } else {
+        const { product_review, ...rest } = reviewPost;
+        const initialReviewPost = { product_review: { ...rest, ...product_review } };
+        updateFn({ initialReviewPost, productReviewId, productId });
       }
 
-      // console.log("updateFn", typeof updateFn)
-      // return
-      
-      if(edit){
-        console.log(editMode)
-        updateFn(reviewPost)
-      }else{
-        
-        updateFn({ initialReview: reviewPost, productReviewId, productId })
-      }
-      // console.log("something", reviewPost);
       document.getElementById("add-review-input").value = "";
-      // createReviewPost({text: "post a review"})
     };
-   
-    
-    const Tooltip = () =>{
-      
-      return(
-        
-        <div id="auth-tooltip" className="tooltip-wrapper max-w-[75%] max-h-[40px]  justify-center flex-wrap whitespace-normal transition-transform ease-linear delay-700">
-          <div id="tooltip" className="tooltip hidden justify-center text-center ">
-            {tags.noReviews.noOrderText}
-          </div>
-        </div>
-      )
-    }
-    const Componentheader =()=>(
-      <>
-        <p className="main-title text-lg font-raleway lining-nums tabular-nums  font-medium">
-          {isAuthed() ? tags.addReview.mainText : "Sign in before you can post a review"}
-        </p>
-        <p className="sub-title h-[27px] text-sm font-raleway lining-nums tabular-nums  font-normal">
-          {isAuthed() ? tags.addReview.subText : ""}
-        </p>
-      </>
-    )
-    const Componentbody = ()=>(
-      <form id="review_post" name="review_post" action="" onSubmit={()=> ""} className="flex flex-col gap-3">
-        {
-          editMode?.value ?
-            <input form="review_post" id="add-review-input" type="text" name="add-review-input" placeholder='Post a review' defaultValue={editMode?.value || null} className="p-3 max-w-md border-2 border-slate-400 rounded-lg caret-black text-black" />
-            : <textarea form="review_post" name="add-review-input" id="add-review-input" cols="10" rows="3" placeholder="Post a review"  className="p-3 max-w-2xl border-2 border-slate-400 rounded-lg caret-black text-black"></textarea>
-        }
-        
-        <div className="update-btns flex flex-row gap-2">
-          <input form="review_post" type="button" onClick={(e) => handlePost(e, editMode?.value,  (arg) => editMode?.updateFn(arg) || addReview(arg))} value={editMode?.value ?"Save" : isAuthed() ? " Add Review " : "Sign In"} className="  p-1 w-max min-w-[80px] bg-orange-500 rounded-md text-white text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer" />
-          {
-            editMode?.value ?
-              <input form="review_post" type="button" onClick={(e) => {e.preventDefault(); editMode.toggleEditMode(false)}} value={"Cancel"} className="  p-1 w-max min-w-[80px] bg-inherit rounded-md text-slate-300 border border-transparent hover:border-slate-300  text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer" />
-              : <></>
-          }
 
-        </div>
-      </form>
-    )
-    const Component  = () => (
-      editMode?.value ? 
-      <Componentbody/>
-      : <div className="add-review max-w-2xl p-6  flex flex-col gap-2 dark:bg-slate-600 bg-slate-200 border dark:border-slate-500 rounded-lg">
-          <Componentheader/>
-          
-          <Componentbody/>
-        </div>
-    )
     return (
-      <>
-        
-          <Tooltip/>
-          <Component />
-        
-      </>
-      
-    )
-  }
+      <div className="add-review max-w-2xl p-6 flex flex-col gap-4 dark:bg-slate-600 bg-slate-200 border dark:border-slate-500 rounded-lg">
+        <div className="ratings-section flex flex-col gap-3">
+          <RatingInput
+            label="Satisfaction"
+            name="satisfaction"
+            value={ratings.satisfaction}
+          />
+          <RatingInput
+            label="Recommend"
+            name="recommend"
+            value={ratings.recommend}
+          />
+          <RatingInput
+            label="Quality"
+            name="quality"
+            value={ratings.quality}
+          />
+        </div>
 
+        <form id="review_post" name="review_post" action="" onSubmit={() => ""} className="flex flex-col gap-3">
+          {editMode?.value ? (
+            <input
+              form="review_post"
+              id="add-review-input"
+              type="text"
+              name="add-review-input"
+              placeholder='Post a review'
+              defaultValue={editMode?.value?.comment || ''}
+              className="p-3 max-w-md border-2 border-slate-400 rounded-lg caret-black text-black"
+            />
+          ) : (
+            <textarea
+              form="review_post"
+              name="add-review-input"
+              id="add-review-input"
+              cols="10"
+              rows="3"
+              placeholder="Post a review"
+              className="p-3 max-w-2xl border-2 border-slate-400 rounded-lg caret-black text-black"
+            />
+          )}
+
+          <div className="update-btns flex flex-row gap-2">
+            <input
+              form="review_post"
+              type="button"
+              onClick={(e) => handlePost(e, editMode?.value, (arg) => editMode?.updateFn(arg) || addReview(arg))}
+              value={editMode?.value ? "Save" : isAuthed() ? "Add Review" : "Sign In"}
+              className="p-1 w-max min-w-[80px] bg-orange-500 rounded-md text-white text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer"
+            />
+            {editMode?.value && (
+              <input
+                form="review_post"
+                type="button"
+                onClick={(e) => { e.preventDefault(); editMode.toggleEditMode(false) }}
+                value="Cancel"
+                className="p-1 w-max min-w-[80px] bg-inherit rounded-md text-slate-300 border border-transparent hover:border-slate-300 text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer"
+              />
+            )}
+          </div>
+        </form>
+      </div>
+    );
+  };
   const ReviewImages =({imageArray})=>(
     <div className="review-images-wrapper w-auto max-w-[570px] overflow-clip">
       <div className="review-images w-full max-w-min flex flex-row gap-2 border-b-2 overflow-x-scroll scrollbar">
@@ -286,14 +453,19 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
       : review?.comment 
     
     const editData = { 
-      value: comment,
+      value: { comment: comment, quantifiers: review.quantifiers },
       type: "update_review_comment",
       toggleEditMode: setEditComment, 
-      updateFn: (reviewBody) => updateReview({ 
-        reviewUpdate: reviewBody, 
-        productId, productReviewId, 
-        reviewId: review.uuid 
-      }) 
+      updateFn: (reviewBody) => {
+        const { product_review, ...rest } = reviewBody
+        const postUpdate = {}
+        postUpdate["product_review"] = { ...rest, ...product_review }
+        return updateReview({ 
+          postUpdate, 
+          productId, productReviewId, 
+          reviewId: review.uuid 
+        }) 
+      }
     }
 
     
@@ -358,8 +530,7 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
     </div>
   )}
   const ReviewQuantifiers = ({quantifiers}) => {
-    const quantifier = (q) => {
-      const { quantifier, value } = q
+    const Quantifier = ({quantifier, value}) => {
       return (
         <div className="quantifier flex flex-row gap-2 items-baseline">
           <p className="quantifier dark:text-white font-semibold text-base">{quantifier}</p>
@@ -383,7 +554,7 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
       //         </div>
       <div className="review-quantifiers flex flex-col gap-2">
         {
-          quantifiers?.map((q, x) => quantifier(q))
+          quantifiers?.map((q, x) => <Quantifier key={x} quantifier={q.quantifier} value={q.value} />)
         }
       </div>
     )
@@ -441,7 +612,7 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
               </div>
               {
                 review?.quantifiers.length?
-                  <ReviewQuantifiers quantifiers={review?.quantifiers}/>
+                  <ReviewQuantifiers  quantifiers={review?.quantifiers}/>
                   :<></>
               }
             </div>

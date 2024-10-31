@@ -23,7 +23,7 @@ const EmbeddedProducts = ({title, tagname, productId}) => {
       ];
       topHalf = halfs[0];
       bottomHalf = halfs[1];
-      console.log(topHalf)
+      // console.log(topHalf)
     }
 
     return(
