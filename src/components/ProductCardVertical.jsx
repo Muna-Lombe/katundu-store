@@ -8,7 +8,7 @@ import no_product_img from '../assets/tests/jsonServer/img/placeholders/no_produ
 import { createdOrder } from '../orm/models/OrderModel';
 import { encodeUrlWWWFormComponent, momentDate } from '../utilities';
 import types from '../orm/actions/actionTypes';
-import { authenticatedUsers, isAlreadyOrdered, isAuthedUser, isInCart } from '../orm/selectors';
+import { authenticatedUsersV2, isAlreadyOrdered, isAuthedUserV2, isInCartV2 } from '../orm/selectors';
 import { createdCartItem } from '../orm/models/CartModel';
 import randomizer from '../utilities/randomizer';
 
@@ -19,9 +19,9 @@ const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW =8, maxWH=""
   const dispatch = useDispatch()
   const goto = useNavigate()
   const location = useLocation()
-  const isOrdered = useSelector(isInCart(product?.uuid))
-  const authSessions = useSelector(authenticatedUsers)
-  const userAuthed = useSelector(isAuthedUser(authSessions[0]?.uuid))
+  const isOrdered = useSelector(isInCartV2(product?.uuid))
+  const authSessions = useSelector(authenticatedUsersV2)
+  const userAuthed = useSelector(isAuthedUserV2(authSessions[0]?.uuid))
   // let cats = useSelector(filteredCategoriesFromModel(product?.categoryIds))
   const textStyle = {
     maxWidth: '100%',

@@ -1,6 +1,6 @@
 import { Suspense, useEffect, } from "react";
 import { ArrowLeft,  ArrowRight,  BasketIco,  CartIco,  PinIco, popularTags } from "../components/icons";
-import { categories, filteredProductsFromModel } from "../orm/selectors";
+import { categoriesV2, filteredProductsFromModelV2 } from "../orm/selectors";
 import { useDispatch, useSelector } from "react-redux";
 import { Link,useParams, useLocation, createSearchParams, } from "react-router-dom";
 import { BuyBtns, ContentDescription, ContentDetails, ContentPayment, ContentSpecification, ContentViewer, Courier, DiscountInfo, EmbeddedProducts, Faqs, FullProductCharacteristics, FullProductDescription, LoadingStateComponent, Logo, NoItems, OrderInfo,  PaymentType, PickupPoints, PinLocation, PriceTag, ProductDescriptor, ProductImageViewer, ProductMinified, ProductSpecificationDetail, ProductTags,  ReviewsAndQuestions } from "../components";
@@ -17,7 +17,7 @@ const ShowProduct = ()=>{
   const  id = useParams().id
 
   const dispatch = useDispatch()
-  let productItem;// = useSelector(filteredProductsFromModel([])).find(i=> i.id.toString() === id.toString())
+  let productItem;// = useSelector(filteredProductsFromModelV2([])).find(i=> i.id.toString() === id.toString())
   const { data, isLoading, isSuccess, isError, error } = useGetProductQuery({productId:id})
   if (isLoading) {
     productItem = false

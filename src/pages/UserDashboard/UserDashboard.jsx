@@ -3,7 +3,7 @@ import { LoadingStateComponent, Sidebar } from '../../components';
 import { AvatarIco } from '../../components/icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { authenticatedUsers } from '../../orm/selectors';
+import { authenticatedUsersV2 } from '../../orm/selectors';
 import { useGetUserQuery, useLogoutUserMutation } from '../../js/middleware/queryHandler';
 import { createdToastMessage } from '../../orm/models/ToastMessageModel';
 import types from '../../orm/actions/actionTypes';
@@ -27,7 +27,7 @@ const UserDashboard = ({ navigation, secondaryNavigation }) => {
     setActiveTab(hash);
   }, [location]);
 
-  const authId = useSelector(authenticatedUsers)[0]?.uuid;
+  const authId = useSelector(authenticatedUsersV2)[0]?.uuid;
   // const { data: user, isLoading, isError, error } = useGetUserQuery({ uuid: authId });
   const [logoutUser, {isLoading: logoutIsLoading, isError: logoutIsError, error: logoutError, isSuccess: logoutIsSuccess}] = useLogoutUserMutation();
 

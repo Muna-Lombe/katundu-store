@@ -1,7 +1,7 @@
 import React, { Suspense, createElement, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { ProductCardVertical,CategoryTag, NoItems, Sidebar, HeroBanner, GridBanner, LoadingStateComponent, AdBanners } from '../components'
-import { filteredProductsFromModel, categories } from '../orm/selectors';
+import { filteredProductsFromModelV2, categories } from '../orm/selectors';
 import { popularTags, titleTagTypes as tags } from '../components/icons';
 import { useDispatch } from 'react-redux';
 import { addedProduct } from '../orm/models/ProductModel';
@@ -109,10 +109,11 @@ const Main = () => {
     )
   }
   const ProductsWrapper = ()=>{
-    let products = useSelector(filteredProductsFromModel([]))
+    let products = useSelector(filteredProductsFromModelV2([]))
     
 
     const [getProducts, { data, isLoading, isSuccess, isError }, {lastArg}] = useLazyGetProductsQuery()
+    
 
     // console.log(products)
     const loadMoreRef = useRef(null);
@@ -133,12 +134,13 @@ const Main = () => {
 
         // if (isSuccess) {
           
-        //   dispatch(addedProduct(
-        //     Array.from(
-        //       Object.entries(data).values()
-        //     ).map((e, x) => e[1])
-        //     // data
-        //   ))
+        //   // dispatch(addedProduct(
+        //   //   Array.from(
+        //   //     Object.entries(data).values()
+        //   //   ).map((e, x) => e[1])
+        //   //   // data
+        //   // ))
+        //   products.push(...data)
         // }
 
         if (isError) {

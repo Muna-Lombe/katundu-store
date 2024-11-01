@@ -1,5 +1,5 @@
 import { createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit'
-import { filteredProductsFromModel } from '../../../orm/selectors'
+import { filteredProductsFromModelV2 } from '../../../orm/selectors'
 
 const searchesAdapter = createEntityAdapter()
 const initialState = searchesAdapter.getInitialState({
@@ -21,7 +21,7 @@ const searchSlice = createSlice({
 export const { setSearchedProductId} = searchSlice.actions
 
 export const selectProductNamesThatMatch =(string) => createSelector(
-    filteredProductsFromModel([]),
+    filteredProductsFromModelV2([]),
     products => products
     .filter((item,i)=>{
         return string ?

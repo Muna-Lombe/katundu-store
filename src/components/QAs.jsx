@@ -7,7 +7,7 @@ import { CopyIco } from './icons'
 import no_img_path from '../assets/tests/jsonServer/img/placeholders/no_product_img.png'
 import no_avtr_path from '../assets/tests/jsonServer/img/placeholders/avatar.png'
 import { useSelector } from 'react-redux'
-import { authenticatedUsers, isAuthedUser, orderedByUser } from '../orm/selectors'
+import { authenticatedUsersV2, isAuthedUserV2, orderedByUser } from '../orm/selectors'
 import types from '../orm/actions/actionTypes'
 import { useAddAnswerMutation, useAddQuestionMutation, useRemoveAnswerMutation, useRemoveQuestionMutation, useUpdateAnswerMutation, useUpdateQuestionMutation } from '../js/middleware/queryHandler'
 import { renderToString } from 'react-dom/server'
@@ -15,9 +15,12 @@ import randomizer from '../utilities/randomizer'
 import PostCreatorTag from './PostCreatorTag'
 
 const QAs = ({ qas, productReviewId , productId}) => {
-  const authSessions = useSelector(authenticatedUsers)
-  const userAuthed = useSelector(isAuthedUser(authSessions[0]?.uuid))
-  const hasOrdered = useSelector(orderedByUser(productId))
+  const authSessions = useSelector(authenticatedUsersV2)
+  const userAuthed = useSelector(isAuthedUserV2(authSessions[0]?.uuid))
+  // console.log("user authed", userAuthed)
+  // const api = useSelector(apiSelector)
+  
+  // const hasOrdered = useSelector(orderedByUser(productId))
   const isAuthed = () => (authSessions.length || authSessions?.some(as => as.authStatus !== types.AUTH_EXPIRED || userAuthed))
   const goto = useNavigate()
   const location = useLocation()
@@ -375,13 +378,13 @@ const QAs = ({ qas, productReviewId , productId}) => {
       </div>
     )
   }
-  const Question =({question,qandas_id,children})=>{
+  const Question =({question,qandas_id, isReadOnly, children})=>{
     const [maxShowResponseLimit, setMaxShowResponseLimit] = useState(5)
 
     const QuestionTimeStamps =({question})=>{
       return(
         <div className="question-timestamp py-1 flex less-than-xs:flex-row flex-col justify-self-end  self-start child:py-0">
-
+          
           {
             (userAuthed && (question?.poster?.canUpdate === authSessions[0]?.uuid)) ?
               <MoreActions>
@@ -401,6 +404,12 @@ const QAs = ({ qas, productReviewId , productId}) => {
         </div>
       )
     }
+    const ReadOnlyPost = () => (
+      <div className="read-only-post">
+        This question has been removed by the poster
+      </div>
+    )
+    
     return(
       <div className="question-wrapper flex flex-col gap-3">
         <div className="question-description my-2 h-max flex less-than-xs:flex-col flex-row less-than-xs:items-start justify-between gap-2 ">
@@ -408,6 +417,11 @@ const QAs = ({ qas, productReviewId , productId}) => {
           <PostCreatorTag posterName={question?.poster?.name} avtr_url={question?.poster?.avtr_url} postTimestamp={question?.datePosted} />
           <QuestionTimeStamps question={question}/>
         </div>
+        {
+          isReadOnly ?
+            <ReadOnlyPost />
+            : <></>
+        }
         <div className="question-answer-details w-full flex flex-col gap-5 child:ml-2">
           <div className="question-content my-2 px-2 flex flex-col gap-6 ">
             <div className="question-details px-0 w-full flex flex-row justify-between gap-2 font-raleway lining-nums tabular-nums  font-medium">
@@ -651,18 +665,20 @@ const QAs = ({ qas, productReviewId , productId}) => {
     const Questions = ({children})=>(
       <div id="questions" className="questions max-w-4xl py-4 ">
         {
-          qas?.map((q, x) => {
+          qas?.map((qa, x) => {
             // console.log("q",q)
             return (
-              <Question key={x} qandas_id={q.uuid} question={{ ...q?.question, responses: "" }}>
+              qa?.question ?
+                (<Question key={x} qandas_id={qa.uuid} isReadOnly={qa?.readOnly} question={{ ...qa?.question, responses: "" }}>
 
-                {
-                  q?.question?.answers?.map((ans, x) =>
-                    <Answer key={x} qandas_id={q.uuid} response={ans} />
-                  )
+                  {
+                    qa?.question?.answers?.map((ans, x) =>
+                      <Answer key={x} qandas_id={qa.uuid} response={ans} />
+                    )
 
-                }
-              </Question>
+                  }
+                </Question>)
+              : <></>
 
             )
 

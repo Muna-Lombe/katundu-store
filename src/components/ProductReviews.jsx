@@ -3,7 +3,7 @@ import { image1_1, imagepath } from "../assets/images"
 import no_img_path from '../assets/tests/jsonServer/img/placeholders/no_product_img.png'
 import no_avtr_path from '../assets/tests/jsonServer/img/placeholders/avatar.png'
 import { useDispatch, useSelector } from "react-redux"
-import { authenticatedUsers, isAuthedUser, orderedByUser } from "../orm/selectors"
+import { authenticatedUsersV2, isAuthedUserV2, orderedByUser } from "../orm/selectors"
 import types from "../orm/actions/actionTypes"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
@@ -13,8 +13,8 @@ import PostCreatorTag from "./PostCreatorTag"
 const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
   const goto = useNavigate()
   const location = useLocation()
-  const authSessions = useSelector(authenticatedUsers)
-  const userAuthed = useSelector(isAuthedUser(authSessions[0]?.uuid))
+  const authSessions = useSelector(authenticatedUsersV2)
+  const userAuthed = useSelector(isAuthedUserV2(authSessions[0]?.uuid))
   const hasOrdered =useSelector(orderedByUser(productId))
   const dispatch = useDispatch()
   const [addReview] = useAddReviewMutation();
@@ -233,27 +233,40 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
       document.getElementById("add-review-input").value = "";
     };
 
+    const Tooltip = () =>{
+      
+      return(
+        
+        <div id="auth-tooltip" className="tooltip-wrapper max-w-[80%] max-h-[40px]  justify-center flex-wrap whitespace-normal transition-transform ease-linear delay-700">
+          <div id="tooltip" className="tooltip hidden justify-center text-center ">
+            {tags.noReviews.noOrderText}
+          </div>
+        </div>
+      )
+    }
     return (
       <div className="add-review max-w-2xl p-6 flex flex-col gap-4 dark:bg-slate-600 bg-slate-200 border dark:border-slate-500 rounded-lg">
-        <div className="ratings-section flex flex-col gap-3">
-          <RatingInput
-            label="Satisfaction"
-            name="satisfaction"
-            value={ratings.satisfaction}
-          />
-          <RatingInput
-            label="Recommend"
-            name="recommend"
-            value={ratings.recommend}
-          />
-          <RatingInput
-            label="Quality"
-            name="quality"
-            value={ratings.quality}
-          />
-        </div>
 
         <form id="review_post" name="review_post" action="" onSubmit={() => ""} className="flex flex-col gap-3">
+          <div className="ratings-section flex flex-col gap-3">
+
+            <RatingInput
+              label="Satisfaction"
+              name="satisfaction"
+              value={ratings.satisfaction}
+            />
+            <RatingInput
+              label="Recommend"
+              name="recommend"
+              value={ratings.recommend}
+            />
+            <RatingInput
+              label="Quality"
+              name="quality"
+              value={ratings.quality}
+            />
+          </div>
+          <Tooltip/>
           {editMode?.value ? (
             <input
               form="review_post"

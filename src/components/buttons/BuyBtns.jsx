@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import types from "../../orm/actions/actionTypes";
 import { momentDate } from "../../utilities";
-import { authenticatedUsers, isAuthedUser, isInCart } from "../../orm/selectors";
+import { authenticatedUsersV2, isAuthedUserV2, isInCartV2 } from "../../orm/selectors";
 import { createdCartItem } from "../../orm/models/CartModel";
 import { NoStockIco, titleTagTypes as tags } from "../icons";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -13,9 +13,9 @@ const BuyBtns = ({ id, deliveryInfo, onlyBtn, children, prodVars }) => {
   const [prodInStok, setProdInStok] = useState({status:true})
   const goto = useNavigate()
   const location = useLocation()
-  const isOrdered = useSelector(isInCart(id))
-  const authSessions = useSelector(authenticatedUsers)
-  const userAuthed = useSelector(isAuthedUser(authSessions[0]?.uuid))
+  const isOrdered = useSelector(isInCartV2(id))
+  const authSessions = useSelector(authenticatedUsersV2)
+  const userAuthed = useSelector(isAuthedUserV2(authSessions[0]?.uuid))
 
   const [addCartItem, { isLoading: addIsLoading }] = useAddCartItemMutation()
   

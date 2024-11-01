@@ -1,7 +1,7 @@
 import React, { Suspense, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { ProductCardVertical,CategoryTag, NoItems, Sidebar, LoadingStateComponent } from '../components'
-import { filteredProductsFromModel, categories } from '../orm/selectors';
+import { filteredProductsFromModelV2, categories, categoriesV2 } from '../orm/selectors';
 import { titleTagTypes as tags } from '../components/icons';
 import { useGetCatalogItemProductsQuery, useGetCatalogItemQuery, useGetCatalogQuery, useLazyGetCatalogItemProductsQuery } from '../js/middleware/queryHandler';
 import { createdToastMessage } from '../orm/models/ToastMessageModel';
@@ -9,7 +9,7 @@ import types from '../orm/actions/actionTypes';
 const Categories = () => {
   // const [ activeCategoryId, setActiveCategoryId] = useState(1)
   const dispatch = useDispatch()
-  let catalog = useSelector(categories)
+  let catalog = useSelector(categoriesV2)
 
   
   const scrollFn = function (event) {

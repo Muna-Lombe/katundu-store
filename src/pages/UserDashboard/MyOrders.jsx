@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { filteredOrdersFromModel } from '../../orm/selectors';
+import { filteredOrdersFromModelV2 } from '../../orm/selectors';
 import { LoadingStateComponent } from '../../components';
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const itemsOrdered = useSelector(filteredOrdersFromModel());
+  const itemsOrdered = useSelector(filteredOrdersFromModelV2());
 
   useEffect(() => {
     // Simulating an API call

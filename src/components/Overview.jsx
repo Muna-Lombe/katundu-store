@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { authenticatedUsers } from '../orm/selectors';
+import { authenticatedUsersV2 } from '../orm/selectors';
 import { useGetUserProfileOverviewQuery, useGetUserQuery } from '../js/middleware/queryHandler';
 import { SecurityCheckIcon, ClockIcon, SecurityAttentionIcon } from '../components/icons/otherIcons';
 import { StarIco } from './icons';
@@ -13,7 +13,7 @@ import BrokenConnection from '../pages/BrokenConnection';
 import { Link } from 'react-router-dom';
 
 const Overview = () => {
-  const authId = useSelector(authenticatedUsers)[0]?.uuid;
+  const authId = useSelector(authenticatedUsersV2)[0]?.uuid;
   const { data: user, isLoading, isError } = useGetUserQuery({ uuid: authId });
   const { data: profileOverview, isLoading: isProfileOverviewLoading, isError: isProfileOverviewError } = useGetUserProfileOverviewQuery({ uuid: authId });
 
@@ -22,7 +22,7 @@ const Overview = () => {
   if (isLoading || isProfileOverviewLoading) return <div><LoadingStateComponent /></div>;
   if (isError || isProfileOverviewError) return <div><BrokenConnection/></div>;
 
-  console.log("profileOverview", profileOverview)
+  // console.log("profileOverview", profileOverview)
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Account Overview</h1>

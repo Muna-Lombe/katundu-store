@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery, retry } from '@reduxjs/toolkit/query/react'
 import axios from 'axios'
 import { addedProduct } from '../../orm/models/ProductModel';
 import { createdCatalog, toggledCategory } from '../../orm/models/ProductCategoryModel';
-import { setActiveUrl, isIterable } from '../../utilities';
+import { setActiveUrl, isIterable, configObject, sleep } from '../../utilities';
 import {  addedCartItems, removedCartItem, updatedCartItem } from '../../orm/models/CartModel';
 import { addedOrderItem } from '../../orm/models/OrderModel';
 import { object } from 'prop-types';
@@ -27,59 +27,7 @@ const setJwt = (headers) => {
   sess.setItem("jwt", jwtToken);
 }
 
-const snakeToCamel = (s) => {
-  return s.replace(/(_\w)/g, function (m) {
-    return m[1].toUpperCase();
-  }) ||s;
 
-}
-
-const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-const objectToCamel = (o) => {
-  let newO, origKey, newKey, value
-  if (o instanceof Array) {
-    return o.map(function (value) {
-      if (typeof value === "object") {
-        value = objectToCamel(value)
-      }
-      return value
-    })
-  } else {
-    newO = {}
-    for (origKey in o) {
-      if (o.hasOwnProperty(origKey)) {
-        newKey = snakeToCamel(origKey)//(origKey.charAt(0).toLowerCase() + origKey.slice(1) || origKey).toString()
-        if(newKey === "id") {
-          // console.log("newKey", newKey)
-          newKey = "uuid"
-        }
-
-        value = o[origKey]
-        if(value === null){
-          value = false
-        }
-        // console.log(origKey,"->",value)
-        if (value instanceof Array || (value !== null && value.constructor === Object)) {
-          value = objectToCamel(value)
-        }
-        newO[newKey] = value
-      }
-    }
-  }
-  // console.log("", newO)
-  
-  return Object.getOwnPropertyNames(newO).length ? newO : null
-
-}
-
-const configObject=(object)=>{
-  if(isIterable(object)){
-    return object.map(prop=>({uuid:prop.id, ...objectToCamel(prop.attributes)}))
-  }else{
-
-    return {uuid:object.id, ...objectToCamel(object.attributes)}
-  }
-}
 
 const upsertProduct = (dispatch, getState, product)=>{
     // console.log("gs", getState())
@@ -183,7 +131,7 @@ const staggeredBaseQuery = fetchBaseQuery({
 const max = 5
 
 // Add this helper function at the top of your file
-const isAuthenticated = () => !!sess.getItem('jwt');
+const isAuthorized = () => !!sess.getItem('jwt');
 
 // Define our single API slice object
 export const apiSlice = createApi({
@@ -221,7 +169,7 @@ export const apiSlice = createApi({
       }   
     }
   ),
-   tagTypes:['ShoppingCart', "ShoppingCartItem", 'Checkout','ProductReviews', 'Reviews','QuestionAndAnswers', 'Questions', 'Answers', 'UserReviews', 'User', 'ProfileOverview', 'UserSettings'],
+   tagTypes:['Products', 'ShoppingCart', "ShoppingCartItem", 'Checkout','ProductReviews', 'Reviews','QuestionAndAnswers', 'Questions', 'Answers', 'UserReviews', 'User', 'ProfileOverview', 'UserSettings'],
   // The "endpoints" represent operations and requests for this server
   endpoints: builder => ({
     // The `getPosts` endpoint is a "query" operation that returns data
@@ -344,10 +292,12 @@ export const apiSlice = createApi({
         url:'/users/'+uuid,
         headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
       }),
-      transformResponse(res){ return [res.data].map(configObject)[0]},
+      transformResponse(res){ return {...[res.data].map(configObject)[0]}},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       // Add this condition
-      skip: () => !isAuthenticated(),
+      skip: () => !isAuthorized(),
+      keepUnusedDataFor: 500000, //5 minutes
+      providesTags: ["User"],
     }),
     getUserProfileOverview: builder.query({
       // query: ({uuid}) => `/users/${uuid}/profile_overview`,
@@ -396,7 +346,7 @@ export const apiSlice = createApi({
       },
       providesTags: ["ProfileOverview"],
       // Add this condition
-      skip: () => !isAuthenticated(),
+      skip: () => !isAuthorized(),
     }),
     getUserReviews: builder.query({
       query: (uuid) => ({
@@ -407,7 +357,7 @@ export const apiSlice = createApi({
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       providesTags: ["UserReviews"],
       // Add this condition
-      skip: () => !isAuthenticated(),
+      skip: () => !isAuthorized(),
     }),
     getUserSettings: builder.query({
       query: (uuid) =>({
@@ -422,7 +372,7 @@ export const apiSlice = createApi({
       },
       providesTags: ["UserSettings"],
       // Add this condition
-      skip: () => !isAuthenticated(),
+      skip: () => !isAuthorized(),
     }),
 
     updateUserSettings: builder.mutation({
@@ -460,12 +410,27 @@ export const apiSlice = createApi({
           // console.log("data", data, "=>",products)
           if(typeof products[0] !== "string" || typeof products[0] !== "number"){
             dispatch(addedProduct(products))
+            if(arg){
+              // update the cache to include the new products
+              dispatch(apiSlice.util.updateQueryData('getProducts', arg, (draft) => {
+                draft.push(...products);
+              }));
+            }
           }
+          
           return;
         } catch (error) {
           console.log( error)
         }
+      },
+      providesTags: (result, error, arg) =>
+        result
+          ? [...result.map(({ uuid }) => ({ type: 'Products', id: uuid })), 'Products']
+          : ['Products'],
+      extraOptions:{
+        maxRetries:1
       }
+
     }),
     getPopularSearches: builder.query({
     
@@ -604,10 +569,10 @@ export const apiSlice = createApi({
 
       providesTags: (result, error, arg) =>
         result
-          ? [...result.cartItems.map(({ uuid }) => ({ type: 'ShoppingCart', uuid })), 'ShoppingCart']
+          ? [...result.cartItems.map(({ uuid }) => ({ type: 'ShoppingCart', id: "cart-"+uuid })), 'ShoppingCart']
           : ['ShoppingCart'],
       // Add this condition
-      skip: () => !isAuthenticated(),
+      skip: () => !isAuthorized(),
     }),
 
     getShoppingCartItem: builder.query({
@@ -800,9 +765,12 @@ export const apiSlice = createApi({
         }
       },
       
-      providesTags: ['Checkout'],
+      providesTags: (result, error, arg) =>
+        result
+          ? [...result.map(({uuid})=>({type:'Checkout-history', id:'checkout-'+uuid}))]
+          : ['Checkout-history'] ,
       // Add this condition
-      skip: () => !isAuthenticated(),
+      skip: () => !isAuthorized(),
     }),
     getCheckoutItem: builder.query({
     
@@ -901,7 +869,7 @@ export const apiSlice = createApi({
         }
 
       },
-      invalidatesTags:  (result, error, arg) =>([{ type: 'ShoppingCart', uuid: arg.cartId }]),
+      invalidatesTags:  (result, error, arg) =>([{ type: 'ShoppingCart', id: "cart-"+arg.cartId }]),
     }),
     removeCartItem: builder.mutation({
       query: ({cartId}) => ({
@@ -927,7 +895,7 @@ export const apiSlice = createApi({
           console.log(error)
         }
       },
-      invalidatesTags: (result, error, arg) => ([{ type: 'ShoppingCart', uuid: arg.cartId }]),
+      invalidatesTags: (result, error, arg) => ([{ type: 'ShoppingCart', id: "cart-"+arg.cartId }]),
     }),
     getProductReviews: builder.query({
       query: ({productId}) => `/products/${productId}/product-reviews`,
@@ -952,7 +920,9 @@ export const apiSlice = createApi({
       providesTags: (result, error, arg) => {
         if (!result) return ['ProductReviews'];
         
-        const { reviews, questions_and_answers } = result;
+        // console.log("result", result);
+        
+          const { reviews, questionAndAnswers } = result;
         const tags = [{ type: 'ProductReviews', id: arg.productId }];
 
         // Add tags for individual reviews
@@ -963,18 +933,22 @@ export const apiSlice = createApi({
         }
 
         // Add tags for Q&A entries
-        if (questions_and_answers?.length) {
-          questions_and_answers.forEach(qa => {
+        if (questionAndAnswers?.length) {
+          questionAndAnswers.forEach(qa => {
             // Tag for the Q&A entry itself
             tags.push({ type: 'ProductReviews', id: `qa-${qa.uuid}` });
             
             // Tag for the question
-            tags.push({ type: 'ProductReviews', id: `question-${qa.question.uuid}` });
+            if(qa.question){
+              tags.push({ type: 'ProductReviews', id: `question-${qa.question.uuid}` });
+
+              // Tags for each answer
+              qa.question.answers?.forEach(answer => {
+                tags.push({ type: 'ProductReviews', id: `answer-${answer.uuid}` });
+              });
+
+            }
             
-            // Tags for each answer
-            qa.question.answers?.forEach(answer => {
-              tags.push({ type: 'ProductReviews', id: `answer-${answer.uuid}` });
-            });
           });
         }
 
@@ -1041,11 +1015,8 @@ export const apiSlice = createApi({
 
         try {
           await queryFulfilled;
-          // console.log('ars', arg)
-          // // const itemInCart = data; //configObject(data);
-          // dispatch(removedReview({
-          //   uuid:arg.cartId,
-          // }))
+          // remove the review from the cache
+          dispatch(apiSlice.util.selectInvalidatedBy(['ProductReviews', `review-${arg.reviewId}`]));
         } catch (error) {
           console.log(error)
         }
@@ -1115,17 +1086,21 @@ export const apiSlice = createApi({
 
         try {
           await queryFulfilled;
-          // console.log('ars', arg)
-          // // const itemInCart = data; //configObject(data);
-          // dispatch(removedQuestionAnswer({
-          //   uuid:arg.cartId,
-          // }))
+          // remove the question from the cache and replace it with the data returned
+          dispatch(apiSlice.util.selectInvalidatedBy(['ProductReviews', `qa-${arg.questionAnswerId}`]));
+          // update the question_answer to readOnly
+          // dispatch(apiSlice.util.updateQueryData('getProductReviews', { productId: arg.productId }, (draft) => {
+          //   const questionAnswer = draft.questions_and_answers.find(qa => qa.uuid === arg.questionAnswerId);
+          //   if (questionAnswer) {
+          //     questionAnswer.readOnly = true;
+          //   }
+          // }));
         } catch (error) {
           console.log(error)
         }
       },
       invalidatesTags: (result, error, arg) => [
-        { type: 'ProductReviews', id: `question-${arg.questionId}` }
+        { type: 'ProductReviews', id: `qa-${arg.questionAnswerId}` }
       ]
     }),
     
@@ -1191,11 +1166,8 @@ export const apiSlice = createApi({
 
         try {
           await queryFulfilled;
-          // console.log('ars', arg)
-          // // const itemInCart = data; //configObject(data);
-          // dispatch(removedQuestionAnswer({
-          //   uuid:arg.cartId,
-          // }))
+          // remove the answer from the cache
+          dispatch(apiSlice.util.selectInvalidatedBy(['ProductReviews', `answer-${arg.answerId}`]));
         } catch (error) {
           console.log(error)
         }

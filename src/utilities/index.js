@@ -58,6 +58,61 @@ export const mapper = (obj)=>{
 
 
 // }
+
+const snakeToCamel = (s) => {
+  return s.replace(/(_\w)/g, function (m) {
+    return m[1].toUpperCase();
+  }) ||s;
+
+}
+
+export const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const objectToCamel = (o) => {
+  let newO, origKey, newKey, value
+  if (o instanceof Array) {
+    return o.map(function (value) {
+      if (typeof value === "object") {
+        value = objectToCamel(value)
+      }
+      return value
+    })
+  } else {
+    newO = {}
+    for (origKey in o) {
+      if (o.hasOwnProperty(origKey)) {
+        newKey = snakeToCamel(origKey)//(origKey.charAt(0).toLowerCase() + origKey.slice(1) || origKey).toString()
+        if(newKey === "id") {
+          // console.log("newKey", newKey)
+          newKey = "uuid"
+        }
+
+        value = o[origKey]
+        if(value === null){
+          value = false
+        }
+        // console.log(origKey,"->",value)
+        if (value instanceof Array || (value !== null && value.constructor === Object)) {
+          value = objectToCamel(value)
+        }
+        newO[newKey] = value
+      }
+    }
+  }
+  // console.log("", newO)
+  
+  return Object.getOwnPropertyNames(newO).length ? newO : null
+
+}
+
+export const configObject=(object)=>{
+  if(isIterable(object)){
+    return object.map(prop=>({uuid:prop.id, ...objectToCamel(prop.attributes)}))
+  }else{
+
+    return {uuid:object.id, ...objectToCamel(object.attributes)}
+  }
+}
+
 export function checkIfServerIsOnline(url) {
   return new Promise((resolve, reject) => {
     let img = new Image();
@@ -229,6 +284,11 @@ export const returnOnReload =  ()=>{
 }
 export const preloadCartItems = apiSlice.endpoints.getShoppingCart.initiate
 export const preloadOrderHistory = apiSlice.endpoints.getCheckout.initiate
+export const preloadGetUser =(uuid)=> ()=> { 
+    console.log("preloadGetUser", uuid)
+    return apiSlice.endpoints.getUser.initiate({uuid:uuid})
+  
+}
 // window.onbeforeunload = function () {
 //   window.setTimeout(function () {
 //     console.log("loc", window.location)

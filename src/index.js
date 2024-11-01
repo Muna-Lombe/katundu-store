@@ -11,13 +11,15 @@ import Store from './js/store';
 // import ReduxTester from './ReduxTester.js.example';
 import App from './App';
 import { apiSlice } from './js/middleware/queryHandler';
+import { createRoot } from 'react-dom/client';
 
 
+const root = createRoot(document.getElementById('root'));
 
 Store.dispatch(apiSlice.endpoints.getProducts.initiate())
 Store.dispatch(apiSlice.endpoints.getCatalog.initiate())
 sessionStorage.setItem("connectionRetry", 0)
-ReactDOM.render(
+root.render(
   <React.StrictMode>
     <BrowserRouter basename='/'>
       {/* <HashRouter> */}
@@ -29,8 +31,7 @@ ReactDOM.render(
       {/* </HashRouter> */}
     </BrowserRouter>
     
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
 
 reportWebVitals();

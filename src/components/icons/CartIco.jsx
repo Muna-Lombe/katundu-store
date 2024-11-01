@@ -3,13 +3,13 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 // import { itemIdsInCart, selectcartIds } from '../../js/slices/cart/cartSlice'
 import BasketIco from './BasketIco'
-import { authenticatedUsers, cartItemsCount, isAuthedUser } from '../../orm/selectors'
+import { authenticatedUsersV2, cartItemsCountV2, isAuthedUserV2 } from '../../orm/selectors'
 
 
 const CartIco = ({size, isBurgerMenu,isCartBtn=false}) => {
-  const authSessions = useSelector(authenticatedUsers)
-  const userAuthed = useSelector(isAuthedUser(authSessions[0]?.uuid))
-  let itemsInCart = useSelector(cartItemsCount())
+  const authSessions = useSelector(authenticatedUsersV2)
+  const userAuthed = useSelector(isAuthedUserV2(authSessions[0]?.uuid))
+  let itemsInCart = useSelector(cartItemsCountV2())
   
   // console.log(itemsInCart)
   const AddCartCount = () =>(

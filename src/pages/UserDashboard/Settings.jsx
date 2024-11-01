@@ -13,7 +13,7 @@ import DropDownMenu from '../../components/DropDownMenu'
 import BrokenConnection from '../BrokenConnection'
 import { LoadingStateComponent } from '../../components'
 import { useGetUserSettingsQuery, useUpdateUserSettingsMutation } from '../../js/middleware/queryHandler'
-import { authenticatedUsers } from '../../orm/selectors'
+import { authenticatedUsersV2 } from '../../orm/selectors'
 import { useSelector } from 'react-redux'
 
 const tabs = [
@@ -30,7 +30,7 @@ const Settings = () => {
   const [activeTab, setActiveTab] = useState( location?.state?.activeTabIdx ? {index: location?.state?.activeTabIdx, href: tabs[location?.state?.activeTabIdx]?.href} : {index:0,href:':~profile-settings'})
   
   
-  const authId = useSelector(authenticatedUsers)[0]?.uuid;
+  const authId = useSelector(authenticatedUsersV2)[0]?.uuid;
   const {data: userSettingsData, isLoading, isError} = useGetUserSettingsQuery(authId, {skip: !activeTab.href.includes(':~profile-settings')})
   const [updateUserSettings] = useUpdateUserSettingsMutation()
 

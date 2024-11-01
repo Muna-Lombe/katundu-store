@@ -8,7 +8,7 @@ import { createdAuth } from "../../orm/models/AuthModel";
 import { createAuthKey, generateNonce, momentDate, sha256 } from "../../utilities";
 import types from "../../orm/actions/actionTypes";
 import { useEffect, useState } from "react";
-import { authenticatedUsers, isAuthedUser } from "../../orm/selectors";
+import { authenticatedUsersV2, isAuthedUserV2 } from "../../orm/selectors";
 import { useSignupUserMutation } from "../../js/middleware/queryHandler";
 import Toast from "../banners/Toast";
 import ToggleVisibleIco from "../icons/ToggleVisibleIco.jsx";

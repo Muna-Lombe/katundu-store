@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import Product from './ProductCardVertical'
 import { ArrowLeft, ArrowRight } from './icons'
 import { useDispatch, useSelector } from "react-redux"
-import { filteredProductsFromModel } from "../orm/selectors"
+import { filteredProductsFromModelV2 } from "../orm/selectors"
 import { useGetEmbeddedProductsQuery, useGetProductQuery, useGetProductsQuery, useLazyGetEmbeddedProductsQuery, useLazyGetProductQuery } from '../js/middleware/queryHandler'
 import { createdToastMessage } from '../orm/models/ToastMessageModel'
 import types from '../orm/actions/actionTypes'

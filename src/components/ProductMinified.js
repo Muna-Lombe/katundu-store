@@ -4,7 +4,7 @@ import PriceTag from "./PriceTag"
 import BuyBtns from "./buttons/BuyBtns"
 import { BasketIco } from "./icons"
 import { useParams, useLocation } from "react-router-dom"
-import { filteredProductsFromModel } from "../orm/selectors"
+import { filteredProductsFromModelV2 } from "../orm/selectors"
 import { useSelector } from "react-redux"
 import randomizer from "../utilities/randomizer"
 
@@ -12,7 +12,7 @@ const ProductMinified = ({children, productItem})=> {
   const idFromLoc = useLocation().pathname?.split("/")?.at(-1)
   const  id = useParams().id || idFromLoc || 2001
   let stickyRef = useRef(0);
-  // const productItem = useSelector(filteredProductsFromModel([])).find
+  // const productItem = useSelector(filteredProductsFromModelV2([])).find
   // (i=> i.id.toString() === id.toString())
   
   // console.log("navprod", productItem)

@@ -30,7 +30,7 @@ const CheckoutForm = ({ location}) => {
   // returnOnReload()
   const cartItemIds = location.state?.cartItemIds;
 
-  const checkouts = useSelector(checkoutSelector)
+  // const checkouts = useSelector(checkoutSelector)
   // console.log("echeo", cartIds)
   const cartUuid = useSelector(getCartUuid) || sessionStorage.getItem("shoppingCartUuid");
   const { data, isLoading, isError, error, isSuccess, refetch } = useBeginItemCheckoutQuery({ cartItemIds: cartItemIds, uuid: cartUuid }, { refetchOnMountOrArgChange: true, forceRefetch:true })

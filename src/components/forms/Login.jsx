@@ -5,11 +5,11 @@ import Logo from "../Logo";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { createdAuth } from "../../orm/models/AuthModel";
-import { createAuthKey, generateNonce, momentDate, preloadCartItems, preloadOrderHistory, } from "../../utilities";
+import { createAuthKey, generateNonce, momentDate, preloadCartItems, preloadGetUser, preloadOrderHistory, } from "../../utilities";
 import types from "../../orm/actions/actionTypes";
 import { useEffect } from "react";
-import { authenticatedUsers, isAuthedUser } from "../../orm/selectors";
-import {  useLoginUserMutation, useSignupUserMutation } from "../../js/middleware/queryHandler";
+import { authenticatedUsersV2, isAuthedUserV2 } from "../../orm/selectors";
+import {  useLazyGetUserQuery, useLoginUserMutation, useSignupUserMutation } from "../../js/middleware/queryHandler";
 import { createdToastMessage } from "../../orm/models/ToastMessageModel";
 import { removedAllCartItems } from "../../orm/models/CartModel";
 import { removedAllOrderItems } from "../../orm/models/OrderModel";
@@ -24,6 +24,7 @@ export default function Login({userId}) {
   // const [signupUser, { isLoading: signupIsLoading }] = useSignupUserMutation()
 
   const [loginUser, {isSuccess, isLoading: loginIsLoading, isError, error:loginError, data }] = useLoginUserMutation()
+  const [getUser, {isSuccess:getUserSuccess, isLoading:getUserLoading, isError:isGetUserError, error:getUserError, data:userData}] = useLazyGetUserQuery()
   const sess = sessionStorage;
   const performAuthedActions = async (asyncAxns) =>{
     asyncAxns.forEach(ax=>dispatch(ax()))
@@ -55,11 +56,11 @@ export default function Login({userId}) {
       const res = await loginUser({ initialCred: {user:{email:data.email, auth_key:authKey}} })
       if(res.error) throw new Error(JSON.stringify(res.error.data.error))
       //  console.log(res)
-      dispatch(createdAuth({uuid:res.data.uuid, dateCreated:momentDate().shortDate, timeCreated:new Date().toString(),  authStatus:types.AUTH_VALID}))
+      dispatch(createdAuth({uuid:res.data.uuid, dateCreated:momentDate().shortDate, timeCreated: new Date().toString(),  authStatus:types.AUTH_VALID}))
       await performAuthedActions([
+        preloadGetUser(res.data.uuid),
         preloadCartItems,
-        preloadOrderHistory
-        // () => dispatch(preloadCartItems),
+        preloadOrderHistory,
 
       ])
       if(location?.state?.pathname){

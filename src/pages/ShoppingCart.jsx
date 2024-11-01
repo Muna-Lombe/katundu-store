@@ -10,7 +10,7 @@ import { createdToastMessage } from '../orm/models/ToastMessageModel'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { titleTagTypes as tags } from '../components/icons'
 import { AttributeWatcher, ClassWatcher } from '../utilities/classWatcher'
-import { getUnorderedCartItems, getOrderedCartItems } from '../orm/selectors'
+import { getUnorderedCartItems, getUnorderedCartItemsV2, getOrderedCartItems, getOrderedCartItemsV2 } from '../orm/selectors'
 
 
 
@@ -19,8 +19,8 @@ const ShoppingCart = () => {
     const goto = useNavigate()
     // recieve the state
   
-    const unOrderedItems = useSelector(getUnorderedCartItems);
-    const orderedItems = useSelector(getOrderedCartItems);
+    const unOrderedItems = useSelector(getUnorderedCartItemsV2);
+    const orderedItems = useSelector(getOrderedCartItemsV2);
     const useVariable = (initialValue) => {
       const ref = useRef(initialValue);
       const get = useCallback(() => ref.current, []);

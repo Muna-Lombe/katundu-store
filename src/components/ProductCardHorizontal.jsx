@@ -8,7 +8,7 @@ import no_product_img from '../assets/tests/jsonServer/img/placeholders/no_produ
 import { createdOrder } from '../orm/models/OrderModel';
 import { momentDate } from '../utilities';
 import types from '../orm/actions/actionTypes';
-import { authenticatedUsers, isAlreadyOrdered, isAuthedUser, isInCart } from '../orm/selectors';
+import { authenticatedUsersV2, isAlreadyOrdered, isAuthedUserV2, isInCartV2 } from '../orm/selectors';
 import { addedCartItem, createdCartItem } from '../orm/models/CartModel';
 import BuyBtns from './buttons/BuyBtns';
 import randomizer from '../utilities/randomizer';
@@ -20,9 +20,9 @@ const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW = 8, maxWH =
   const dispatch = useDispatch()
   const goto = useNavigate()
   const location = useLocation()
-  const isOrdered = useSelector(isInCart(product?.id))
-  const authSessions = useSelector(authenticatedUsers)
-  const userAuthed = useSelector(isAuthedUser(authSessions[0]?.uuid))
+  const isOrdered = useSelector(isInCartV2(product?.id))
+  const authSessions = useSelector(authenticatedUsersV2)
+  const userAuthed = useSelector(isAuthedUserV2(authSessions[0]?.uuid))
   // let cats = useSelector(filteredCategoriesFromModel(product?.categoryIds))
   const textStyle = {
     maxWidth: '100%',
