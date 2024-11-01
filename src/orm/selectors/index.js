@@ -13,6 +13,7 @@ import { createSelector as createApiSelector } from '@reduxjs/toolkit';
 
 const ormSelector = state => state
 const apiSelector = state => {
+  console.log("api", state)
  return state.api
 }
 const dispatch = Store.dispatch
@@ -21,7 +22,7 @@ const dispatch = Store.dispatch
 export const authenticatedUsersV2 = createApiSelector(
   apiSelector,
   (api)=> {
-      console.log("api", Object.keys(api.queries))
+      // console.log("api", Object.keys(api.queries))
     return [{...api.queries.getUser?.data, authStatus:types.AUTH_VALID}] || []
   }
 )

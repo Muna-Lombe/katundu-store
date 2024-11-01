@@ -1,12 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
 import {Navigate, useLocation } from 'react-router-dom';
-import { authenticatedUsersV2, isAuthedUserV2 } from '../orm/selectors';
+import { authenticatedUsers, authenticatedUsersV2, isAuthedUser, isAuthedUserV2 } from '../orm/selectors';
 import types from '../orm/actions/actionTypes';
 
 const PrivateRoute =({ component: Component}) =>{
-  const authSessions = useSelector(authenticatedUsersV2) 
+  const authSessions = useSelector(authenticatedUsers) 
   // console.log("as", authSessions)
-  const userAuthed = useSelector(isAuthedUserV2(authSessions[0]?.uuid))
+  const userAuthed = useSelector(isAuthedUser(authSessions[0]?.uuid))
   const location = useLocation()
   const dispatch = useDispatch()
   

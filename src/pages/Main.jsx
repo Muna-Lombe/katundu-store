@@ -1,7 +1,7 @@
 import React, { Suspense, createElement, useEffect, useRef, useState } from 'react'
 import { useSelector } from 'react-redux'
 import { ProductCardVertical,CategoryTag, NoItems, Sidebar, HeroBanner, GridBanner, LoadingStateComponent, AdBanners } from '../components'
-import { filteredProductsFromModelV2, categories } from '../orm/selectors';
+import { filteredProductsFromModelV2, categories, filteredProductsFromModel } from '../orm/selectors';
 import { popularTags, titleTagTypes as tags } from '../components/icons';
 import { useDispatch } from 'react-redux';
 import { addedProduct } from '../orm/models/ProductModel';
@@ -109,7 +109,7 @@ const Main = () => {
     )
   }
   const ProductsWrapper = ()=>{
-    let products = useSelector(filteredProductsFromModelV2([]))
+    let products = useSelector(filteredProductsFromModel([]))
     
 
     const [getProducts, { data, isLoading, isSuccess, isError }, {lastArg}] = useLazyGetProductsQuery()

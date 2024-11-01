@@ -1,10 +1,10 @@
 import React, { Suspense } from 'react'
 import { useSelector } from 'react-redux'
 import { NoItems, OrderHistory } from '../components'
-import { filteredOrdersFromModelV2 } from '../orm/selectors'
+import { filteredOrdersFromModel, filteredOrdersFromModelV2 } from '../orm/selectors'
 
 const History = () => {
-  const itemsOrdered = useSelector(filteredOrdersFromModelV2())
+  const itemsOrdered = useSelector(filteredOrdersFromModel())
   // console.log(itemsOrdered)
   return (
     <Suspense fallback={<NoItems />}>

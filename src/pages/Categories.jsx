@@ -9,7 +9,7 @@ import types from '../orm/actions/actionTypes';
 const Categories = () => {
   // const [ activeCategoryId, setActiveCategoryId] = useState(1)
   const dispatch = useDispatch()
-  let catalog = useSelector(categoriesV2)
+  let catalog = useSelector(categories)
 
   
   const scrollFn = function (event) {
