@@ -71,14 +71,15 @@ import { SearchIco } from '../icons';
       }
       return costs[str2.length];
     }
-    const similarityWeight = (str1, str2) => {
+    const similarityWeight = (str1=null, str2=null) => {
       let longer = str1;
       let shorter = str2;
-      if (str1.length < str2.length) {
+      if(!str1 || !str2) return 1.0;
+      if (str1?.length < str2?.length) {
         longer = str2;
         shorter = str1;
       }
-      let longerLength = longer.length;
+      let longerLength = longer?.length || 0;
       if (longerLength === 0) {
         return 1.0;
       }

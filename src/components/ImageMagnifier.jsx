@@ -6,9 +6,9 @@ import randomizer from '../utilities/randomizer'
 const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
   // const [activeImage, setActiveImage] = useState(false)
    const activeImage = useRef(false)
-  useEffect(()=>{
+   useEffect(()=>{
      if(images?.length){
-
+       
        activeImage.current = images[0]//setActiveImage(images[0])
      }
     return ()=>""
@@ -75,12 +75,9 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
   }
 
   const handleSetActive = (id) => { 
-    if (activeImage.uuid !== id){ 
-      // console.log("active id", activeImage)
+    if (activeImage.current?.uuid !== id){ 
       activeImage.current = images.find((i) => i.uuid === id)
-      //setActiveImage(images.find((i) => i.id === id ))
-      document.getElementById("activeImage").src = "https://placehold.co/600x400/orange/"+randomizer(["black","white","gray","red"]);
-     
+      document.getElementById("activeImage").src = activeImage.current?.imageUrl
       const active = document.querySelector(".small_image_active_image")
       active.classList.toggle("small_image_active_image");
       const toActive = document.getElementById("small_img_" + id)
@@ -99,8 +96,9 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
     } 
   }
 
+  const isActiveImg = (uuid) => activeImage?.current?.id === uuid
   const SmallSizeImageArray = ({imgArr=[1,2,3,4]}) => (
-      <div className={"  max-w-full flex justify-center gap-2 "}>
+      <div className={"  max-w-full flex flex-row greater-than-sm:flex-col justify-center gap-2 "}>
         {
           
           imgArr?.map((i,idx)=>
@@ -109,10 +107,10 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
               id={ "small_img_"+(i.uuid||idx)} 
               alt="gallery"
               onClick={handleClick} 
-              onPointerEnter={(e) => ((activeImage?.current?.id !== i.uuid || activeImage?.current?.id !== idx) ? handleSetActive(Number.parseInt(e.currentTarget.id.split("_").at(-1))) : ("")  )} 
+              onPointerEnter={(e) => ((!isActiveImg(i.uuid) || activeImage?.current?.id !== idx) ? handleSetActive(e.currentTarget.id.split("_").at(-1)) : ("")  )} 
               // onTouchStart={((e) => (activeImage?.current?.id !== i.id ? handleSetActive(Number.parseInt(e.target.id)) : ("")))}
-              className={((idx === 0) ? "small_image_active_image " : " ") + " w-full mt-2 p-4 min-w-[40px] less-than-xs:max-w-[3rem] max-w-[6rem]  aspect-square " + ((idx === 0) ? " p-4 border-[3px] border-[#00000037]" :" p-[1px]")+ " rounded-md object-cover object-center block cursor-pointer" } 
-              src={"https://placehold.co/600x400/orange/" + randomizer(["black", "white", "gray", "red"])}
+              className={((isActiveImg(i.uuid) || idx===0) ? "small_image_active_image " : " ") + " w-full mt-2 p-4 min-w-[40px] less-than-xs:max-w-[3rem] max-w-[6rem]  aspect-square " + ((isActiveImg(i.uuid)) ? " p-4 border-[3px] border-[#00000037]" :" p-[1px]")+ " rounded-md object-cover object-center block cursor-pointer" } 
+              src={i.imageUrl}
                
             />
           )
@@ -128,13 +126,11 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
           // onTouchMove={(e) => magnify("activeImage", 3)} 
           
         className={"mesh-mask modal absolute flex  w-full h-full bg-black opacity-30 border-[10px]  rounded-md"}>
-            {/* <VerticalLine count={Number.parseInt(((sqrDim / (sqrDim / 10) * 5)).toString())} />
-            <HorizontalLine count={Number.parseInt(((sqrDim / (sqrDim / 10) * 5)).toString())} /> */}
 
         </div>
             {
               // images?.length ?
-        <img id="activeImage" alt="gallery" className={" min-w-[200px] w-full max-w-[400px]  aspect-square object-cover object-center block bg-white border-[1px] rounded-md"} src={"https://placehold.co/600x400/orange/" + randomizer(["black", "white", "gray", "red"])} />
+        <img id="activeImage" alt="gallery" className={" min-w-[200px] w-full max-w-[800px]  aspect-square object-cover object-center block bg-white border-[1px] rounded-md"} src={activeImage.current?.imageUrl || images[0].imageUrl} />
                 // : ""
             }
         <div className={"peer img-magnifier-glass absolute bottom-0 right-0 w-1/4 aspect-square hover:bg-white border-[3px] border-slate-600  rounded-md cursor-none"}></div>
@@ -142,9 +138,9 @@ const ImageMagnifier = ({  handleClick,images, sqrDim = 400 }) => {
   )
  
   return (
-    <div className={"img-magnifier-container relative flex flex-col"} >
+    <div className={"img-magnifier-container relative flex flex-col greater-than-sm:flex-row flex-nowrap  gap-1"} >
+      <SmallSizeImageArray imgArr={images} />
       <CurrentImage />
-      <SmallSizeImageArray  />
     </div>
   )
 }

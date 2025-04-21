@@ -1,23 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { LoadingStateComponent } from '../../components';
+import { useSelector } from 'react-redux';
+import { authenticatedUsersV2 } from '../../orm/selectors';
+import { useLazyGetUserReviewsQuery } from '../../js/middleware/queryHandler';
 
 const MyReviews = () => {
-  const [reviews, setReviews] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
+  // const [reviews, setReviews] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  const authId = useSelector(authenticatedUsersV2)[0]?.uuid;
+  const [getUserReviews,{data:reviews, isLoading, isSuccess, isError, isFetching, isUninitialized}] = useLazyGetUserReviewsQuery()
   useEffect(() => {
     // Simulating an API call
     setTimeout(() => {
-      setReviews([
-        { id: 1, productName: 'Product 1', rating: 4, comment: 'Great product!' },
-        { id: 2, productName: 'Product 2', rating: 5, comment: 'Excellent quality!' },
-        { id: 3, productName: 'Product 3', rating: 3, comment: 'Good, but could be better.' },
-      ]);
-      setIsLoading(false);
+      // setReviews([
+      //   { id: 1, productName: 'Product 1', rating: 4, comment: 'Great product!' },
+      //   { id: 2, productName: 'Product 2', rating: 5, comment: 'Excellent quality!' },
+      //   { id: 3, productName: 'Product 3', rating: 3, comment: 'Good, but could be better.' },
+      // ]);
+      // setIsLoading(false);
+      getUserReviews({ uuid: authId })
     }, 1000);
   }, []);
 
-  if (isLoading) return <LoadingStateComponent />;
+  if (isUninitialized||isLoading) return <LoadingStateComponent />;
 
   return (
     <div>

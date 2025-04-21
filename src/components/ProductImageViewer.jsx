@@ -5,7 +5,7 @@ const ProductImageViewer = ({images}) => {
   // const [modalOpen, setModalOpen] = useState(true)
 
   return (
-    <div className="image-viewer p-2 w-auto xs:max-w-1/4  max-w-[500px] order-1 ">
+    <div className="image-viewer p-2 w-auto less-than-lg:max-w-[400px] xs:max-w-1/4   order-1 ">
       <ImageMagnifier images={images} />
       {/* <ViewImageModal openModal={modalOpen} modalAction={setModalOpen}/> */}
     </div>

@@ -105,7 +105,7 @@ const Product = ({ product, forwardRef, noPrd, isSearchOrMain, minW =8, maxWH=""
           {
             noPrd
               ? <Image imagepath={no_product_img}/>
-              : <Image imagepath={("https://placehold.co/600x400/orange/" + randomizer(["black", "white", "gray", "red"])) || no_product_img} />
+              : <Image imagepath={product.imageUrl || no_product_img} />
           }
         </Link>
         <DiscountTag product={product}/>  

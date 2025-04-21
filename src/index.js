@@ -18,7 +18,9 @@ const root = createRoot(document.getElementById('root'));
 
 Store.dispatch(apiSlice.endpoints.getProducts.initiate())
 Store.dispatch(apiSlice.endpoints.getCatalog.initiate())
+
 sessionStorage.setItem("connectionRetry", 0)
+
 root.render(
   <React.StrictMode>
     <BrowserRouter basename='/'>

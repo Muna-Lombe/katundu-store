@@ -10,6 +10,232 @@ import { useEffect, useState } from "react"
 import { useAddReviewMutation, useRemoveReviewMutation, useUpdateReviewMutation } from "../js/middleware/queryHandler"
 import PostCreatorTag from "./PostCreatorTag"
 
+
+const RatingInput = ({ label, name, value, ratings, setRatings, Stars }) => {
+  const [hoverRating, setHoverRating] = useState(0);
+  
+  const getStarCount = (rating) => {
+    switch (rating) {
+      case 'Low': return 1;
+      case 'Medium': return 3;
+      case 'High': return 5;
+      default: return 3;
+    }
+  };
+
+  const currentValue = getStarCount(value);
+
+  const handleRatingClick = (stars) => {
+    let newRating;
+    if (stars <= 2) newRating = 'Low';
+    else if (stars <= 4) newRating = 'Medium';
+    else newRating = 'High';
+
+    setRatings(prev => ({
+      ...prev,
+      [name.toLowerCase()]: newRating
+    }));
+  };
+
+  return (
+    <div className="rating-input flex flex-row flex-wrap items-center gap-4">
+      <label className="w-32 text-sm font-medium text-gray-700">{label}</label>
+      <div className="stars flex flex-row gap-1"
+           onMouseLeave={() => setHoverRating(0)}>
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            type="button"
+            onClick={() => handleRatingClick(star)}
+            onMouseEnter={() => setHoverRating(star)}
+            className="star-button p-1 hover:scale-110 transition-transform"
+          >
+            <StarIcon 
+              filled={hoverRating ? star <= hoverRating : star <= currentValue}
+              className={`w-6 h-6 ${
+                hoverRating ? 
+                  star <= hoverRating ? 'text-yellow-400' : 'text-gray-300' :
+                  star <= currentValue ? 'text-yellow-400' : 'text-gray-300'
+              }`}
+            />
+          </button>
+        ))}
+      </div>
+      <span className="text-sm text-gray-500">
+        {value}
+      </span>
+    </div>
+  );
+};
+
+const StarIcon = ({ filled, className }) => (
+  <svg 
+    className={className}
+    fill={filled ? 'currentColor' : 'none'}
+    stroke="currentColor"
+    viewBox="0 0 24 24"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+    />
+  </svg>
+);
+
+const AddReview = ({ editMode, addReview, authSessions, userAuthed, hasOrdered, productId, productReviewId, location, Stars, goto, }) => {
+  const [ratings, setRatings] = useState({
+    satisfaction: editMode?.value?.quantifiers?.[0]?.value || 'Medium',
+    recommend: editMode?.value?.quantifiers?.[1]?.value || 'Medium',
+    quality: editMode?.value?.quantifiers?.[2]?.value || 'Medium'
+  });
+  const isAuthed = () => (authSessions.length || authSessions?.some(as => as.authStatus !== types.AUTH_EXPIRED || userAuthed))
+
+  
+
+  const handlePost = async (e, edit, updateFn) => {
+    e.preventDefault();
+    if (!isAuthed()) return goto("/signin", { state: { ...location } });
+
+    // if (!hasOrdered) {
+    //   const tooltip = document.getElementById("tooltip");
+    //   tooltip.classList.replace("hidden", "flex");
+    //   setTimeout(() => {
+    //     tooltip.classList.replace("flex", "hidden");
+    //   }, 3000);
+    //   return;
+    // }
+
+    const form = document.forms["review_post"];
+    const formData = new FormData(form);
+
+    const reviewPost = {
+      "product_review": {
+        review: {
+          comment: formData.get("add-review-input"),
+          quantifiers: [
+            {
+              quantifier: "Satisfaction",
+              value: ratings.satisfaction
+            },
+            {
+              quantifier: "Likely to recommend",
+              value: ratings.recommend
+            },
+            {
+              quantifier: "Quality",
+              value: ratings.quality
+            }
+          ]
+        },
+        poster_uuid: authSessions[0].uuid
+      },
+      type: editMode ? editMode.type : "add_review"
+    };
+
+    if (reviewPost.product_review?.review?.comment.length === 0) return;
+
+    if (edit) {
+      updateFn(reviewPost);
+    } else {
+      const { product_review, ...rest } = reviewPost;
+      const initialReview = { product_review: { ...rest, ...product_review } };
+      updateFn({ initialReview, productReviewId, productId });
+    }
+
+    document.getElementById("add-review-input").value = "";
+  };
+
+  const Tooltip = () =>{
+    
+    return(
+      
+      <div id="auth-tooltip" className="tooltip-wrapper max-w-[80%] max-h-[40px]  justify-center flex-wrap whitespace-normal transition-transform ease-linear delay-700">
+        <div id="tooltip" className="tooltip hidden justify-center text-center ">
+          {tags.noReviews.noOrderText}
+        </div>
+      </div>
+    )
+  }
+  return (
+    <div className="add-review max-w-2xl p-6 flex flex-col gap-4 dark:bg-slate-600 bg-slate-200 border dark:border-slate-500 rounded-lg">
+
+      <form id="review_post" name="review_post" action="" onSubmit={() => ""} className="flex flex-col gap-3">
+        <div className="ratings-section flex flex-col gap-3">
+
+          <RatingInput
+            label="Satisfaction"
+            name="satisfaction"
+            value={ratings.satisfaction}
+            ratings={ratings}
+            setRatings={setRatings}
+            Stars={Stars}
+          />
+          <RatingInput
+            label="Recommend"
+            name="recommend"
+            value={ratings.recommend}
+            ratings={ratings}
+            setRatings={setRatings}
+            Stars={Stars}
+          />
+          <RatingInput
+            label="Quality"
+            name="quality"
+            value={ratings.quality}
+            ratings={ratings}
+            setRatings={setRatings}
+            Stars={Stars}
+          />
+        </div>
+        <Tooltip/>
+        {editMode?.value ? (
+          <input
+            form="review_post"
+            id="add-review-input"
+            type="text"
+            name="add-review-input"
+            placeholder='Post a review'
+            defaultValue={editMode?.value?.comment || ''}
+            className="p-3 max-w-md border-2 border-slate-400 rounded-lg caret-black text-black"
+          />
+        ) : (
+          <textarea
+            form="review_post"
+            name="add-review-input"
+            id="add-review-input"
+            cols="10"
+            rows="3"
+            placeholder="Post a review"
+            className="p-3 max-w-2xl border-2 border-slate-400 rounded-lg caret-black text-black"
+          />
+        )}
+
+        <div className="update-btns flex flex-row gap-2">
+          <input
+            form="review_post"
+            type="button"
+            onClick={(e) => handlePost(e, editMode?.value, (arg) => editMode?.updateFn(arg) || addReview(arg))}
+            value={editMode?.value ? "Save" : isAuthed() ? "Add Review" : "Sign In"}
+            className="p-1 w-max min-w-[80px] bg-orange-500 rounded-md text-white text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer"
+          />
+          {editMode?.value && (
+            <input
+              form="review_post"
+              type="button"
+              onClick={(e) => { e.preventDefault(); editMode.toggleEditMode(false) }}
+              value="Cancel"
+              className="p-1 w-max min-w-[80px] bg-inherit rounded-md text-slate-300 border border-transparent hover:border-slate-300 text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer"
+            />
+          )}
+        </div>
+      </form>
+    </div>
+  );
+};
+
 const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
   const goto = useNavigate()
   const location = useLocation()
@@ -17,300 +243,23 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
   const userAuthed = useSelector(isAuthedUserV2(authSessions[0]?.uuid))
   const hasOrdered =useSelector(orderedByUser(productId))
   const dispatch = useDispatch()
-  const [addReview] = useAddReviewMutation();
+  const [addReview, {data:addedData, isLoading:addLoading, isSuccess:addSuccess, error:addError }] = useAddReviewMutation();
   const [updateReview, {data:updatedData, isLoading:updateLoading, isError:updateError, isSuccess:updateSuccess}] = useUpdateReviewMutation();
   const [removeReview, { data: removedData, isLoading: removeLoading, isError: removeError, isSuccess: removeSuccess }] = useRemoveReviewMutation();
   
-  // const AddReview = ({editMode }) => {
-  //   const isAuthed = () => (authSessions.length || authSessions?.some(as => as.authStatus !== types.AUTH_EXPIRED || userAuthed))
-    
-  //   console.log("editMode", editMode)
-
-  //   const handlePost = async (e, edit, updateFn) => {
-  //     e.preventDefault();
-  //     if (!isAuthed()) return goto("/signin", { state: { ...location } });
+  useEffect(() => {
+    const tooltip = document.getElementById("tooltip");
+    tooltip.classList.replace("hidden", "flex");
+    setTimeout(() => {
+      tooltip.classList.replace("flex", "hidden");
+    }, 3000);
       
-  //     if (!hasOrdered) {
-  //       const tooltip = document.getElementById("tooltip");
-  //       tooltip.classList.replace("hidden", "flex");
-
-  //       setTimeout(() => {
-  //         tooltip.classList.replace("flex", "hidden");
-  //       }, 3000);
-  //       return;
-  //     }
-  //     const form = document.forms["review_post"];
-
-  //     const reviewPost = { "product_review" :{}, type:editMode? editMode.type  :"add_review"}
-  //     // Get form data
-  //     const formData = new FormData(form);
-  //     // reviewPost["product_review_id"] = productReviewId
-  //     for (let [name, value] of formData) {
-  //       // console.log(name, value);
-  //       reviewPost["product_review"] = {
-  //         review:{
-  //           comment: value,           
-  //         }, 
-  //         poster_uuid: authSessions[0].uuid
-  //       }
-  //     }
-
-  //     // console.log("updateFn", typeof updateFn)
-  //     // return
-  //     if (reviewPost.product_review?.review?.comment.length === 0) return
-  //     if(edit){
-  //       console.log(editMode)
-
-  //       updateFn(reviewPost)
-  //     }else{
-  //       const { product_review, ...rest } = reviewPost
-  //       const initialReviewPost = { product_review: { ...rest, ...product_review } }
-  //       updateFn({ initialReviewPost, productReviewId, productId })
-  //     }
-  //     // console.log("something", reviewPost);
-  //     document.getElementById("add-review-input").value = "";
-  //     // createReviewPost({text: "post a review"})
-  //   };
-   
-    
-  //   const Tooltip = () =>{
-      
-  //     return(
-        
-  //       <div id="auth-tooltip" className="tooltip-wrapper max-w-[75%] max-h-[40px]  justify-center flex-wrap whitespace-normal transition-transform ease-linear delay-700">
-  //         <div id="tooltip" className="tooltip hidden justify-center text-center ">
-  //           {tags.noReviews.noOrderText}
-  //         </div>
-  //       </div>
-  //     )
-  //   }
-  //   const Componentheader =()=>(
-  //     <>
-  //       <p className="main-title text-lg font-raleway lining-nums tabular-nums  font-medium">
-  //         {isAuthed() ? tags.addReview.mainText : "Sign in before you can post a review"}
-  //       </p>
-  //       <p className="sub-title h-[27px] text-sm font-raleway lining-nums tabular-nums  font-normal">
-  //         {isAuthed() ? tags.addReview.subText : ""}
-  //       </p>
-  //     </>
-  //   )
-  //   const Componentbody = ()=>(
-  //     <form id="review_post" name="review_post" action="" onSubmit={()=> ""} className="flex flex-col gap-3">
-  //       {
-  //         editMode?.value ?
-  //           <input form="review_post" id="add-review-input" type="text" name="add-review-input" placeholder='Post a review' defaultValue={editMode?.value || null} className="p-3 max-w-md border-2 border-slate-400 rounded-lg caret-black text-black" />
-  //           : <textarea form="review_post" name="add-review-input" id="add-review-input" cols="10" rows="3" placeholder="Post a review"  className="p-3 max-w-2xl border-2 border-slate-400 rounded-lg caret-black text-black"></textarea>
-  //       }
-        
-  //       <div className="update-btns flex flex-row gap-2">
-  //         <input form="review_post" type="button" onClick={(e) => handlePost(e, editMode?.value,  (arg) => editMode?.updateFn(arg) || addReview(arg))} value={editMode?.value ?"Save" : isAuthed() ? " Add Review " : "Sign In"} className="  p-1 w-max min-w-[80px] bg-orange-500 rounded-md text-white text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer" />
-  //         {
-  //           editMode?.value ?
-  //             <input form="review_post" type="button" onClick={(e) => {e.preventDefault(); editMode.toggleEditMode(false)}} value={"Cancel"} className="  p-1 w-max min-w-[80px] bg-inherit rounded-md text-slate-300 border border-transparent hover:border-slate-300  text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer" />
-  //             : <></>
-  //         }
-
-  //       </div>
-  //     </form>
-  //   )
-  //   const Component  = () => (
-  //     editMode?.value ? 
-  //     <Componentbody/>
-  //     : <div className="add-review max-w-2xl p-6  flex flex-col gap-2 dark:bg-slate-600 bg-slate-200 border dark:border-slate-500 rounded-lg">
-  //         <Componentheader/>
-          
-  //         <Componentbody/>
-  //       </div>
-  //   )
-  //   return (
-  //     <>
-        
-  //         <Tooltip/>
-  //         <Component />
-        
-  //     </>
-      
-  //   )
-  // }
-  const AddReview = ({ editMode }) => {
-    const [ratings, setRatings] = useState({
-      satisfaction: editMode?.value?.quantifiers?.[0]?.value || 'Medium',
-      recommend: editMode?.value?.quantifiers?.[1]?.value || 'Medium',
-      quality: editMode?.value?.quantifiers?.[2]?.value || 'Medium'
-    });
-    const isAuthed = () => (authSessions.length || authSessions?.some(as => as.authStatus !== types.AUTH_EXPIRED || userAuthed))
-
-    const RatingInput = ({ label, name, value }) => {
-      const getStarCount = (rating) => {
-        switch (rating) {
-          case 'Low': return 1;
-          case 'Medium': return 3;
-          case 'High': return 5;
-          default: return 3;
-        }
-      };
-
-      const handleRatingClick = (newRating) => {
-        setRatings(prev => ({
-          ...prev,
-          [name.toLowerCase()]: newRating
-        }));
-      };
-
-      return (
-        <div className="rating-input flex flex-row items-center gap-4">
-          <label className="w-32 text-sm font-medium text-gray-700">{label}</label>
-          <div className="stars flex flex-row gap-1">
-            {['Low', 'Medium', 'High'].map((rating) => (
-              <button
-                key={rating}
-                type="button"
-                onClick={() => handleRatingClick(rating)}
-                className={`flex flex-row items-center gap-1 px-2 py-1 rounded-md ${value === rating
-                    ? 'bg-orange-100 text-orange-700'
-                    : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
-                  }`}
-              >
-                <Stars count={getStarCount(rating)} />
-                <span className="text-sm">{rating}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      );
-    };
-
-    const handlePost = async (e, edit, updateFn) => {
-      e.preventDefault();
-      if (!isAuthed()) return goto("/signin", { state: { ...location } });
-
-      if (!hasOrdered) {
-        const tooltip = document.getElementById("tooltip");
-        tooltip.classList.replace("hidden", "flex");
-        setTimeout(() => {
-          tooltip.classList.replace("flex", "hidden");
-        }, 3000);
-        return;
-      }
-
-      const form = document.forms["review_post"];
-      const formData = new FormData(form);
-
-      const reviewPost = {
-        "product_review": {
-          review: {
-            comment: formData.get("add-review-input"),
-            quantifiers: [
-              {
-                quantifier: "Satisfaction",
-                value: ratings.satisfaction
-              },
-              {
-                quantifier: "Likely to recommend",
-                value: ratings.recommend
-              },
-              {
-                quantifier: "Quality",
-                value: ratings.quality
-              }
-            ]
-          },
-          poster_uuid: authSessions[0].uuid
-        },
-        type: editMode ? editMode.type : "add_review"
-      };
-
-      if (reviewPost.product_review?.review?.comment.length === 0) return;
-
-      if (edit) {
-        updateFn(reviewPost);
-      } else {
-        const { product_review, ...rest } = reviewPost;
-        const initialReviewPost = { product_review: { ...rest, ...product_review } };
-        updateFn({ initialReviewPost, productReviewId, productId });
-      }
-
-      document.getElementById("add-review-input").value = "";
-    };
-
-    const Tooltip = () =>{
-      
-      return(
-        
-        <div id="auth-tooltip" className="tooltip-wrapper max-w-[80%] max-h-[40px]  justify-center flex-wrap whitespace-normal transition-transform ease-linear delay-700">
-          <div id="tooltip" className="tooltip hidden justify-center text-center ">
-            {tags.noReviews.noOrderText}
-          </div>
-        </div>
-      )
+  
+    return () => {
+      // second
     }
-    return (
-      <div className="add-review max-w-2xl p-6 flex flex-col gap-4 dark:bg-slate-600 bg-slate-200 border dark:border-slate-500 rounded-lg">
-
-        <form id="review_post" name="review_post" action="" onSubmit={() => ""} className="flex flex-col gap-3">
-          <div className="ratings-section flex flex-col gap-3">
-
-            <RatingInput
-              label="Satisfaction"
-              name="satisfaction"
-              value={ratings.satisfaction}
-            />
-            <RatingInput
-              label="Recommend"
-              name="recommend"
-              value={ratings.recommend}
-            />
-            <RatingInput
-              label="Quality"
-              name="quality"
-              value={ratings.quality}
-            />
-          </div>
-          <Tooltip/>
-          {editMode?.value ? (
-            <input
-              form="review_post"
-              id="add-review-input"
-              type="text"
-              name="add-review-input"
-              placeholder='Post a review'
-              defaultValue={editMode?.value?.comment || ''}
-              className="p-3 max-w-md border-2 border-slate-400 rounded-lg caret-black text-black"
-            />
-          ) : (
-            <textarea
-              form="review_post"
-              name="add-review-input"
-              id="add-review-input"
-              cols="10"
-              rows="3"
-              placeholder="Post a review"
-              className="p-3 max-w-2xl border-2 border-slate-400 rounded-lg caret-black text-black"
-            />
-          )}
-
-          <div className="update-btns flex flex-row gap-2">
-            <input
-              form="review_post"
-              type="button"
-              onClick={(e) => handlePost(e, editMode?.value, (arg) => editMode?.updateFn(arg) || addReview(arg))}
-              value={editMode?.value ? "Save" : isAuthed() ? "Add Review" : "Sign In"}
-              className="p-1 w-max min-w-[80px] bg-orange-500 rounded-md text-white text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer"
-            />
-            {editMode?.value && (
-              <input
-                form="review_post"
-                type="button"
-                onClick={(e) => { e.preventDefault(); editMode.toggleEditMode(false) }}
-                value="Cancel"
-                className="p-1 w-max min-w-[80px] bg-inherit rounded-md text-slate-300 border border-transparent hover:border-slate-300 text-sm font-raleway lining-nums tabular-nums font-semibold cursor-pointer"
-              />
-            )}
-          </div>
-        </form>
-      </div>
-    );
-  };
+  }, [addError])
+  
   const ReviewImages =({imageArray})=>(
     <div className="review-images-wrapper w-auto max-w-[570px] overflow-clip">
       <div className="review-images w-full max-w-min flex flex-row gap-2 border-b-2 overflow-x-scroll scrollbar">
@@ -329,15 +278,16 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
     </div>
   )
   const MoreActions = ({children}) => {
+    
     const Option = ({children}) => (
-      <div className="more-options-wrapper less-than-sm:absolute  py-1 min-w-max  items-baseline less-than-sm:border rounded-xl shadow-sm text-sm less-than-sm:hidden  less-than-sm:group-hover:flex  less-than-sm:flex-col greater-than-sm:flex greater-than-sm:flex-row less-than-sm:gap-1 gap-2">
+      <div className="more-options-wrapper less-than-sm:absolute left-1 p-[2px] less-than-xs:min-w-max  min-w-[100px] items-baseline less-than-sm:border rounded-xl shadow-sm text-sm less-than-sm:hidden  less-than-sm:group-hover:flex  less-than-sm:flex-col greater-than-sm:flex greater-than-sm:flex-row less-than-sm:gap-1 gap-2 bg-white">
         {children}
         {/* <span>{"Copy to clipboard"}</span> */}
       </div>
     )
     return (
       <div className="more-actions relative py-0 flex flex-col items-center text-xl text-slate-400 font-semibold cursor-pointer group " anchor="actions-anchor">
-        <p className="px-2 aspect-square greater-than-sm:hidden less-than-sm:group-hover:hidden  hover:text-blue-500 ">{"..."}</p>
+        <p className="px-2 aspect-square greater-than-sm:hidden   hover:text-blue-500 ">{"..."}</p>
         <Option >
           {children}
         </Option>
@@ -488,7 +438,7 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
           <span className="comment-title text-slate-400 text-lg">{"Comment"}</span>
           {
             editComment ?
-              <AddReview editMode={editData}  />
+              <AddReview editMode={editData} addReview={addReview} authSessions={authSessions} userAuthed={userAuthed} hasOrdered={hasOrdered} productId={productId} productReviewId={productReviewId} location={location} Stars={Stars} goto={goto}  />
               : <span className="comment-text whitespace-normal text-base">{comment}</span>
           }
 
@@ -512,11 +462,11 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
 
     const handleUpvote = (e) => {
       e.preventDefault()
-      updateReview({ reviewUpdate: { type: "update_review_votes", product_review: { review: { upvotes: 1}, reviewer_uuid:authSessions[0].uuid } }, productId, productReviewId, reviewId: review.uuid })
+      updateReview({ reviewUpdate: { type: "update_review_rating", product_review: { review: { upvotes: 1}, reviewer_uuid:authSessions[0].uuid } }, productId, productReviewId, reviewId: review.uuid })
     }
     const handleDownvote = (e) => {
       e.preventDefault()
-      updateReview({ reviewUpdate: { type: "update_review_votes", product_review: { review: { downvotes: 1 }, reviewer_uuid: authSessions[0].uuid } }, productId, productReviewId, reviewId: review.uuid })
+      updateReview({ reviewUpdate: { type: "update_review_rating", product_review: { review: { downvotes: 1 }, reviewer_uuid: authSessions[0].uuid } }, productId, productReviewId, reviewId: review.uuid })
     }
 
     return (
@@ -573,7 +523,42 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
     )
   }
 
+  const ReviewRanking = ({review}) => {
+    return (
+      <div className="reviewer-ranking  flex flex-col  ">
+        <div className="review-rating-actions w-max flex flex-row items-center greater-than-sm:flex-col greater-than-xs:items-end gap-2">
 
+          <div className="review-rating flex flex-row">
+            <Stars count={review?.reviewRanking} />
+
+          </div>
+          {
+            (userAuthed && (review?.reviewer?.canUpdate === authSessions[0]?.uuid)) ?
+              <MoreActions>
+                <>
+                  <div id={"edit-review" + review?.uuid} className="edit-review flex flex-row items-baseline gap-1 text-slate-400 hover:text-blue-500 text-base">
+                    <p className="less-than-xs:hidden ">{"Edit"}</p>
+                    <EditIco />
+                  </div>
+                  <div id={"delete-review" + review?.uuid} className="delete-review flex flex-row items-baseline gap-1  text-red-600  text-base hover:text-red-500">
+                    <p className="less-than-xs:hidden">{"Delete"}</p>
+                    <DeleteIco size={16} />
+                  </div>
+                </>
+              </MoreActions>
+              : <></>
+          }
+
+          {/* <div className="copy-review flex flex-row items-baseline gap-1">
+                    <CopyIco size={16} />
+                    <p className="less-than-sm:hidden text-slate-400 hover:text-blue-500 text-base ">{"Copy"}</p>
+
+                  </div> */}
+
+        </div>
+      </div>
+    )
+  }
   const Review =({review})=>{
     return (
       <div className="review-component w-full p-2 flex gap-2 justify-between">
@@ -582,38 +567,8 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
            
             <PostCreatorTag posterName={review?.reviewer?.name} avtr_url={review?.reviewer?.avtr_url} postTimestamp={review?.datePosted}/>
             
-            <div className="reviewer-ranking  flex flex-col  ">
-              <div className="review-rating-actions w-max flex flex-col items-end">
-                
-                <div className="review-rating flex flex-row">
-                  <Stars  count={review?.reviewRanking} />
-                
-                </div>
-                  {
-                    (userAuthed && (review?.reviewer?.canUpdate === authSessions[0]?.uuid)) ?
-                    <MoreActions>
-                      <>
-                        <div id={"edit-review" + review?.uuid} className="edit-review flex flex-row items-baseline gap-1 text-slate-400 hover:text-blue-500 text-base">
-                          <EditIco />
-                          <p className="less-than-sm:hidden ">{"Edit"}</p>
-                        </div>
-                        <div id={"delete-review" + review?.uuid} className="delete-review flex flex-row items-baseline gap-1  text-red-600  text-base hover:text-red-500">
-                          <DeleteIco size={16} />
-                          <p className="less-than-sm:hidden">{"Delete"}</p>
-                        </div>
-                      </>
-                    </MoreActions>
-                    : <></>
-                  }
-                  
-                  {/* <div className="copy-review flex flex-row items-baseline gap-1">
-                    <CopyIco size={16} />
-                    <p className="less-than-sm:hidden text-slate-400 hover:text-blue-500 text-base ">{"Copy"}</p>
-
-                  </div> */}
-
-              </div>
-            </div>
+            <ReviewRanking review={review}/>
+            
           </div>
           <div className="review-details w-auto my-2 less-than-xs:ml-0 ml-12 px-2 flex flex-col gap-8">
             <div className="purchase-platform-brief  flex flex-col gap-2 font-raleway lining-nums tabular-nums  font-medium">
@@ -665,7 +620,7 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
 
             </div>
 
-            <AddReview />
+            <AddReview addReview={addReview} authSessions={authSessions} userAuthed={userAuthed} hasOrdered={hasOrdered} productId={productId} productReviewId={productReviewId} location={location} Stars={Stars} goto={goto}  />
           </div>
           <Reviews reviews={prs}/>
         </div>
@@ -684,7 +639,7 @@ const ProductReviews = ({ prs, summary, productId, productReviewId })=>{
       <p className="text-sm font-normal">
         {tags.noReviews.subText}
       </p>
-      <AddReview/>
+      <AddReview addReview={addReview} authSessions={authSessions} userAuthed={userAuthed} hasOrdered={hasOrdered} productId={productId} productReviewId={productReviewId} location={location} Stars={Stars} goto={goto}  />
     </div>
       
   )

@@ -78,7 +78,7 @@ const axiosQuery =
       }
       return { data: (configObject(await result?.data )||{}) }
     } catch (axiosError) {
-      console.log(axiosError)
+      // console.log(axiosError)
       const err = axiosError
       return {
         error: {
@@ -131,7 +131,7 @@ const staggeredBaseQuery = fetchBaseQuery({
 const max = 5
 
 // Add this helper function at the top of your file
-const isAuthorized = () => !!sess.getItem('jwt');
+export const isAuthorized = () => sess?.getItem('jwt') || false;
 
 // Define our single API slice object
 export const apiSlice = createApi({
@@ -143,10 +143,19 @@ export const apiSlice = createApi({
   baseQuery: retry(
     staggeredBaseQuery, 
     {
-      maxRetries:max,
+      // maxRetries:max,
       retryCondition : (error, args, extraArgs) => {
         // console.log("error3", error, args, extraArgs, extraArgs?.baseQueryApi.getState())
-        if( error.status === 401 || error.status === 'FETCH_ERROR'){
+        // define the conditions for not retrying
+        if (error.status === 401 || error.status === 'FETCH_ERROR'){
+          return false
+        }
+        if(extraArgs.attempt > 5  ){
+          extraArgs?.baseQueryApi.abort("endpoint not alive")
+          return false
+
+        }
+        
          
           // console.log("conn", extraArgs?.baseQueryApi.getState().orm.ConnectionRetriesMonitor)
           sess.setItem("connectionRetry", parseInt(sess.getItem("connectionRetry"))+1)
@@ -158,13 +167,11 @@ export const apiSlice = createApi({
               
             })
           )
-          extraArgs?.baseQueryApi.abort("endpoint not alive")
-          if(extraArgs.attempt > 3){
-            return false
+          // console.log("aborting", extraArgs?.attempt)
 
-          }
+          
 
-        }
+        
         return true
       }   
     }
@@ -179,7 +186,7 @@ export const apiSlice = createApi({
         
         url: `/signup`,
         method: 'POST',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         body: initialCred,
         
       }),
@@ -190,7 +197,7 @@ export const apiSlice = createApi({
         method: 'POST',
         body: initialCred,
         // headers: (sess.getItem('jwt')
-        //    ? ""/{"Authorization":  `Bearer ${sess.getItem('jwt')}`} 
+        //    ? ""/{"Authorization":  `Bearer ${sess.getItem('jwt') || ""}`} 
         //    : ""), 
         
       }),
@@ -199,38 +206,44 @@ export const apiSlice = createApi({
       async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
         try {
-          await queryFulfilled;
-          
+          const {data} = await queryFulfilled;
+          // console.log("data", data)
+          // can I get the user here?
+          dispatch(apiSlice.endpoints.getUser.initiate({uuid:data.uuid}, {skip: !isAuthorized()}))
         } catch (errorRes) {
           // console.log(errorRes) 
-          if(errorRes.error.data.error === "nil user") {
+          if(errorRes?.error?.data?.error === "nil user") {
             sess.removeItem('jwt')
           }
         }
       },
-      invalidatesTags: ["UserReviews", "ShoppingCart", "Checkout", "User", "ProfileOverview", "UserSettings"]
+      
+      invalidatesTags: ["UserReviews", "ShoppingCart", "Checkout", "ProfileOverview", "UserSettings"]
     }),
     logoutUser: builder.mutation({
       queryFn: () => axiosQuery({
         url: `/logout`,
         method: 'GET',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
       }),
       async onQueryStarted(arg, { dispatch, queryFulfilled, getState }) {
         try {
           await queryFulfilled;
+          sess.clear()
+          localStorage.clear()
           sess.removeItem('jwt');
+          sess.removeItem('connectionRetry')
+          sess.removeItem('shoppingCartUuid')
           
+          // Reset the entire cache
+          // dispatch(apiSlice.util.resetApiState());
+
           // Clear specific cache entries without refetching
           const tags = ["UserReviews", "ShoppingCart", "Checkout", "User",  "ProfileOverview", "UserSettings"];
-          tags.forEach(tag => {
-            dispatch(apiSlice.util.invalidateTags([tag]));
-          });
-
-          // Reset the entire cache
-          dispatch(apiSlice.util.resetApiState());
+          dispatch(apiSlice.util.invalidateTags(tags));
+          
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
       },
     }),
@@ -255,7 +268,7 @@ export const apiSlice = createApi({
 
 
         } catch (error) {
-          console.log( error)
+          // console.log( error)
         }
       },
       invalidatesTags: ["User", "ProfileOverview", "UserSettings"]
@@ -281,7 +294,7 @@ export const apiSlice = createApi({
 
 
         } catch (error) {
-          console.log( error)
+          // console.log( error)
         }
       },
       invalidatesTags: ["User", "ProfileOverview", "UserSettings"]
@@ -290,20 +303,23 @@ export const apiSlice = createApi({
     
       query: ({uuid}) => ({
         url:'/users/'+uuid,
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
       }),
       transformResponse(res){ return {...[res.data].map(configObject)[0]}},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
+      async onCacheEntryAdded(arg, api){
+        // console.log("cacheEntry:", arg, api)
+      },
       // Add this condition
-      skip: () => !isAuthorized(),
+      // skip: () => !isAuthorized(),
       keepUnusedDataFor: 500000, //5 minutes
       providesTags: ["User"],
     }),
     getUserProfileOverview: builder.query({
       // query: ({uuid}) => `/users/${uuid}/profile_overview`,
-      query: ({uuid}) => ({
-        url:`/users/${uuid}/profile_overview`,
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+      query: ({userUuid}) => ({
+        url:`/users/${userUuid}/profile_overview`,
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
       }),
       async transformResponse(res){
         // console.log("res", res)
@@ -346,23 +362,23 @@ export const apiSlice = createApi({
       },
       providesTags: ["ProfileOverview"],
       // Add this condition
-      skip: () => !isAuthorized(),
+      // skip: () => !isAuthorized(),
     }),
     getUserReviews: builder.query({
-      query: (uuid) => ({
-        url: `/users/${uuid}/reviews`,
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+      query: ({uuid}) => ({
+        url: `/users/${uuid}/user_reviews`,
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
       }),
       transformResponse(res){return res.data?.map(configObject)},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       providesTags: ["UserReviews"],
       // Add this condition
-      skip: () => !isAuthorized(),
+      // skip: () => !isAuthorized(),
     }),
     getUserSettings: builder.query({
       query: (uuid) =>({
         url:`/users/${uuid}/user_settings`,
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
       }),
       transformResponse(res) {
         return configObject(res.data);
@@ -372,13 +388,13 @@ export const apiSlice = createApi({
       },
       providesTags: ["UserSettings"],
       // Add this condition
-      skip: () => !isAuthorized(),
+      // skip: () => !isAuthorized(),
     }),
 
     updateUserSettings: builder.mutation({
       queryFn:({update, uuid}) => ({
         url: `/users/${uuid}/user_settings`,
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         method: 'PUT',
         body: {update},
       }),
@@ -386,12 +402,32 @@ export const apiSlice = createApi({
     }),
     getStores: builder.query({
     
-      query: () => '/stores'
+      query: () => '/stores',
+      transformResponse(res){return res.data?.map(configObject)},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
+      providesTags: (result, error, arg) =>
+        result
+          ? [...result.map(({ uuid }) => ({ type: 'Stores', id: uuid })), 'Stores']
+          : ['Stores'],
     }),
     getStore: builder.query({
     
-      query: (storeId) => `/stores/${storeId}`,
+      query: ({storeId}) => `/stores/${storeId}`,
+      transformResponse(res){return configObject(res.data)},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
+      providesTags: (result, error, arg) =>
+        [{type:'Store', id:'store-'+arg.storeId}]
+         
 
+    }),
+    getStoreProducts: builder.query({
+      query: ({storeId, query}) => `/stores/${storeId}/products${query ? '?' + query : ''}`,
+      transformResponse(res){return res.data?.map(configObject)},
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
+      providesTags: (result, error, arg) =>
+        result
+          ? [...result.map(({ uuid }) => ({ type: 'Store', id: 'store-product-'+uuid })), 'Store']
+          : ['Store'],
     }),
     getProducts: builder.query({
     
@@ -420,7 +456,7 @@ export const apiSlice = createApi({
           
           return;
         } catch (error) {
-          console.log( error)
+          // console.log( error)
         }
       },
       providesTags: (result, error, arg) =>
@@ -444,7 +480,7 @@ export const apiSlice = createApi({
          } 
         
         catch (error) {
-          console.log( error)
+          // console.log( error)
 
          }
         
@@ -462,7 +498,7 @@ export const apiSlice = createApi({
          } 
         
         catch (error) {
-          console.log( error)
+          // console.log( error)
          }
         
       }
@@ -497,7 +533,7 @@ export const apiSlice = createApi({
           // apiSlice.endpoints.getCatalogItem.initiate()
 
         } catch (error) {
-          console.log(error)
+          // console.log(error)
         }
       }
     }),
@@ -517,7 +553,7 @@ export const apiSlice = createApi({
           // console.log(catalogItem)
           dispatch(toggledCategory({uuid:catalogItem.uuid,active:true }))
         } catch (error) {
-          console.log( error)
+          // console.log( error)
         }
       }
     }),
@@ -531,7 +567,7 @@ export const apiSlice = createApi({
     
       query: () => ({
         url:'/shopping_carts',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         
       }),
       transformResponse(res){return configObject(res.data)},
@@ -563,7 +599,7 @@ export const apiSlice = createApi({
          }
           
         } catch (error) {
-          console.log( error)
+          // console.log( error)
         }
       },
 
@@ -572,14 +608,14 @@ export const apiSlice = createApi({
           ? [...result.cartItems.map(({ uuid }) => ({ type: 'ShoppingCart', id: "cart-"+uuid })), 'ShoppingCart']
           : ['ShoppingCart'],
       // Add this condition
-      skip: () => !isAuthorized(),
+      // skip: () => !isAuthorized(),
     }),
 
     getShoppingCartItem: builder.query({
     
       query: (cartId) => ({
         url:`/shopping_carts/${cartId}`,
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         
       }),
       transformResponse(res){return configObject(res.data)},
@@ -594,7 +630,7 @@ export const apiSlice = createApi({
           if(cartItemIds.length > 0){
             return {
               url:`/shopping_carts/${uuid}/begin_checkout?${cartItemIds?.map(id=> `cart_item_ids[]=${id}`).join("&")}`,
-              headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+              headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
               
             }
         }
@@ -603,34 +639,13 @@ export const apiSlice = createApi({
       
       async onCacheEntryAdded(id, { dispatch, getState, extra, requestId, cacheEntryRemoved, cacheDataLoaded, getCacheEntry, updateCachedData }) {
           
-          // console.log(
-          //   "Cache entry added:",
-          //    "id:", id, "\n",
-          //     "requestId:", requestId, "\n",
-          //     "cacheEntryRemoved:", cacheEntryRemoved, "\n",
-          //     "cacheDataLoaded:", cacheDataLoaded, "\n",
-          //     "getCacheEntry:", getCacheEntry, "\n",
-          //     "updateCachedData:", updateCachedData, "\n",
-          //     "extra:", extra, "\n",
-          // )
-          // apiSlice.ut
-          // const data = getCacheEntry(id)
-          // console.log("data", data)
       },
-       async onQueryStarted ({cartId}, {dispatch, queryFulfilled }){
+      async onQueryStarted ({cartId}, {dispatch, queryFulfilled }){
 
         try {
           const {data} = await queryFulfilled;
-          // console.log(
-          //   "\n id:", id,
-          //   "\n data:", data,
-          //   "\n cartIdss:", cartId
-          // )
-          // dispatch(
-          //   apiSlice.util.updateQueryData('getPosts', cartId, (checkout) => data)
-          // )
         } catch (error) {
-          console.log( error)
+          // console.log( error)
         }
       },
       extraOptions:{
@@ -697,7 +712,7 @@ export const apiSlice = createApi({
                 // console.log("p", p)
               })
             }
-            console.log("params", params)
+            // console.log("params", params)
             return params
         }
         const searchParams = buildQueryParams([{query:searchString}, {getFilters}, {filters}, {sort} ])
@@ -714,7 +729,7 @@ export const apiSlice = createApi({
       transformResponse(res){
         if(res?.data){
           const {search_filters, search_results} =res.data.attributes;
-          console.log("res", res.data.attributes)
+          // console.log("res", res.data.attributes)
           return {searchFilters:configObject(search_filters.data), searchResults:configObject(search_results.data)}
         }
       },
@@ -724,7 +739,7 @@ export const apiSlice = createApi({
     
       query: () => ({
         url:'/checkout/history',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         
       }),
       transformResponse(res){return configObject(res.data)},
@@ -736,10 +751,10 @@ export const apiSlice = createApi({
           
           const orderHistory = data; //data?.map(configObject);
           // console.log("itemInCart", itemsInCart)
-         if( orderHistory.length){
+         if(orderHistory.length){
             // orderHistory?.map((item)=>{
             //   const productUuids = []
-            //   console.log("item", item)
+              // console.log("item", item)
             //   item.order_items?.map((i)=>{
             //     productUuids.push(i.id)
             //   })
@@ -761,7 +776,7 @@ export const apiSlice = createApi({
          }
           
         } catch (error) {
-          console.log( error)
+          // console.log( error)
         }
       },
       
@@ -770,13 +785,13 @@ export const apiSlice = createApi({
           ? [...result.map(({uuid})=>({type:'Checkout-history', id:'checkout-'+uuid}))]
           : ['Checkout-history'] ,
       // Add this condition
-      skip: () => !isAuthorized(),
+      // skip: () => !isAuthorized(),
     }),
     getCheckoutItem: builder.query({
     
       query: (orderId) => ({
         url:`/checkout/history/${orderId}`,
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         
 
       }),
@@ -787,15 +802,17 @@ export const apiSlice = createApi({
     
     
     completeItemCheckout: builder.mutation({
-      query: ({initialOrderItem, orderId, cartId}) => ({
-        url: `/checkout/orders/${orderId}/complete_checkout?cart_item_ids=${cartId}`,
+      query: ({initialOrderItem, orderId}) => ({
+        url: `/checkout/${orderId}/complete_checkout`,
         method: 'POST',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
-        body: initialOrderItem,
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
+        body: {order:{...initialOrderItem}},
         
       }),
-      // transformResponse(res){return configObject(res.data)},
-      // transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
+      transformResponse(res){
+        return configObject(res.data)
+      },
+      transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       // async onQueryStarted (arg, { dispatch, queryFulfilled }){
 
       //   try {
@@ -809,10 +826,10 @@ export const apiSlice = createApi({
       //     //   ItemStatus: itemInCart.item_status
       //     // }))
       //   } catch (error) {
-      //     console.log(error)
+          // console.log(error)
       //   }
       // },
-      invalidatesTags: ['ShoppingCart','Checkout']
+      invalidatesTags: ['ShoppingCart','Checkout-history']
 
     }),
     
@@ -820,7 +837,7 @@ export const apiSlice = createApi({
       query: ({initialCartItem}) => ({
         url: `/shopping_carts/${sessionStorage.getItem("shoppingCartUuid")}`,
         method: 'POST',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         body: {shopping_cart:{
           id:sessionStorage.getItem("shoppingCartUuid"), 
           ...initialCartItem}
@@ -829,25 +846,38 @@ export const apiSlice = createApi({
       }),
       transformResponse(res){return configObject(res.data)},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
-      async onQueryStarted (arg, { dispatch, queryFulfilled }){
+      async onQueryStarted ({}, { dispatch, queryFulfilled, getState }){
 
          try {
+        
           const { data: newCartItem } = await queryFulfilled;
-          dispatch(
-            apiSlice.util.updateQueryData('getShoppingCart', { cartId: sessionStorage.getItem("shoppingCartUuid") }, (draft) => {
+          const tags = ["ShoppingCart"]
+          
+          const toBeUpdated = apiSlice.util.selectInvalidatedBy(getState(), tags)
+
+          
+          // optimistically select the tags that would be invalidated
+          // update rather than invalidate
+          toBeUpdated.forEach(tag=>{
+            const {endpointName, originalArgs, queryCacheKey} = tag
+            dispatch(apiSlice.util.updateQueryData(endpointName, originalArgs, (draft)=>{
+              const indexToRemove = draft.cartItems.findIndex((ci) => ci.product.priceVariation.oldPrice === newCartItem.product.priceVariation.oldPrice) 
+              if (indexToRemove !== -1){
+                draft.cartItems.splice(indexToRemove, 1)
+              }
               draft.cartItems.unshift(newCartItem);
-            })
-          );
+            }))
+          })
         } catch {
           // If the mutation fails, the update will be automatically rolled back
         }
       },
-      invalidatesTags: ['ShoppingCart']
+      // invalidatesTags: ['ShoppingCart']
     }),
     updateCartItem: builder.mutation({
      query: ({itemUpdate,cartId}) => ({
         url:`/shopping_carts/${sessionStorage.getItem("shoppingCartUuid")}/cart_items/${cartId}`,
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         method:"PUT",
         body:{shopping_cart:{update:{...itemUpdate}}}
         
@@ -856,43 +886,55 @@ export const apiSlice = createApi({
         return configObject(res.data)
       },
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
-      async onQueryStarted (arg, { dispatch, queryFulfilled }){
+      async onQueryStarted ({cartId, itemUpdate}, { dispatch, queryFulfilled, getState }){
        
         try {
           const {data} = await queryFulfilled;
+          const tags = [{ type: 'ShoppingCart', id: `cart-${cartId}` }]
+          const toBeUpdated = apiSlice.util.selectInvalidatedBy(getState(),tags)
+
+          // console.log(itemUpdate,"toBeUpdated", toBeUpdated);
           
-          const updatedItem = data; //configObject(data);
-          console.log(updatedItem)
-            dispatch(updatedCartItem({serializedProduct:JSON.stringify(updatedItem.product), uuid:updatedItem.uuid, itemCount:updatedItem.itemCount, itemStatus:updatedItem.itemStatus, shoppingCartUuid:updatedItem.shoppingCartUuid}))
+          // toBeUpdated.forEach(tag=>{
+            const {endpointName, originalArgs, queryCacheKey} = toBeUpdated[0]
+            dispatch(apiSlice.util.updateQueryData(endpointName, originalArgs, (draft)=>{
+                draft.cartItems.find(item=>item.uuid === cartId).itemCount = itemUpdate.item_count
+            }))
         } catch (error) {
-          console.log( error)
+          // console.log( error)
         }
 
       },
-      invalidatesTags:  (result, error, arg) =>([{ type: 'ShoppingCart', id: "cart-"+arg.cartId }]),
+      // invalidatesTags:  (result, error, arg) =>([{ type: 'ShoppingCart', id: "cart-"+arg.cartId }]),
     }),
     removeCartItem: builder.mutation({
       query: ({cartId}) => ({
         url: `/shopping_carts/${sessionStorage.getItem("shoppingCartUuid")}/cart_items/${cartId}`,
         method: 'DELETE',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         
       }),
       // transformResponse(res){
       //   return configObject(res.data)
       // },
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
-      async onQueryStarted (arg, { dispatch, queryFulfilled }){
+      async onQueryStarted (arg, { dispatch, queryFulfilled, getState }){
 
         try {
           await queryFulfilled;
           // console.log('ars', arg)
           // const itemInCart = data; //configObject(data);
-          dispatch(removedCartItem({
-            uuid:arg.cartId,
-          }))
+          const tags = ["ShoppingCart"]
+          const toBeUpdated = apiSlice.util.selectInvalidatedBy(getState(), tags)
+         
+
+          // toBeUpdated.forEach(tag=>{
+            const {endpointName, originalArgs, queryCacheKey} = toBeUpdated[0]
+            dispatch(apiSlice.util.updateQueryData(endpointName, originalArgs, (draft)=>{
+              draft.cartItems = draft.cartItems.filter(item => item.uuid !== arg.cartId);
+            }))
         } catch (error) {
-          console.log(error)
+          // console.log(error)
         }
       },
       invalidatesTags: (result, error, arg) => ([{ type: 'ShoppingCart', id: "cart-"+arg.cartId }]),
@@ -913,7 +955,7 @@ export const apiSlice = createApi({
           //   uuid:arg.cartId,
           // }))
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
       },
       
@@ -922,7 +964,7 @@ export const apiSlice = createApi({
         
         // console.log("result", result);
         
-          const { reviews, questionAndAnswers } = result;
+        const { reviews, questionAndAnswers } = result;
         const tags = [{ type: 'ProductReviews', id: arg.productId }];
 
         // Add tags for individual reviews
@@ -959,25 +1001,33 @@ export const apiSlice = createApi({
       query: ({initialReview, productId, productReviewId}) => ({
         url: `/products/${productId}/product-reviews/${productReviewId}/reviews`,
         method: 'POST',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         body: initialReview,
         
       }),
       transformResponse(res){return configObject(res.data)},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       // Invalidate the product reviews collection for this product
-      invalidatesTags: (result, error, arg) => [
-        { type: 'ProductReviews', id: arg.productId }
-      ],
+      // invalidatesTags: (result, error, arg) => [
+      //   { type: 'ProductReviews', id: arg.productId }
+      // ],
       // Optionally, you can use onQueryStarted to optimistically update the cache
-      async onQueryStarted({ productId, initialReview }, { dispatch, queryFulfilled }) {
+      async onQueryStarted({ productId, initialReview }, { dispatch, queryFulfilled, getState }) {
         try {
-          const { data: newReview } = await queryFulfilled;
-          dispatch(
-            apiSlice.util.updateQueryData('getProductReviews', { productId }, (draft) => {
+          const {data:newReview} = await queryFulfilled;
+          const tags = [{ type: 'ProductReviews', id: productId }]
+          
+          const toBeUpdated = apiSlice.util.selectInvalidatedBy(getState(), tags)
+
+          
+          // optimistically select the tags that would be invalidated
+          // update rather than invalidate
+          toBeUpdated.forEach(tag=>{
+            const {endpointName, originalArgs, queryCacheKey} = tag
+            dispatch(apiSlice.util.updateQueryData(endpointName, originalArgs, (draft)=>{
               draft.reviews.unshift(newReview);
-            })
-          );
+            }))
+          })
         } catch {
           // If the mutation fails, the update will be automatically rolled back
         }
@@ -986,7 +1036,7 @@ export const apiSlice = createApi({
     updateReview: builder.mutation({
      query: ({reviewUpdate,productId, productReviewId, reviewId}) => ({
         url:`/products/${productId}/product-reviews/${productReviewId}/reviews/${reviewId}`,
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         method:"PUT",
         body:reviewUpdate
         
@@ -997,28 +1047,57 @@ export const apiSlice = createApi({
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
       invalidatesTags: (result, error, arg) => [
         { type: 'ProductReviews', id: `review-${arg.reviewId}` }
-      ]
-      // invalidatesTags: ['ShoppingCart']
+      ],
+      async onQueryStarted({ productId, reviewId, reviewUpdate }, { dispatch, queryFulfilled, getState }) {
+        try {
+          const {data} = await queryFulfilled;
+          // update the question in the cache
+          const tags = [{ type: 'ProductReviews', id: `review-${reviewId}` }]
+          const toBeUpdated = apiSlice.util.selectInvalidatedBy(tags)
+          const {review, type} = reviewUpdate.product_review
+          const [action, target, value] = type.split("_")
+          const [attribute] = Object.keys(review)
+
+
+          // toBeUpdated.forEach(tag=>{
+            const {endpointName, originalArgs, queryCacheKey} = toBeUpdated[0]
+            dispatch(apiSlice.util.updateQueryData(endpointName, originalArgs, (draft)=>{
+              draft.reviews.find(review=>review.uuid === reviewId).attributes = data.attributes
+            }))
+        } catch {
+          // If the mutation fails, the update will be automatically rolled back
+        }
+      }
     }),
     removeReview: builder.mutation({
       query: ({productId, productReviewId, reviewId}) => ({
         url: `/products/${productId}/product-reviews/${productReviewId}/reviews/${reviewId}`,
         method: 'DELETE',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         
       }),
       // transformResponse(res){
       //   return configObject(res.data)
       // },
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
-      async onQueryStarted (arg, { dispatch, queryFulfilled }){
+      async onQueryStarted ({ productId, reviewId }, { dispatch, queryFulfilled, getState }){
 
         try {
           await queryFulfilled;
-          // remove the review from the cache
-          dispatch(apiSlice.util.selectInvalidatedBy(['ProductReviews', `review-${arg.reviewId}`]));
+          // remove the question from the cache and replace it with the data returned
+          // const {data} = await queryFulfilled;
+          // update the question in the cache
+          const tags = [{ type: 'ProductReviews', id: `review-${reviewId}` }]
+          const toBeUpdated = apiSlice.util.selectInvalidatedBy(tags)
+         
+
+          // toBeUpdated.forEach(tag=>{
+            const {endpointName, originalArgs, queryCacheKey} = toBeUpdated[0]
+            dispatch(apiSlice.util.updateQueryData(endpointName, originalArgs, (draft)=>{
+              draft.reviews = draft.reviews.filter(review => review.uuid !== reviewId);
+            }))
         } catch (error) {
-          console.log(error)
+          // console.log(error)
         }
       },
       invalidatesTags: (result, error, arg) => [
@@ -1030,25 +1109,43 @@ export const apiSlice = createApi({
       query: ({initialPost, productId, productReviewId}) => ({
         url: `/products/${productId}/product-reviews/${productReviewId}/qandas`,
         method: 'POST',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         body: initialPost,
         
       }),
       transformResponse(res){return configObject(res.data)},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
-      invalidatesTags: (result, error, arg) => {console.log("result", result); return [
-        { type: 'ProductReviews', id: `qa-${result.questionAndAnswer.uuid}` },
+      // this returns a new questionAnswerId, so we need to add that to the cache
 
-        // { type: 'ProductReviews', id: arg.productId }
-      ]},
-      async onQueryStarted({ productId, initialPost }, { dispatch, queryFulfilled }) {
+
+      // invalidatesTags: (result, error, arg) => {console.log("result", result); return [
+      //   { type: 'ProductReviews', id: `qa-${result.questionAnswerId}` },
+
+      //   // { type: 'ProductReviews', id: arg.productId }
+      // ]},
+      // invalidatesTags: (result, error, arg) => [
+      //   { type: 'ProductReviews', id: arg.productId }
+      // ],
+      async onQueryStarted({ productId, initialPost }, { dispatch, queryFulfilled, getState }) {
         try {
-          const { data: newQA } = await queryFulfilled;
-          dispatch(
-            apiSlice.util.updateQueryData('getProductReviews', { productId }, (draft) => {
-              draft.questions_and_answers.unshift(newQA);
-            })
-          );
+          
+          const tags = [{ type: 'ProductReviews', id: productId }]
+          
+          const toBeUpdated = apiSlice.util.selectInvalidatedBy(getState(), tags)
+
+          const { data: newQA, error } = await queryFulfilled;
+          
+          // optimistically select the tags that would be invalidated
+          // update rather than invalidate
+          toBeUpdated.forEach(tag=>{
+            const {endpointName, originalArgs, queryCacheKey} = tag
+            dispatch(apiSlice.util.updateQueryData(endpointName, originalArgs, (draft)=>{
+              draft.questionAndAnswers.unshift(newQA);
+            }))
+          })
+          // provide the new tags on productReview
+          // add the tags for the newQA
+          // dispatch(apiSlice.util.selectInvalidatedBy(['ProductReviews', `qa-${newQA.questionAnswerId}`]));
         } catch {
           // If the mutation fails, the update will be automatically rolled back
         }
@@ -1058,7 +1155,7 @@ export const apiSlice = createApi({
     updateQuestion: builder.mutation({
      query: ({postUpdate,productId, productReviewId, questionAnswerId, questionId}) => ({
         url:`/products/${productId}/product-reviews/${productReviewId}/qandas/${questionAnswerId}/question/${questionId}`,
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         method:"PUT",
         body:postUpdate
         
@@ -1067,27 +1164,61 @@ export const apiSlice = createApi({
         return configObject(res.data)
       },
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
-      invalidatesTags: (result, error, arg) => [
-        { type: 'ProductReviews', id: `question-${arg.questionId}` }
-      ]
+      // invalidatesTags: (result, error, arg) => [
+      //   { type: 'ProductReviews', id: `question-${arg.questionId}` }
+      // ]
+      // do an optimistic update of the question in the cache
+      async onQueryStarted({ productId, questionAnswerId,questionId, postUpdate }, { dispatch, queryFulfilled, getState }) {
+        try {
+          const {data} = await queryFulfilled;
+          // update the question in the cache
+          const tags = [{ type: 'ProductReviews', id: `question-${questionId}` }]
+          const toBeUpdated = apiSlice.util.selectInvalidatedBy(tags)
+          const {question, type} = postUpdate.product_review
+          const [action, target, value] = type.split("_")
+          const [attribute] = Object.keys(question)
+
+
+          // toBeUpdated.forEach(tag=>{
+            const {endpointName, originalArgs, queryCacheKey} = toBeUpdated[0]
+            dispatch(apiSlice.util.updateQueryData(endpointName, originalArgs, (draft)=>{
+              draft.questionAndAnswers.find(qa => qa.uuid === questionAnswerId).question[value][attribute] = data[value][attribute];
+            }))
+          // })
+        } catch {
+          // If the mutation fails, the update will be automatically rolled back
+        }
+      }
     }),
     removeQuestion: builder.mutation({
       query: ({productId, productReviewId, questionAnswerId, questionId}) => ({
         url: `/products/${productId}/product-reviews/${productReviewId}/qandas/${questionAnswerId}/question/${questionId}`,
         method: 'DELETE',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         
       }),
       // transformResponse(res){
       //   return configObject(res.data)
       // },
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
-      async onQueryStarted (arg, { dispatch, queryFulfilled }){
+      async onQueryStarted ({ productId, questionAnswerId,questionId }, { dispatch, queryFulfilled, getState }){
 
         try {
           await queryFulfilled;
           // remove the question from the cache and replace it with the data returned
-          dispatch(apiSlice.util.selectInvalidatedBy(['ProductReviews', `qa-${arg.questionAnswerId}`]));
+          // const {data} = await queryFulfilled;
+          // update the question in the cache
+          const tags = [{ type: 'ProductReviews', id: `question-${questionId}` }]
+          const toBeUpdated = apiSlice.util.selectInvalidatedBy(tags)
+         
+
+          // toBeUpdated.forEach(tag=>{
+            const {endpointName, originalArgs, queryCacheKey} = toBeUpdated[0]
+            dispatch(apiSlice.util.updateQueryData(endpointName, originalArgs, (draft)=>{
+              draft.questionAndAnswers = draft.questionAndAnswers.filter(qa => qa.uuid !== questionAnswerId);
+            }))
+          // })
+          // dispatch(apiSlice.util.selectInvalidatedBy(['ProductReviews', `qa-${questionAnswerId}`]));
           // update the question_answer to readOnly
           // dispatch(apiSlice.util.updateQueryData('getProductReviews', { productId: arg.productId }, (draft) => {
           //   const questionAnswer = draft.questions_and_answers.find(qa => qa.uuid === arg.questionAnswerId);
@@ -1096,7 +1227,7 @@ export const apiSlice = createApi({
           //   }
           // }));
         } catch (error) {
-          console.log(error)
+          // console.log(error)
         }
       },
       invalidatesTags: (result, error, arg) => [
@@ -1108,28 +1239,32 @@ export const apiSlice = createApi({
       query: ({initialPost, productId, productReviewId,questionAnswerId}) => ({
         url: `/products/${productId}/product-reviews/${productReviewId}/qandas/${questionAnswerId}/answers`,
         method: 'POST',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         body: initialPost,
         
       }),
       transformResponse(res){return configObject(res.data)},
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
-      invalidatesTags: (result, error, arg) => [
-        { type: 'ProductReviews', id: `qa-${arg.questionAnswerId}` }
-      ],
-      async onQueryStarted({ productId, questionAnswerId, initialPost }, { dispatch, queryFulfilled }) {
+      // invalidatesTags: (result, error, arg) => [
+      //   { type: 'ProductReviews', id: `qa-${arg.questionAnswerId}` }
+      // ],
+      async onQueryStarted({ productId, questionAnswerId, initialPost }, { dispatch, queryFulfilled, getState }) {
         try {
-          const { data: newAnswer } = await queryFulfilled;
-          dispatch(
-            apiSlice.util.updateQueryData('getProductReviews', { productId }, (draft) => {
-              const qa = draft.questions_and_answers.find(
-                qa => qa.uuid === questionAnswerId
-              );
-              if (qa) {
-                qa.question.answers.push(newAnswer);
-              }
-            })
-          );
+          const {data:newAnswer} = await queryFulfilled;
+          const tags = [{ type: 'ProductReviews', id: `qa-${questionAnswerId}` }]
+          
+          const toBeUpdated = apiSlice.util.selectInvalidatedBy(getState(), tags)
+
+          // optimistically select the tags that would be invalidated
+          // update rather than invalidate
+          const {endpointName, originalArgs, queryCacheKey} = toBeUpdated[0]
+          // toBeUpdated.forEach(tag=>{
+          dispatch(apiSlice.util.updateQueryData(endpointName, originalArgs, (draft)=>{
+            const qa = draft.questionAndAnswers.find(qa => qa.uuid === questionAnswerId);
+            if (qa) {
+              qa.question.answers.push(newAnswer);
+            }
+          }));
         } catch {
           // If the mutation fails, the update will be automatically rolled back
         }
@@ -1138,7 +1273,7 @@ export const apiSlice = createApi({
     updateAnswer: builder.mutation({
      query: ({postUpdate,productId, productReviewId, questionAnswerId, answerId}) => ({
         url:`/products/${productId}/product-reviews/${productReviewId}/qandas/${questionAnswerId}/answers/${answerId}`,
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         method:"PUT",
         body:postUpdate
         
@@ -1147,34 +1282,56 @@ export const apiSlice = createApi({
         return configObject(res.data)
       },
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
-      invalidatesTags: (result, error, arg) => [
-        { type: 'ProductReviews', id: `answer-${arg.answerId}` }
-      ]
+      // invalidatesTags: (result, error, arg) => [
+      //   { type: 'ProductReviews', id: `answer-${arg.answerId}` }
+      // ]
+      async onQueryStarted({ productId, questionAnswerId, answerId, postUpdate }, { dispatch, queryFulfilled, getState }) {
+        try {
+          const {data} = await queryFulfilled;
+          const tags = [{ type: 'ProductReviews', id: `answer-${answerId}` }]
+          const toBeUpdated = apiSlice.util.selectInvalidatedBy(tags)
+          const {answer, type} = postUpdate.product_review
+          const [action, target, value] = type.split("_")
+          const [attribute] = Object.keys(answer)
+
+          const {endpointName, originalArgs, queryCacheKey} = toBeUpdated[0]
+          dispatch(apiSlice.util.updateQueryData(endpointName, originalArgs, (draft)=>{
+            draft.questionAndAnswers.find(qa => qa.uuid === questionAnswerId).question.answers.find(answer => answer.uuid === answerId)[value][attribute] = data[value][attribute];
+          }));
+        } catch {
+          // If the mutation fails, the update will be automatically rolled back
+        }
+      }
     }),
     removeAnswer: builder.mutation({
       query: ({productId, productReviewId, questionAnswerId, answerId}) => ({
         url: `/products/${productId}/product-reviews/${productReviewId}/qandas/${questionAnswerId}/answers/${answerId}`,
         method: 'DELETE',
-        headers: {"Authorization": `Bearer ${sess.getItem('jwt')}`},
+        headers: {"Authorization": `Bearer ${sess.getItem('jwt') || ""}`},
         
       }),
       // transformResponse(res){
       //   return configObject(res.data)
       // },
       transformErrorResponse(err){return err ? err.data?.errors : "unknown error"},
-      async onQueryStarted (arg, { dispatch, queryFulfilled }){
+      async onQueryStarted ({ productId, questionAnswerId, answerId }, { dispatch, queryFulfilled, getState }){
 
         try {
           await queryFulfilled;
           // remove the answer from the cache
-          dispatch(apiSlice.util.selectInvalidatedBy(['ProductReviews', `answer-${arg.answerId}`]));
+          const tags = [{ type: 'ProductReviews', id: `answer-${answerId}` }]
+          const toBeUpdated = apiSlice.util.selectInvalidatedBy(tags)
+          const {endpointName, originalArgs, queryCacheKey} = toBeUpdated[0]
+          dispatch(apiSlice.util.updateQueryData(endpointName, originalArgs, (draft)=>{
+            draft.questionAndAnswers.find(qa => qa.uuid === questionAnswerId).question.answers = draft.questionAndAnswers.find(qa => qa.uuid === questionAnswerId).question.answers.filter(answer => answer.uuid !== answerId);
+          }));
         } catch (error) {
-          console.log(error)
+          // console.log(error)
         }
       },
-      invalidatesTags: (result, error, arg) => [
-        { type: 'ProductReviews', id: `answer-${arg.answerId}` }
-      ]
+      // invalidatesTags: (result, error, arg) => [
+      //   { type: 'ProductReviews', id: `answer-${arg.answerId}` }
+      // ]
     })
 
   }),
@@ -1196,11 +1353,15 @@ export const {
    useLazyGetUserProfileOverviewQuery,
    useGetUserSettingsQuery,
    useLazyGetUserSettingsQuery,
+   useGetUserReviewsQuery,
+   useLazyGetUserReviewsQuery,
    useUpdateUserSettingsMutation,
    useGetStoresQuery,
    useLazyGetStoresQuery,
    useGetStoreQuery,
    useLazyGetStoreQuery,
+   useGetStoreProductsQuery,
+   useLazyGetStoreProductsQuery,
    useGetProductsQuery,
    useLazyGetProductsQuery,
    useGetPopularSearchesQuery,

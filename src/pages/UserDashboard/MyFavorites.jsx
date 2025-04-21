@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { LoadingStateComponent } from '../../components';
+import { authenticatedUsersV2, filteredProductsFromModelV2 } from '../../orm/selectors';
+import { useSelector } from 'react-redux';
 
 const MyFavorites = () => {
   const [favorites, setFavorites] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  
+  const products = useSelector(filteredProductsFromModelV2()).slice(0, 4).map(prd => ({ id: prd.uuid, name: prd.name, price: prd.oldPrice }));
   useEffect(() => {
     // Simulating an API call
     setTimeout(() => {
-      setFavorites([
-        { id: 1, name: 'Product 1', price: 19.99 },
-        { id: 2, name: 'Product 2', price: 29.99 },
-        { id: 3, name: 'Product 3', price: 39.99 },
-      ]);
+      setFavorites(products);
       setIsLoading(false);
     }, 1000);
   }, []);

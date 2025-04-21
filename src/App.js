@@ -4,7 +4,7 @@ import React,{lazy} from 'react';
 import {Routes, Route, BrowserRouter } from "react-router-dom";
 import AppWrapper from './components/AppWrapper';
 import { Login, ResetPassword } from './components';
-import { PrivateRoute } from './pages';
+import { PrivateRoute, Store } from './pages';
 import Signup from './components/forms/Signup';
 
 // BrowserRouter
@@ -47,6 +47,7 @@ function App() {
         <Route path="/me/*" exact element={
           <PrivateRoute component={Dashboard} />
         } />
+        <Route path="/store/:id" exact element={<Store />} />
         <Route path="/signup" exact element={<Signup /> } /> 
         <Route path="/signin" exact element={<Login /> } /> 
         <Route path="/reset-password" exact element={<ResetPassword />}/>

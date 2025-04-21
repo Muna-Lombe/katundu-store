@@ -1,5 +1,5 @@
 import moment from "moment"
-import { apiSlice } from "../js/middleware/queryHandler"
+import { apiSlice, isAuthorized } from "../js/middleware/queryHandler"
 import { Sha256 } from "@aws-crypto/sha256-browser"
 
 
@@ -282,8 +282,8 @@ export const returnOnReload =  ()=>{
   let data = window.performance.getEntriesByType("navigation")
   console.log(data)
 }
-export const preloadCartItems = apiSlice.endpoints.getShoppingCart.initiate
-export const preloadOrderHistory = apiSlice.endpoints.getCheckout.initiate
+export const preloadCartItems = ()=>apiSlice.endpoints.getShoppingCart.initiate(undefined, {skip: !isAuthorized()})
+export const preloadOrderHistory = ()=>apiSlice.endpoints.getCheckout.initiate(undefined, {skip: !isAuthorized()})
 export const preloadGetUser =(uuid)=> ()=> { 
     console.log("preloadGetUser", uuid)
     return apiSlice.endpoints.getUser.initiate({uuid:uuid})

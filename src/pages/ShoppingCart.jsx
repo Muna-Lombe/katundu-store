@@ -21,6 +21,8 @@ const ShoppingCart = () => {
   
     const unOrderedItems = useSelector(getUnorderedCartItemsV2);
     const orderedItems = useSelector(getOrderedCartItemsV2);
+    // console.log("orderedItems", orderedItems)
+    // console.log("unOrderedItems", unOrderedItems)
     const useVariable = (initialValue) => {
       const ref = useRef(initialValue);
       const get = useCallback(() => ref.current, []);

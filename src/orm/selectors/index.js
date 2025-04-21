@@ -9,25 +9,36 @@ import Store from "../../js/store";
 import { configObject, momentDate } from "../../utilities";
 import { updatedAuth } from "../models/AuthModel";
 import { createSelector as createApiSelector } from '@reduxjs/toolkit';
+import { apiSlice } from "../../js/middleware/queryHandler";
 // console.log(session, orm)
 
-const ormSelector = state => state
-const apiSelector = state => {
-  console.log("api", state)
+const ormStateSelector = state => state
+const apiStateSelector = state => {
+  // console.log("api", state)
  return state.api
 }
 const dispatch = Store.dispatch
 
+  
 
 export const authenticatedUsersV2 = createApiSelector(
-  apiSelector,
-  (api)=> {
-      // console.log("api", Object.keys(api.queries))
-    return [{...api.queries.getUser?.data, authStatus:types.AUTH_VALID}] || []
+  apiStateSelector,
+  (state) => {
+    const userQueries = Object.entries(state.api.queries)
+      .find(([key, value]) => key.startsWith('getUser({\"uuid\":') && value.status === 'fulfilled');
+    return userQueries ? userQueries[1].data : null;
+  },
+  (api, userData) => {
+    // console.log("userData", userData)
+    if (userData) {
+      return [{...userData, authStatus: types.AUTH_VALID, timeCreated: new Date()}];
+    }
+    return [];
   }
 )
+
 export const authenticatedUsers = createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   (state )=> {
     const authObject = state.Auth
       .all()
@@ -39,14 +50,16 @@ export const authenticatedUsers = createOrmSelector(
 )
 
 export const isAuthedUserV2 = (id) => createApiSelector(
-  apiSelector,
-  authenticatedUsers,
+  apiStateSelector,
+  authenticatedUsersV2,
   (api, auths) => {
-    return auths?.some(u=> u?.uuid === id )
+    
+    return auths?.some(u=> u?.uuid === id && u?.authStatus === types.AUTH_VALID)
   }
 )
+
 export const isAuthedUser = (id) => createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   authenticatedUsers,
   (state,auths) => {
     if(!auths.length) return false
@@ -63,18 +76,19 @@ export const isAuthedUser = (id) => createOrmSelector(
   }
 ) 
 export const categoriesV2 = createApiSelector(
-  apiSelector,
-  (api)=> {
-    const catalog = api.queries.getCatalog.data
+  apiStateSelector,
+  apiSlice.endpoints.getCatalog.select(),
+  (api,catalogSelector)=> {
+    const catalog = catalogSelector.data
                             ?.map((d, x)=>({...d, attributes:{...d.attributes, active:x===0}}))
-                            ?.map(configObject);
+                            ;
     catalog[0].active = true;
     return catalog
   }
 )
 
 export const categories=  createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   state => {
     const catObject = state.ProductCategory
     .all()
@@ -87,14 +101,14 @@ export const categories=  createOrmSelector(
 )
 
 export const filteredListingsFromModelV2 = (ex)=> createApiSelector(
-  apiSelector,
+  apiStateSelector,
   categoriesV2,
   (api, categories)=>{ 
     return (ex.length ? categories.filter(el=> !ex.some((e)=> e=== el.uuid)) :  categories)
   }
 )
 export const filteredListingsFromModel = (ex)=> createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   state => {
    
     // console.log("running categories selector", )
@@ -106,21 +120,22 @@ export const filteredListingsFromModel = (ex)=> createOrmSelector(
   }
 )
 export const toastMessage = createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   state =>{
     const messages = state.ToastMessage.filter((obj)=> obj.status !== types.TOAST_EXPIRED).toRefArray()
     return messages
   }
 )
 export const filteredProductsFromModelV2 = (ex)=> createApiSelector(
-  apiSelector,
-  (api)=>{
-    return api.queries.getProducts.data?.map(configObject)
+  apiStateSelector,
+  apiSlice.endpoints.getProducts.select(),
+  (api,productsSelector)=>{
+    return productsSelector.data || []
   }
 )
 
 export const filteredProductsFromModel = (ex)=> createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   state => {
     
     // console.log("catis", ex)
@@ -132,25 +147,26 @@ export const filteredProductsFromModel = (ex)=> createOrmSelector(
 
 export const useGetName=(model, id)=>{
   const name = createOrmSelector(
-    ormSelector(session.schema),
+    ormStateSelector(session.schema),
     (state)=> state[model]?.withId(id)?.ref.name 
   )
   return useSelector(name)
 }
 
     // export const checkouts = createSelector(
-    //   ormSelector(session.schema),
+    //   ormStateSelector(session.schema),
     //   (state) =>{
     //     return state.Checkout.all().toRefArray()
     //   }
     // )
 export const productsMatchingSearchV2 =(searchTextArr)=> createApiSelector(
-  apiSelector,
-  (api)=> api.queries.getProducts.data?.map(configObject).filter(p=> searchTextArr.some(t=> p.name.includes(t)))
+  apiStateSelector,
+  apiSlice.endpoints.getProducts.select(),
+  (api,productsSelector)=> productsSelector.data.filter(p=> searchTextArr.some(t=> p.name.includes(t)))
 )
 
 export const productsMatchingSearch =(searchTextArr)=> createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   filteredProductsFromModel([]),
   (state,products)=> {
     
@@ -160,12 +176,13 @@ export const productsMatchingSearch =(searchTextArr)=> createOrmSelector(
 )
 
 export const filteredOrdersFromModelV2 =()=> createApiSelector(
-  apiSelector,
-  (api)=> api.queries.getCheckout.data?.map(configObject)
+  apiStateSelector,
+  apiSlice.endpoints.getCheckout.select(undefined),
+  (api,checkoutSelector)=> checkoutSelector.data
 )
 
 export const filteredOrdersFromModel =()=>  createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   (state) => {
     return state.Order.all().toRefArray()
     
@@ -173,7 +190,7 @@ export const filteredOrdersFromModel =()=>  createOrmSelector(
 )
 
 export const orderedByUser =(productUuid)=>  createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   filteredOrdersFromModel(),
   (state, orders) => {
     
@@ -182,7 +199,7 @@ export const orderedByUser =(productUuid)=>  createOrmSelector(
 )
 
 export const getNextId = (model)=> createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   (state)=> state[model].all().toRefArray().length+1
 )
 // Helper functions for cart filtering and sorting
@@ -201,7 +218,9 @@ const filterByStore = (cartItems) => {
 
 const sortByOrderStatus = (cartItems, orderStatuses) => {
   const matchingStatus = (item) => {
-    return orderStatuses.some(status => status.includes(item.itemStatus.toString()));
+    // console.log( item.itemStatus,"item", orderStatuses)
+    return orderStatuses.includes(item.itemStatus)
+    // return orderStatuses.some(status => status.includes(item.itemStatus.toString()));
   };
   
   const filterByStatus = ([k, v]) => {
@@ -230,7 +249,7 @@ const addTotalCost = (store) => {
 
 
 export const filteredCartItemsFromModelV1 = () => createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   filteredProductsFromModel([]),
   (state, products) => {
 
@@ -258,7 +277,7 @@ export const filteredCartItemsFromModelV1 = () => createOrmSelector(
 
     
 export const filteredCartItemsFromModelV2 = () => createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   filteredProductsFromModel([]),
   (state, products) => {
 
@@ -286,12 +305,33 @@ export const filteredCartItemsFromModelV2 = () => createOrmSelector(
 )
 
 export const filteredCartItemsFromModelV3 = () => createApiSelector(
-  apiSelector,
-  (api)=> api.queries.getCheckout.data?.map(configObject)
+  apiStateSelector,
+  apiSlice.endpoints.getShoppingCart.select(),
+  (api,shoppingCartSelector)=> {
+    const {cartItems} = shoppingCartSelector.data
+    const makeProd = (product, priceVar) => {
+      if (!product) return null
+      // console.log("prod", prod)
+      
+      return { uuid: product.uuid, name: product.name, store: {name:product.store.name}, price: priceVar.discountTag ? priceVar.newPrice : priceVar.oldPrice, discountTag: priceVar.discountTag }
+    }
+    
+
+    const CartItemsObj = cartItems.map((i, x, arr) => {
+      // console.log("pr", i);
+      
+      const {itemCount, uuid, itemStatus, product, ...rest} = i
+      return {itemCount, uuid, itemStatus, product: makeProd(product, product?.priceVariation) }
+
+    })
+    
+    
+    return {...shoppingCartSelector.data, cartItems: CartItemsObj.filter(i => i !== undefined)}
+  }
 )
 
 export const getUnorderedCartItems = createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   filteredCartItemsFromModelV2(),
   (state, cartItems) => {
     if (!cartItems.length) return [];
@@ -309,16 +349,17 @@ export const getUnorderedCartItems = createOrmSelector(
 );
 
 export const getUnorderedCartItemsV2 = createApiSelector(
-  apiSelector,
-  filteredCartItemsFromModelV2(),
-  (api, cartItems)=> {
-    if (!cartItems.length) return [];
-
+  apiStateSelector,
+  filteredCartItemsFromModelV3(),
+  (api,shoppingCartSelector)=> {
+    // console.log("shoppingCartSelector", shoppingCartSelector)
+    if (!shoppingCartSelector.cartItems?.length) return [];
+    const cartItems = shoppingCartSelector.cartItems
     return addTotalCost(
       Object.fromEntries(
         sortByOrderStatus(
           filterByStore(
-            Object.values(configObject(cartItems))
+            Object.values(cartItems)
           ),
           [types.IN_CART, types.ORDERED_PENDING]
         )
@@ -328,13 +369,13 @@ export const getUnorderedCartItemsV2 = createApiSelector(
 )
 
 export const getCartUuid = createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   (state)=> sessionStorage.getItem("shoppingCartUuid")
     
 )
 
 export const getOrderedCartItems = createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   filteredCartItemsFromModelV2(),
   (state, cartItems) => {
     if (!cartItems.length) return [];
@@ -352,15 +393,16 @@ export const getOrderedCartItems = createOrmSelector(
 );
 
 export const getOrderedCartItemsV2 = createApiSelector(
-  apiSelector,
-  filteredCartItemsFromModelV2(),
-  (api, cartItems)=> {
-    if (!cartItems.length) return [];
+  apiStateSelector,
+  filteredCartItemsFromModelV3(),
+  (api,shoppingCartSelector)=> {
+    if (!shoppingCartSelector.cartItems?.length) return [];
+    const cartItems = shoppingCartSelector.cartItems
     return addTotalCost(
       Object.fromEntries(
         sortByOrderStatus(
           filterByStore(
-            Object.values(configObject(cartItems))
+            Object.values(cartItems)
           ),
           [types.OUT_CART, types.ORDERED_COMPLETE]
         )
@@ -370,17 +412,17 @@ export const getOrderedCartItemsV2 = createApiSelector(
 )
     
 export const cartItemsSortedByStore =()=> createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   filteredCartItemsFromModelV2(),
   (state, cartItems)=> cartItems.sort((a,b)=> a.product?.store.name.localeCompare(b.product?.store.name))
 )
 export const cartItemsSortedByItemStatus =()=> createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   filteredCartItemsFromModelV2(),
   (state, cartItems)=> cartItems.sort((a,b)=> a.itemStatus.localeCompare(b.itemStatus))
 )
 export const cartItemsGroupedByStatus =()=> createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   filteredCartItemsFromModelV2(),
   (state, cartItems)=> cartItems.reduce((acc, item) => {
     acc[item.itemStatus] = (acc[item.itemStatus] || []).concat(item);
@@ -388,7 +430,7 @@ export const cartItemsGroupedByStatus =()=> createOrmSelector(
   }, {})
 )
 export const cartItemsGroupedByStore =()=> createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   filteredCartItemsFromModelV2(),
   (state, cartItems)=> cartItems.reduce((acc, item) => {
     acc[item.product?.store.name] = (acc[item.product?.store.name] || []).concat(item);
@@ -396,31 +438,32 @@ export const cartItemsGroupedByStore =()=> createOrmSelector(
   }, {})
 )
 export const cartItemsReadyForDisplay =()=> createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   cartItemsGroupedByStatus(),
   cartItemsGroupedByStore(),
   (state, cartItems)=> cartItems.filter(i=> i.length)
 )
 
 export const cartItemsTotalV2 = ()=> createApiSelector(
-  apiSelector,
-  filteredCartItemsFromModelV2(),
-  (cartItems)=> cartItems.reduce((acc, item) => acc + item.product?.price * item.itemCount, 0)
+  apiStateSelector,
+  filteredCartItemsFromModelV3(),
+  (api,shoppingCartSelector)=> shoppingCartSelector.data?.reduce((acc, item) => acc + item.product?.price * item.itemCount, 0)
 )
 
 export const cartItemsTotal =()=> createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   filteredCartItemsFromModelV2(),
   (state, cartItems)=> cartItems.reduce((acc, item) => acc + item.product?.price * item.itemCount, 0)
 )
 
 export const cartItemsCountV2 =()=> createApiSelector(
-  apiSelector,
-  (api)=> api.queries.getCheckout?.data?.length || 0
+  apiStateSelector,
+  filteredCartItemsFromModelV3(),
+  (api,shoppingCartSelector)=> shoppingCartSelector.cartItems?.length || 0
 )
 
 export const cartItemsCount =()=> createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   // filteredOrdersFromModel(),
   (state, userAuthed) => {
     // let count;
@@ -432,13 +475,13 @@ export const cartItemsCount =()=> createOrmSelector(
 )
 
 export const isInCartV2 = (id) => createApiSelector(
-  apiSelector,
-  filteredCartItemsFromModelV2(),
-  (api,cartItems)=> cartItems.some(i=> i.uuid === id && i.itemStatus === types.IN_CART)
+  apiStateSelector,
+  apiSlice.endpoints.getShoppingCart.select(),
+  (api,shoppingCartSelector)=> shoppingCartSelector.data?.cartItems?.some(i=> i.uuid === id && i.itemStatus === types.IN_CART)
 )
 
 export const isInCart = (id) => createOrmSelector(
-  ormSelector(session.schema),
+  ormStateSelector(session.schema),
   // filteredOrdersFromModel(),
   (state) => {
     // console.log("id", id)
@@ -454,7 +497,7 @@ export const isInCart = (id) => createOrmSelector(
 )
     
     export const connectionRetries = createOrmSelector(
-      ormSelector(session.schema),
+      ormStateSelector(session.schema),
       (state) =>{
         return state.ConnectionRetriesMonitor.last()
       }

@@ -3,14 +3,21 @@ import { ArrowLeft,  ArrowRight,  BasketIco,  CartIco,  PinIco, popularTags } fr
 import { categoriesV2, filteredProductsFromModelV2 } from "../orm/selectors";
 import { useDispatch, useSelector } from "react-redux";
 import { Link,useParams, useLocation, createSearchParams, } from "react-router-dom";
-import { BuyBtns, ContentDescription, ContentDetails, ContentPayment, ContentSpecification, ContentViewer, Courier, DiscountInfo, EmbeddedProducts, Faqs, FullProductCharacteristics, FullProductDescription, LoadingStateComponent, Logo, NoItems, OrderInfo,  PaymentType, PickupPoints, PinLocation, PriceTag, ProductDescriptor, ProductImageViewer, ProductMinified, ProductSpecificationDetail, ProductTags,  ReviewsAndQuestions } from "../components";
+import { BuyBtns, Card, ContentDescription, ContentDetails, ContentPayment, ContentSpecification, ContentViewer, Courier, DiscountInfo, EmbeddedProducts, Faqs, FullProductCharacteristics, FullProductDescription, LoadingStateComponent, Logo, NoItems, OrderInfo,  PaymentType, PickupPoints, PinLocation, PriceTag, ProductDescriptor, ProductImageViewer, ProductMinified, ProductSpecificationDetail, ProductTags,  ReviewsAndQuestions } from "../components";
 import { useGetProductQuery } from "../js/middleware/queryHandler";
 import { createdToastMessage } from "../orm/models/ToastMessageModel";
 import types from "../orm/actions/actionTypes";
+import StoreCard from "../components/StoreCard";
+import RatingStars from "../components/RatingStars/RatingStars";
+import ContentProperties from "../components/contents/ContentProperties";
 
 
 // Somewhere inside, something is causing 6 rerenders
-
+const StoreLogo = ({product}) => (
+  <Link to={`/store/${product?.store.uuid}`}>
+    <Logo logo={product?.store.name} bgColor="bg-slate-500" />
+  </Link>
+)
 const ShowProduct = ()=>{
   // console.log("", useParams())
   // const location = useLocation()
@@ -25,9 +32,10 @@ const ShowProduct = ()=>{
   } else if (isSuccess) {
     productItem = data //{ id:data.uuid, ...data.attributes }
   } else if (isError) {
-    dispatch(createdToastMessage({ status: types.TOAST_VALID, text: { header: "Error", body: error.data.error }, type: types.TOAST_ERROR, id:"loading error"}))
-    // console.log(error)
+    // dispatch(createdToastMessage({ status: types.TOAST_VALID, text: { header: "Error", body: error.data.error }, type: types.TOAST_ERROR, id:"loading error"}))
+    console.log(error)
     productItem = false//[{ noProd: error.data.error }]
+    return <NoItems mainText={"Looks like the product you are looking for is not available"} subText={"🙅🏾‍♂️ No product found📦"}/>
   }
   // console.log("pr",productItem)
   const getCat = ()=> productItem?.categories[0] //useSelector(categories).find(cat => cat.id === productItem?.categoryIds[0])
@@ -98,6 +106,7 @@ const ShowProduct = ()=>{
     )
   }
   
+
   const Home =()=>(
     <svg fill="currentColor" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"> <path fill-rule="evenodd" clip-rule="evenodd" d="M11.3356 2.25259C11.7145 1.9158 12.2855 1.9158 12.6644 2.25259L21.6644 10.2526C22.0772 10.6195 22.1143 11.2516 21.7474 11.6644C21.3805 12.0771 20.7484 12.1143 20.3356 11.7474L20 11.4491V19C20 20.1046 19.1046 21 18 21H6.00001C4.89544 21 4.00001 20.1046 4.00001 19V11.4491L3.66437 11.7474C3.25159 12.1143 2.61952 12.0771 2.2526 11.6644C1.88568 11.2516 1.92286 10.6195 2.33565 10.2526L11.3356 2.25259ZM6.00001 9.67129V19H9.00001V14C9.00001 13.4477 9.44773 13 10 13H14C14.5523 13 15 13.4477 15 14V19H18V9.67129L12 4.33795L6.00001 9.67129ZM13 19V15H11V19H13Z" /> </svg>
   )
@@ -146,36 +155,81 @@ const ShowProduct = ()=>{
             <div className="show-product-page relative dark:text-white">
                 <NavBack/>
                 <MiddleSection>
-                  <div className="product-product-name overflow-clip  text-2xl  text-ellipsis">
-                    <span style={textStyle}>{productItem?.name}</span>
+                  <div className="product-product-name-md mt-2  lg:hidden overflow-clip  text-[1.4rem]  text-ellipsis">
+                    <span >{productItem?.name}</span>
+                    <RatingStars
+                      rating={4.9}
+                      reviewCount={28}
+                      questionCount={191}
+                    />
+
                   </div>
                   <ContentViewer>
-                    <section id="product-details">
+                    <section id="product-details" className="w-auto lg:w-full max-w-fit flex flex-col lg:flex-row justify-between items-start gap-5">
                       <ProductImageViewer images={productItem?.images}/>
-                      <ContentDetails contentType={"product"} showLogo={<Logo logo={productItem?.storeName} bgColor="bg-slate-500" />} variations={productItem?.variations.map((p)=> ({...p, text:p.price}))}>
-                            { productItem?.variations.map((i,x)=>
-                                  <ContentDescription key={x} first={x===0} id={`${i.uuid}`} >
-                                    <div className="w-full  less-than-xs:child:max-w-[330px] less-than-xs:child:justify-between">
-                                      <ProductDescriptor key={101} id={`${i.uuid}${x}`} label={"In stock"} values={[i.stock]} />
-                                    </div>
-                                    { i.properties.map((k,v)=> 
-                                      <div key={v} className="w-full less-than-xs:child:max-w-[330px] less-than-xs:child:flex-wrap less-than-xs:child:justify-between">
-                                        <ProductDescriptor key={v} id={`${i.uuid}${v}`} label={k.name} values={k.values || [`${k.type}`]} />
-                                      </div>
-                                    )}
-                                  </ContentDescription>
-                                )
-                            }
+                      
+                      <ContentDetails 
+                        productName={productItem?.name}
+                        contentType={"product"} 
+                        showLogo={
+                        // <StoreLogo product={productItem} />
+                          // <StoreCard store={productItem?.store} />
+                          <div className="md:hidden flex">
 
-                            <ContentSpecification pathId={"product-description"}>
-                              {
-                                productItem?.unitValues.map((uv,x)=><ProductSpecificationDetail key={x} label={uv.label} value={uv.value} />
-                                )
-                              }
-                            </ContentSpecification>
+                            <RatingStars 
+                              rating={4.9} 
+                              reviewCount={28} 
+                              questionCount={191}
+                            />
+                          </div>
+                        } 
+                          
+                        variations={productItem?.variations.map((p,x)=> ({...p, text:p.price, image:productItem?.images[x]}))}
+                      >
+                        {/* <ContentProperties
+                          properties={
+                            productItem?.variations.map((i, x) =>
+                              <ContentDescription key={x} first={x === 0} id={`${i.uuid}`} >
+                                <div className="w-full  less-than-xs:child:max-w-[330px] less-than-xs:child:justify-between">
+                                  <ProductDescriptor key={101} id={`${i.uuid}${x}`} label={"In stock"} values={[i.stock]} />
+                                </div>
+                                {i.properties.map((k, v) =>
+                                  <div key={v} className="w-full less-than-xs:child:max-w-[330px] less-than-xs:child:flex-wrap less-than-xs:child:justify-between">
+                                    <ProductDescriptor key={v} id={`${i.uuid}${v}`} label={k.name} values={k.values || [`${k.type}`]} />
+                                  </div>
+                                )}
+                              </ContentDescription>
+                            )
+
+                          }
+                        /> */}
+
+                          { productItem?.variations.map((i,x)=>
+                                <ContentDescription key={x} first={x===0} id={`${i.uuid}`} >
+                                  <div className="w-full  less-than-xs:child:max-w-[330px] less-than-xs:child:justify-between border-b ">
+                                    <ProductDescriptor key={101} id={`${i.uuid}${x}`} label={"In stock"} values={[i.stock]} />
+                                  </div>
+                                  { i.properties.map((k,v)=> 
+                                    <div key={v} className="w-full less-than-xs:child:max-w-[330px] less-than-xs:child:flex-wrap less-than-xs:child:justify-between">
+                                      <ProductDescriptor key={v} id={`${i.uuid}${v}`} label={k.name} values={k.values || [`${k.type}`]} />
+                                    </div>
+                                  )}
+                                </ContentDescription>
+                              )
+                          }
+                        
+
+                        <ContentSpecification pathId={"product-description"}>
+                          {
+                            productItem?.unitValues.map((uv,x)=><ProductSpecificationDetail key={x} label={uv.label} value={uv.value} />
+                            )
+                          }
+                        </ContentSpecification>
+                        <StoreCard store={productItem?.store} />
+                        
                       </ContentDetails >
                     </section>
-                    <section id="produc-price-details">
+                  <section id="produc-price-details" className="w-auto less-than-lg:max-w-[90vw] max-w-[20vw]">
                       <ContentPayment >
                         <PriceTag 
                           tagFor={"product-variations"} 
@@ -206,9 +260,7 @@ const ShowProduct = ()=>{
                       </PaymentType>
                     </section> 
                   </ContentViewer>
-                  <section id="product-recommendations" className="w-full">
-                    <RecommendedProducts/>
-                    <BuyTogetherProducts/>
+                  <section id="similar-products" className="w-full">
                     <SimilarProducts/>
                   </section>
                   <section id="product-description " className="w-full">
@@ -218,6 +270,11 @@ const ShowProduct = ()=>{
                   </section>
                   <section id="product-reviews" className="w-full">
                     <ReviewsAndQuestions  productId={productItem?.name+"-"+productItem?.uuid}/>
+                  </section>
+                  <section id="product-recommendations" className="w-full">
+                    <RecommendedProducts/>
+                    <BuyTogetherProducts/>
+                    {/* <SimilarProducts/> */}
                   </section>
                 </MiddleSection>
               <div className="bottom w-full border "></div>

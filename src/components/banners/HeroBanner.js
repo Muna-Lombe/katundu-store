@@ -3,7 +3,15 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight } from '../icons'
 import { imagepath } from '../../assets/images'
 
- const HeroBanner=()=>{
+ const HeroBanner=({carousel=true, jambotron=false, text, speed, interval})=>{
+    const banners = [
+        imagepath("/img/placeholders/Banner_1.png"),
+        "https://sun9-9.vkuserphoto.ru/impg/SKWBgfK9CunhNJYkITc-HFEcdmXX2vOObhg1cQ/ZMJgaSZl1A4.jpg?size=943x271&quality=95&sign=a45f863df71009a59790af07240f99b1&type=album",
+        "https://sun9-67.vkuserphoto.ru/impg/-s-n_WnhCUnVn_YQjQNFehJycEjuGieD7fh9xw/f1KuAmrxADM.jpg?size=942x273&quality=95&sign=fd898cd170b6033c4202ac4573ccd169&type=album",
+        "https://sun9-44.vkuserphoto.ru/impg/YA-ZXGa790SrEmeS5RfFE8JEIte4gI-pJxX3Zg/Ckea6R-VmZA.jpg?size=943x272&quality=95&sign=763568ffd3d219978dae1a08577204f2&type=album",
+        "https://sun9-80.vkuserphoto.ru/impg/65XER12ySwgb5MtROa95rQFVs6shEKE00tDFKQ/4oQRLK3hkbE.jpg?size=939x270&quality=95&sign=f9e938c5c19ffc5ee6dd753776ad97fb&type=album",
+
+      ]
     const BtnBasic = ({className, id, clickEv, children}) => (
       <div id={id} onClick={(e)=> clickEv(e)} className={className + " less-than-sm:w-[5%] w-[4.5%] less-than-sm:aspect-[2/4] aspect-[5/6.5]  cursor-pointer "}>
         {children}
@@ -85,14 +93,7 @@ import { imagepath } from '../../assets/images'
     const ScrollableGallery = ({})=>{
       const [activeIds, setActiveIds] = useState({activePageIdx:1, nextId:2, prevId:5})
       // console.log("state", activeIds)
-      const banners = [
-        imagepath("/img/placeholders/Banner_1.png"),
-        "https://sun9-9.vkuserphoto.ru/impg/SKWBgfK9CunhNJYkITc-HFEcdmXX2vOObhg1cQ/ZMJgaSZl1A4.jpg?size=943x271&quality=95&sign=a45f863df71009a59790af07240f99b1&type=album",
-        "https://sun9-67.vkuserphoto.ru/impg/-s-n_WnhCUnVn_YQjQNFehJycEjuGieD7fh9xw/f1KuAmrxADM.jpg?size=942x273&quality=95&sign=fd898cd170b6033c4202ac4573ccd169&type=album",
-        "https://sun9-44.vkuserphoto.ru/impg/YA-ZXGa790SrEmeS5RfFE8JEIte4gI-pJxX3Zg/Ckea6R-VmZA.jpg?size=943x272&quality=95&sign=763568ffd3d219978dae1a08577204f2&type=album",
-        "https://sun9-80.vkuserphoto.ru/impg/65XER12ySwgb5MtROa95rQFVs6shEKE00tDFKQ/4oQRLK3hkbE.jpg?size=939x270&quality=95&sign=f9e938c5c19ffc5ee6dd753776ad97fb&type=album",
-
-      ]
+      
       const splitId = (s)=> s.toString().split("_")
       
       const handleScroll = (e) => {
@@ -148,12 +149,87 @@ import { imagepath } from '../../assets/images'
         </>
       )
     }
+
+    const SingleBanner = ()=>{
+      return(
+        <div id="Hero-Banner" className={" relative inline-block min-w-[250px] w-full   aspect-[4/2] greater-than-xs:aspect-[6/1] text-white dark:text-black  overflow-clip bg-transparent flex justify-center items-center"}>
+          <img src={banners[0]} loading='eager' placeholder='some' alt="" />
+        </div>
+      )
+    }
+    const CarouselBanner = ()=>{
+      return(
+        <div id="Hero-Banner" className={" relative inline-block min-w-[250px] w-full greater-than-sm:max-w-[56%]  aspect-[4/2] greater-than-xs:aspect-[6/2] text-white dark:text-black  overflow-clip bg-transparent "}>
+          <ScrollableGallery/>
+        </div>
+      )
+    }
+    // create a jambotron banner that is some text on a background image and with the width of the screen and the max height of 100px and scrolling continuously from right to left in a loop at a speed of 100px per second
+    const JambotronBanner = ({text, speed, interval})=>{
+       text ||= "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.";
+      speed ||= 200;
+      interval ||= 1000;
+
+      return(
+        <section className=" w-full h-[100px] bg-red-500 text-8xl text-center align-middle leading-none">
+          <div className=' bg-black'>
+            <h2 className="fill-transparent stroke-white stroke-[2px] text-white animate-scroll">
+              {text}
+            </h2>
+          </div>
+          
+          <div className=' bg-orange-500'>
+            <h2 className=" stroke-white stroke-[2px] animate-scroll text-black">
+              {text}
+            </h2>
+          </div>
+          <style jsx>
+            {`
+              section {
+                display: flex;
+                overflow: hidden;
+                position: relative;
+              }
+
+              section div:nth-child(1) {
+                overflow: hidden;
+                position: relative;
+                width: 50%;
+              }
+
+              section div:nth-child(1) h2 {
+                // -webkit-text-fill-color: rgba(0, 0, 0, 0);
+                // -webkit-text-stroke: 2px;
+                // -webkit-text-stroke-color: #ffffff;
+                left: 50%;
+              }
+
+              section div:nth-child(2) {
+                // background-color: #20506b;
+                overflow: hidden;
+                position: relative;
+                width: 50%;
+              }
+
+              section div h2 {
+                animation: animate 20s linear infinite;
+                position: absolute;
+                left: -50%;
+                white-space: nowrap;
+              }
+
+              @keyframes animate {	
+                to {
+                  transform: translateX(-100%);
+                }
+              }
+            `}
+          </style>
+        </section>
+      )
+    }
     return(
-      <div id="Hero-Banner" className={" relative inline-block min-w-[250px] w-full greater-than-sm:max-w-[56%]  aspect-[4/2] greater-than-xs:aspect-[6/2] text-white dark:text-black  overflow-clip bg-transparent "}>
-        
-        <ScrollableGallery/>
-        
-      </div>
+      jambotron ? <JambotronBanner text={text} speed={speed} interval={interval}/> : carousel ? <CarouselBanner/> : <SingleBanner/>
     )
   }
 

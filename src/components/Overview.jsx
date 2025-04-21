@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { authenticatedUsersV2 } from '../orm/selectors';
-import { useGetUserProfileOverviewQuery, useGetUserQuery } from '../js/middleware/queryHandler';
+import { authenticatedUsersV2, selectUser } from '../orm/selectors';
+import { useGetUserProfileOverviewQuery, useGetUserQuery, useLazyGetUserProfileOverviewQuery } from '../js/middleware/queryHandler';
 import { SecurityCheckIcon, ClockIcon, SecurityAttentionIcon } from '../components/icons/otherIcons';
 import { StarIco } from './icons';
 import LoadingStateComponent from './LoadingStateComponent';
@@ -13,31 +13,32 @@ import BrokenConnection from '../pages/BrokenConnection';
 import { Link } from 'react-router-dom';
 
 const Overview = () => {
-  const authId = useSelector(authenticatedUsersV2)[0]?.uuid;
-  const { data: user, isLoading, isError } = useGetUserQuery({ uuid: authId });
-  const { data: profileOverview, isLoading: isProfileOverviewLoading, isError: isProfileOverviewError } = useGetUserProfileOverviewQuery({ uuid: authId });
+  const authedUsers = useSelector(authenticatedUsersV2);
+  const user = authedUsers[0] || {}//useSelector(selectUser)//useGetUserQuery({ uuid: authId }, {skip: !authId});
+  const {data: profileOverview, isLoading: isProfileOverviewLoading, isError: isProfileOverviewError} = useGetUserProfileOverviewQuery({userUuid: user?.uuid});
+  // const authId = user?.uuid;
 
+  
 
-
-  if (isLoading || isProfileOverviewLoading) return <div><LoadingStateComponent /></div>;
-  if (isError || isProfileOverviewError) return <div><BrokenConnection/></div>;
+  if (!user?.uuid || isProfileOverviewLoading) return <div><LoadingStateComponent /></div>;
+  if (isProfileOverviewError) return <div><BrokenConnection/></div>;
 
   // console.log("profileOverview", profileOverview)
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Account Overview</h1>
       
-      <div className="bonuses mb-6">
+      {/* <div className="bonuses mb-6">
         <Bonuses bonuses={profileOverview?.bonuses} />
 
-      </div>
+      </div> */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Account Information */}
         <section className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-4">Account Information</h2>
-          <p><strong>Name:</strong> {user.name}</p>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Member Since:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
+          <p><strong>Name:</strong> {user?.name}</p>
+          <p><strong>Email:</strong> {user?.email}</p>
+          <p><strong>Member Since:</strong> {new Date(user?.createdAt).toLocaleDateString()}</p>
         </section>
 
         {/* Recent Activity */}
@@ -46,7 +47,7 @@ const Overview = () => {
           <ul className="space-y-2">
             <li className="flex items-center gap-1">
               <ClockIcon className="h-5 w-5 mr-2 text-gray-400" />
-              Last login: {new Date(user.lastLogin).toLocaleString()}
+              Last login: {new Date(user?.lastLogin).toLocaleString()}
             </li>
             <li className="flex items-center gap-1">
               <StarIco className="h-5 w-5 mr-2 text-gray-400" />
@@ -61,7 +62,7 @@ const Overview = () => {
           <ul className="space-y-2">
             <li className="flex items-center">
               <SecurityCheckIcon className="h-5 w-5 mr-2 text-green-500" />
-              Two-factor authentication: {user.twoFactorEnabled ? 'Enabled' : 'Disabled'}
+              Two-factor authentication: {user?.twoFactorEnabled ? 'Enabled' : 'Disabled'}
             </li>
             <li className="flex items-center">
               <SecurityAttentionIcon className="h-5 w-5 mr-2 text-yellow-500" />

@@ -3,7 +3,7 @@ import { titleTagTypes as tags} from "../icons";
 
 const ContentSpecification = ({pathId, children})=>{
     return(
-      <div className="content-specification w-full max-w-[342px] ">
+      <div className="content-specification w-fit  ">
         <a href={`#${pathId}`}  target="_self" rel="no-referer no-reopenner" className=' text-blue-500 text-sm font-raleway lining-nums tabular-nums  font-medium cursor-pointer'>
           {tags.contentSpecification.mainText}
         </a>

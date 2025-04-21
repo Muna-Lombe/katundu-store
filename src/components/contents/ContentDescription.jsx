@@ -1,4 +1,4 @@
-const ContentDescription = ({ id, first, children }) => {
+const ContentDescription = ({ id, first, children, has_bottom=false }) => {
   return (
     <div id={'content_desc_' + id} className={"content-description " + (first ? "flex" : "hidden") + " flex-col gap-1"}>
       {children}

@@ -31,7 +31,7 @@ const Settings = () => {
   
   
   const authId = useSelector(authenticatedUsersV2)[0]?.uuid;
-  const {data: userSettingsData, isLoading, isError} = useGetUserSettingsQuery(authId, {skip: !activeTab.href.includes(':~profile-settings')})
+  const {data: userSettingsData, isLoading, isError} = useGetUserSettingsQuery(authId, {skip: !authId || !activeTab.href.includes(':~profile-settings')})
   const [updateUserSettings] = useUpdateUserSettingsMutation()
 
   function classNames(...classes) {

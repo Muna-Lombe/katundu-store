@@ -6,11 +6,12 @@ import { titleTagTypes as tags } from '../components/icons';
 import { useGetCatalogItemProductsQuery, useGetCatalogItemQuery, useGetCatalogQuery, useLazyGetCatalogItemProductsQuery } from '../js/middleware/queryHandler';
 import { createdToastMessage } from '../orm/models/ToastMessageModel';
 import types from '../orm/actions/actionTypes';
+import { useParams } from 'react-router-dom';
 const Categories = () => {
   // const [ activeCategoryId, setActiveCategoryId] = useState(1)
   const dispatch = useDispatch()
   let catalog = useSelector(categories)
-
+  let category = useParams()?.category
   
   const scrollFn = function (event) {
     if (document.body.doScroll)
@@ -163,7 +164,7 @@ const Categories = () => {
       
       <div className="sectioned_products w-full h-full flex flex-col max-h-screen overflow-y-scroll scroll-smooth scrollbar ">
       
-        <CategorySection category={catalog.find(c=>c.active)}/>
+        <CategorySection category={category||catalog.find(c=>c.active)}/>
         
       </div>
     </div>

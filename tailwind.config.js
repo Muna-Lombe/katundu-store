@@ -94,6 +94,15 @@ module.exports = {
           'transition': 'transition',
           'box-shadow': 'box-shadow',
         },
+        animation: {
+          'jambotron-scroll': 'scroll 60s linear infinite',
+        },
+        keyframes: {
+          scroll: {
+            '0%': { transform: 'translateX(0)' },
+            '100%': { transform: 'translateX(-100%)' },
+          },
+        },
       },
       
     },

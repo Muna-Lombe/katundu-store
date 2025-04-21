@@ -15,6 +15,7 @@ import { removedAllCartItems } from "../../orm/models/CartModel";
 import { removedAllOrderItems } from "../../orm/models/OrderModel";
 import Toast from "../banners/Toast";
 import ToggleVisibleIco from "../icons/ToggleVisibleIco.jsx";
+import LoadingStateComponent from "../LoadingStateComponent";
 
 export default function Login({userId}) {
 
@@ -36,6 +37,9 @@ export default function Login({userId}) {
   const handleSignin = async(e)=>{
     try {
       e.preventDefault()
+      // document.getElementById("Signin-form").classList.add("hidden")
+      document.getElementById("signin-button-text").classList.replace("flex", "hidden")
+      document.getElementById("signin-button-loading-spinner").classList.replace("hidden", "flex")
       const forms = document.forms
       const data = {}
      
@@ -58,17 +62,19 @@ export default function Login({userId}) {
       //  console.log(res)
       dispatch(createdAuth({uuid:res.data.uuid, dateCreated:momentDate().shortDate, timeCreated: new Date().toString(),  authStatus:types.AUTH_VALID}))
       await performAuthedActions([
-        preloadGetUser(res.data.uuid),
+        // preloadGetUser(res.data.uuid),
         preloadCartItems,
         preloadOrderHistory,
 
       ])
-      if(location?.state?.pathname){
-        location.state.pathname ||= ["/reset-password", "/signup"].includes(location?.state?.pathname) ? "/" : location?.state?.pathname;
+      setTimeout(() => {
+        if(location?.state?.pathname){
+          location.state.pathname ||= ["/reset-password", "/signup"].includes(location?.state?.pathname) ? "/" : location?.state?.pathname;
         goto(location?.state,{state:{from: location?.pathname||"/"}});
       }else{
-        goto("/");
-      }
+          goto("/");
+        }
+      }, 1000)
       
     } catch (error) {
       const msg = error.message.toString().split("\"")
@@ -183,15 +189,16 @@ export default function Login({userId}) {
             <div>
               <button
                 type="submit"
-                // onSubmit={(e) => handleSignin(e)}
-                // onClick={(e) => handleSignin(e)}
-                className="group relative flex w-full justify-center rounded-md bg-orange-600 py-2 px-3 text-sm font-semibold text-white dark:text-black  hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
+                className="group relative flex w-full min-h-[36px] justify-center rounded-md border-2 border-orange-600 text-sm font-semibold text-white dark:text-black  hover:bg-orange-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-600"
               >
-                <span className="absolute inset-y-0 left-0 flex items-center pl-3">
+                <span id="signin-button-text" className="w-full h-full min-h-[36px] flex justify-center items-center text-center text-lg font-semibold bg-orange-600 rounded-md">
                   {/* <LockClosedIcon className="h-5 w-5 text-orange-500 group-hover:text-orange-400" aria-hidden="true" /> */}
                   {/* <InfoIco/> */}
+                  Sign in
                 </span>
-                Sign in
+                <span id="signin-button-loading-spinner" className=" hidden bg-white w-full h-full min-h-[36px]  justify-center items-center text-center text-lg font-semibold rounded-md">
+                  <LoadingStateComponent  />
+                </span>
               </button>
             </div>
           </form>

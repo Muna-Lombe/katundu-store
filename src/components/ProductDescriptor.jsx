@@ -3,7 +3,7 @@ import { setTextBg, textBg } from "./icons";
 const ProductDescriptor = ({ id, label = "Some descriptively long", values = ["Textword"] }) => {
   // console.log("", id,label, values)
   return (
-  <p id={'prod_desc_' + id} className={'product-descriptor px-2   w-full flex flex-wrap ' + (values.length > 1 ? "flex-col " : " flex-row lg:flex-row xl:flex-row") + ' flex-nowrap items-baseline '}>
+  <p id={'prod_desc_' + id} className={'product-descriptor px-2   w-full flex flex-wrap ' + (values.length > 1 ? "flex-col " : " flex-row lg:flex-row xl:flex-row") + ' flex-nowrap items-baseline justify-between '}>
     <span className='w-max whitespace-nowrap font-raleway lining-nums tabular-nums  font-medium'>{label} </span>
     
     <span className={"dotted-div less-than-xs:hidden px-2 w-full h-[2px] " + (values.length >= 1 ? "hidden" : "flex") + " text-slate-400 overflow-hidden clear-right text-clip bg-repeat-x"} style={setTextBg(".", "black")} >
@@ -11,7 +11,7 @@ const ProductDescriptor = ({ id, label = "Some descriptively long", values = ["T
     
     <span className={" px-1 w-max flex less-than-xs:flex-wrap flex-row " + (values.length >= 1 ? "justify-start" : "justify-end") + " gap-2  text-slate-500 font-raleway lining-nums tabular-nums  font-medium "}>
       {
-        values.map((i, v) => <span key={v} className="w-max">{i || i} </span>)
+        values.map((i, v) => <span key={v} className="w-max">{i || '--'} </span>)
 
       }
     </span>

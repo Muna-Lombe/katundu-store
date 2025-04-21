@@ -16,7 +16,7 @@ import { handleLoadTest, handleRotateIco } from '../utilities'
 
 const OrderHistory = ({ itemsOrdered, listStyle}) => {
   const dispatch = useDispatch()
-  console.log("", itemsOrdered)
+  // console.log("", itemsOrdered)
 
   // handleLoadTest(dispatch, createdOrderItem)
   // handleRotateIco()
@@ -136,7 +136,7 @@ const OrderHistory = ({ itemsOrdered, listStyle}) => {
           </div>
           <div id="order_cost">
             <p className="text-xs text-[#727280] font-medium"> {tags.orderHistory.orderCostText}</p>
-            <p className="text-xs text-black dark:text-white  font-semibold"> {tags.currencyType + order?.orderCost}</p>
+            <p className="text-xs text-black dark:text-white  font-semibold"> {tags.currencyType + (order?.orderCost||order?.orderItems?.reduce((acc, oi)=> acc + oi.price * oi.quantity, 0))}</p>
           </div>
           <div id="delivery_address">
             <p className="text-xs text-[#727280] font-medium"> {tags.orderHistory.deliveryAddressText} </p>
@@ -152,12 +152,12 @@ const OrderHistory = ({ itemsOrdered, listStyle}) => {
             specificId: oi.uuid, 
             nameTag: { 
               modelName: "Product", 
-              item: { id: oi.uuid, prop: "     x" + oi.productQuantity }
+                item: { id: oi.product.uuid, prop: "     x" + oi.quantity }
             }, 
-            valuesArray: [tags.currencyType + Number.parseInt(oi.productPrice * oi.productQuantity)] 
+            valuesArray: [tags.currencyType + Number.parseInt(oi.price * oi.quantity)] 
           })) || [] 
         const variations = order?.orderItems.map((o, x) => ({ uuid: o.uuid, text: x+1 }))
-        console.log("order list", variations, contentArray)
+        // console.log("order list", variations, contentArray)
 
           return (
             <div id={"order-list-"+order.uuid} className=" child:m-0 child:p-0 w-max child:gap-1 text-xs transition-transform ">
@@ -172,7 +172,7 @@ const OrderHistory = ({ itemsOrdered, listStyle}) => {
           specificId: v.uuid,
           ChildElement: v.text === "list" ? OrderList : OrderSummary 
         }))
-        console.log("order details", variations, contentArray)
+        // console.log("order details", variations, contentArray)
         return(
             <ToggleableField contentType={contentType}  contentArray={contentArray} variations={variations} hasChildElement={true}/>
         )
@@ -255,7 +255,7 @@ const OrderHistory = ({ itemsOrdered, listStyle}) => {
   const GridCards = ({listStyle})=>(
     <div id="content_wrapper" className="w-full grid  grid-flow-cols grid-cols-[repeat(auto-fit,minmax(14rem,1fr))] gap-2">
       {
-        itemsOrdered.length
+        itemsOrdered?.length
           ? itemsOrdered?.map((item, x) => <CardItem listStyle={listStyle} key={x} idx={x} order={item} />)
           : <NoItems subText={"🙅 looks like you have no orders yet 👀"} mainText={<span> {"😃 "} <Link to={"/"} className='text-blue-500 hover:underline'>{"Buy something"} </Link>  {" to start your shopping journey 😃"} </span>} />
       }
@@ -289,7 +289,7 @@ const OrderHistory = ({ itemsOrdered, listStyle}) => {
         
           
           {
-            itemsOrdered.length
+            itemsOrdered?.length
               ? itemsOrdered?.map((item, x) => <ListItem listStyle={listStyle} key={x} idx={x} order={item} />)
               : <></>
           }

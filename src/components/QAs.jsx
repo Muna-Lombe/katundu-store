@@ -18,49 +18,51 @@ const QAs = ({ qas, productReviewId , productId}) => {
   const authSessions = useSelector(authenticatedUsersV2)
   const userAuthed = useSelector(isAuthedUserV2(authSessions[0]?.uuid))
   // console.log("user authed", userAuthed)
+
   // const api = useSelector(apiSelector)
   
   // const hasOrdered = useSelector(orderedByUser(productId))
-  const isAuthed = () => (authSessions.length || authSessions?.some(as => as.authStatus !== types.AUTH_EXPIRED || userAuthed))
+  const isAuthed = () => (userAuthed)
   const goto = useNavigate()
   const location = useLocation()
   const [addQuestion, { data: addedQuestionData, isLoading: addQuestionLoading, isError: addQuestionError, isSuccess: addQuestionSuccess }] = useAddQuestionMutation();
   const [updateQuestion, { data: updatedQuestionData, isLoading: updateQuestionLoading, isError: updateQuestionError, isSuccess: updateQuestionSuccess }] = useUpdateQuestionMutation();
   const [removeQuestion, { data: removedQuestionData, isLoading: removeQuestionLoading, isError: removeQuestionError, isSuccess: removeQuestionSuccess }] = useRemoveQuestionMutation();
 
-  const [addAnswer] = useAddAnswerMutation();
+  const [addAnswer, {data:addedAnswerData, isLoading:isAnswerLoading, isSuccess:isAnswerSuccess, isError:isAnswerError}] = useAddAnswerMutation();
   const [updateAnswer, { data: updatedAnswerData, isLoading: updateAnswerLoading, isError: updateAnswerError, isSuccess: updateAnswerSuccess } ] = useUpdateAnswerMutation();
   const [removeAnswer, { data: removedAnswerData, isLoading: removeAnswerLoading, isError: removeAnswerError, isSuccess: removeAnswerSuccess }] = useRemoveAnswerMutation();
   
-  console.log("qas", qas)
-  useEffect(() => {
-    if (addQuestionSuccess && addedQuestionData) {
-      const {questionAnswerId:qandas_id, ...rest} = addedQuestionData
+  // console.log("qas", qas)
+  // useEffect(() => {
+  //   if (addQuestionSuccess && addedQuestionData) {
+  //     const {questionAnswerId:qandas_id, ...rest} = addedQuestionData
       
-      const questions = document.getElementById("questions")
-      const q = { uuid: qandas_id, rankby: [], question: { ...rest } }
+  //     console.log("addedQuestionData", addedQuestionData)
+  //     const questions = document.getElementById("questions")
+  //     const q = { uuid: qandas_id, rankby: [], question: { ...rest } }
       
-      const InsertElement = ()=>(
-        <Question qandas_id={q.uuid} question={{ ...q.question, responses: "" }}>
-          {
-            q.question.answers.map((ans, x) =>
-            <Answer key={x} qandas_id={q.uuid} response={ans} />
-            )
+  //     // const InsertElement = ()=>(
+  //     //   <Question qandas_id={q.uuid} question={{ ...q.question, responses: "" }}>
+  //     //     {
+  //     //       q.question.answers.map((ans, x) =>
+  //     //       <Answer key={x} qandas_id={q.uuid} response={ans} />
+  //     //       )
             
-          }
-          <Respond qandas_id={q.uuid} />
-        </Question>
-      )
+  //     //     }
+  //     //     <Respond qandas_id={q.uuid} />
+  //     //   </Question>
+  //     // )
 
 
-      questions.insertAdjacentHTML("afterbegin", renderToString(<InsertElement />) )
+  //     // questions.insertAdjacentHTML("afterbegin", renderToString(<InsertElement />) )
       
-    }
+  //   }
   
-    return () => {
-      "second"
-    }
-  }, [addQuestionSuccess, addedQuestionData])
+  //   return () => {
+  //     "second"
+  //   }
+  // }, [addQuestionSuccess, addedQuestionData])
   
 
 
@@ -250,7 +252,7 @@ const QAs = ({ qas, productReviewId , productId}) => {
   
   const MoreActions = ({ children }) => {
     const Option = ({ children }) => (
-      <div className="more-options-wrapper less-than-sm:absolute  py-1 min-w-max  items-baseline less-than-sm:border rounded-xl shadow-sm text-sm less-than-sm:hidden  less-than-sm:group-hover:flex  less-than-sm:flex-col greater-than-sm:flex greater-than-sm:flex-row less-than-sm:gap-1 gap-2">
+      <div className="more-options-wrapper less-than-sm:absolute right-1 p-[2px] min-w-max  items-baseline less-than-sm:border rounded-xl shadow-sm text-sm less-than-sm:hidden  less-than-sm:group-hover:flex  less-than-sm:flex-col greater-than-sm:flex greater-than-sm:flex-row less-than-sm:gap-1 gap-2">
         {children}
         {/* <span>{"Copy to clipboard"}</span> */}
       </div>
@@ -280,14 +282,14 @@ const QAs = ({ qas, productReviewId , productId}) => {
 
     const handleUpvote = (e) => {
       e.preventDefault()
-      updateQuestion({ postUpdate:{product_review: { type: "update_question_votes", question: { upvotes: 1 }, poster_uuid: authSessions[0].uuid}}, productId, productReviewId, questionAnswerId: qandas_id, questionId: question.uuid })
+      updateQuestion({ postUpdate:{product_review: { type: "update_question_rating", question: { upvotes: 1 }, poster_uuid: authSessions[0].uuid}}, productId, productReviewId, questionAnswerId: qandas_id, questionId: question.uuid })
     }
     const handleDownvote = (e) => {
       e.preventDefault()
       if(!isAuthed()){
         return goto("/signin", { state: { ...location } })
       }
-      updateQuestion({ postUpdate:{product_review: { type: "update_question_votes", question: { downvotes: 1 }, poster_uuid: authSessions[0].uuid}}, productId, productReviewId, questionAnswerId: qandas_id, questionId: question.uuid })
+      updateQuestion({ postUpdate:{product_review: { type: "update_question_rating", question: { downvotes: 1 }, poster_uuid: authSessions[0].uuid}}, productId, productReviewId, questionAnswerId: qandas_id, questionId: question.uuid })
     }
 
     return (
@@ -390,12 +392,12 @@ const QAs = ({ qas, productReviewId , productId}) => {
               <MoreActions>
                 <>
                   <div id={"edit-question" + question?.uuid} className="edit-question flex flex-row items-baseline gap-1 text-slate-400 hover:text-blue-500 text-base">
+                    <p className="less-than-xs:hidden ">{"Edit"}</p>
                     <EditIco />
-                    <p className="less-than-sm:hidden ">{"Edit"}</p>
                   </div>
                   <div id={"delete-question" + question?.uuid} className="delete-question flex flex-row items-baseline gap-1  text-red-600  text-base hover:text-red-500">
+                    <p className="less-than-xs:hidden">{"Delete"}</p>
                     <DeleteIco size={16} />
-                    <p className="less-than-sm:hidden">{"Delete"}</p>
                   </div>
                 </>
               </MoreActions>
@@ -486,12 +488,12 @@ const QAs = ({ qas, productReviewId , productId}) => {
 
     const handleUpvote = (e) => {
       e.preventDefault()
-      updateAnswer({ postUpdate: { type: "update_answer_votes", product_answer: { answer: { upvotes: 1 }, poster_uuid: authSessions[0].uuid } }, productId, productReviewId, questionAnswerId: qandas_id, answerId: answer.uuid })
+      updateAnswer({ postUpdate: { type: "update_answer_rating", product_answer: { answer: { upvotes: 1 }, poster_uuid: authSessions[0].uuid } }, productId, productReviewId, questionAnswerId: qandas_id, answerId: answer.uuid })
     }
     const handleDownvote = (e) => {
       e.preventDefault()
       updateAnswer({
-        postUpdate: { type: "update_answer_votes", product_review: { answer: { downvotes: 1 }, poster_uuid: authSessions[0].uuid } }, productId, productReviewId, 
+        postUpdate: { type: "update_answer_rating", product_review: { answer: { downvotes: 1 }, poster_uuid: authSessions[0].uuid } }, productId, productReviewId, 
         questionAnswerId: qandas_id, answerId: answer.uuid })
     }
 
@@ -603,12 +605,12 @@ const QAs = ({ qas, productReviewId , productId}) => {
                     <MoreActions>
                       <>
                         <div id={"edit-answer" + response?.uuid} className="edit-answer flex flex-row items-baseline gap-1 text-slate-400 hover:text-blue-500 text-base">
+                          <p className="less-than-xs:hidden ">{"Edit"}</p>
                           <EditIco />
-                          <p className="less-than-sm:hidden ">{"Edit"}</p>
                         </div>
                         <div id={"delete-answer" + response?.uuid} className="delete-answer flex flex-row items-baseline gap-1  text-red-600  text-base hover:text-red-500">
+                          <p className="less-than-xs:hidden">{"Delete"}</p>
                           <DeleteIco size={16} />
-                          <p className="less-than-sm:hidden">{"Delete"}</p>
                         </div>
                       </>
                     </MoreActions>
@@ -638,7 +640,7 @@ const QAs = ({ qas, productReviewId , productId}) => {
         const { product_review, ...rest } = postBody
         const initialPost = {}
         initialPost["product_review"] = { ...rest, ...product_review }
-        return updateQuestion({
+        return addAnswer({
           initialPost,
           questionAnswerId: qandas_id,
           productId, 
